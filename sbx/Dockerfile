@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libgmp-dev \
         libreadline-dev \
         libpq-dev \
+        chromium chromium-driver \
         sqlite3 \
         netcat-openbsd \
         locales \
