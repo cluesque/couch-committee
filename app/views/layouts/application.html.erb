@@ -14,9 +14,8 @@
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="icon" href="/app_icon.png" type="image/png">
+    <link rel="apple-touch-icon" href="/app_icon.png">
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
@@ -25,7 +24,10 @@
   <body>
     <nav class="navbar bg-body-tertiary border-bottom mb-3">
       <div class="container">
-        <%= link_to "Couch Committee", root_path, class: "navbar-brand" %>
+        <%= link_to root_path, class: "navbar-brand d-flex align-items-center gap-2" do %>
+          <%= image_tag "/app_icon.png", alt: "", width: 32, height: 32, class: "rounded" %>
+          Couch Committee
+        <% end %>
       </div>
     </nav>
 
