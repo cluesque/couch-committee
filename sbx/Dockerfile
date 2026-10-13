@@ -15,12 +15,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libgmp-dev \
         libreadline-dev \
         libpq-dev \
-        chromium chromium-driver \
         sqlite3 \
         netcat-openbsd \
         locales \
         mg \
     && rm -rf /var/lib/apt/lists/*
+
+# Chromium for system tests (Cuprite drives it directly, no chromedriver needed).
+# Ubuntu's chromium packages are snap stubs that can't run in a container, and Google
+# ships no linux-arm64 Chrome, so use Playwright's Chromium build instead.
+ENV PLAYWRIGHT_BROWSERS_PATH=/opt/ms-playwright
+RUN npx -y playwright@1 install --with-deps chromium \
+    && ln -s "$(find /opt/ms-playwright -path '*/chromium-*' -name chrome -type f | head -1)" /usr/local/bin/chromium \
+    && rm -rf /var/lib/apt/lists/* /root/.npm
+ENV BROWSER_PATH=/usr/local/bin/chromium
 
 # Layer 2: ruby, compiled with ruby-build into /usr/local
 ARG RUBY_VERSION=4.0.7
