@@ -80,6 +80,17 @@ class ListEntryTest < ActiveSupport::TestCase
     assert_nil rewatch.last_viewed_on
   end
 
+  test "viewed? is about this entry's viewings only" do
+    season = create(:season, episode_count: 2)
+    entry = create(:list_entry, title: season)
+    other = create(:list_entry, title: season)
+    view(other, season.episodes.second)
+    view(entry, season.episodes.first)
+
+    assert entry.viewed?(season.episodes.first)
+    assert_not entry.viewed?(season.episodes.second)
+  end
+
   test "last viewed is the latest viewing date" do
     entry = create(:list_entry, title: create(:season, episode_count: 2))
     view(entry, entry.title.episodes.second, on: Date.new(2026, 10, 12))

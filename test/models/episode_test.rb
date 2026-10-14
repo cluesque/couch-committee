@@ -17,6 +17,11 @@ class EpisodeTest < ActiveSupport::TestCase
     assert build(:episode, title: create(:season, episode_count: 0), number: 1).valid?
   end
 
+  test "label is its number and name, or just its number" do
+    assert_equal "3. Next", build(:episode, number: 3, name: "Next").label
+    assert_equal "Episode 3", build(:episode, number: 3, name: "").label
+  end
+
   test "name and availability date are optional" do
     assert build(:episode, name: nil, available_on: nil).valid?
   end
