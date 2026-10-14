@@ -118,6 +118,16 @@ class ListEntryTest < ActiveSupport::TestCase
     assert_not entry.viewed?(season.episodes.second)
   end
 
+  test "a finished entry ended on its last viewing, or when it was cancelled" do
+    entry = create(:list_entry, title: create(:season, episode_count: 2))
+    view(entry, entry.title.episodes.first, on: Date.new(2026, 10, 1))
+    view(entry, entry.title.episodes.second, on: Date.new(2026, 10, 9))
+    assert_equal [ Date.new(2026, 10, 1), Date.new(2026, 10, 9) ], [ entry.first_viewed_on, entry.ended_on ]
+
+    cancelled = create(:list_entry, :cancelled, cancelled_at: Time.zone.local(2026, 10, 5, 12))
+    assert_equal Date.new(2026, 10, 5), cancelled.ended_on
+  end
+
   test "last viewed is the latest viewing date" do
     entry = create(:list_entry, title: create(:season, episode_count: 2))
     view(entry, entry.title.episodes.second, on: Date.new(2026, 10, 12))

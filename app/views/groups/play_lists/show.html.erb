@@ -7,7 +7,10 @@
       <p class="text-body-secondary mb-0"><%= @play_list.description %></p>
     <% end %>
   </div>
-  <%= link_to "Edit", edit_group_play_list_path(Current.group, @play_list), class: "btn btn-outline-secondary btn-sm" %>
+  <div class="d-flex gap-2">
+    <%= link_to "History", group_play_list_history_path(Current.group, @play_list), class: "btn btn-outline-secondary btn-sm" %>
+    <%= link_to "Edit", edit_group_play_list_path(Current.group, @play_list), class: "btn btn-outline-secondary btn-sm" %>
+  </div>
 </div>
 
 <% if @entries.any? %>

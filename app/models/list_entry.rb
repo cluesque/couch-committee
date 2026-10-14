@@ -37,8 +37,17 @@ class ListEntry < ApplicationRecord
     remaining_episodes.first
   end
 
+  def first_viewed_on
+    viewings.map(&:date).min
+  end
+
   def last_viewed_on
     viewings.map(&:date).max
+  end
+
+  # When a finished entry left the active list: its last viewing, or when it was cancelled.
+  def ended_on
+    cancelled? ? cancelled_at.to_date : last_viewed_on || updated_at.to_date
   end
 
   # Nothing left to watch is out yet. An episode without a date is assumed to be available.

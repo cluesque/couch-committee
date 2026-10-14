@@ -76,6 +76,19 @@ class PlayListTest < ActiveSupport::TestCase
     assert_equal [ b, a, newer ], play_list.list_entries.active.order(:sequence).to_a
   end
 
+  test "history is finished entries, most recently ended first" do
+    play_list = create(:play_list)
+    group = play_list.group
+    watched_early = play_list.add(create(:movie))
+    WatchRecorder.call(group: group, episode: watched_early.title.episodes.first, date: Date.new(2026, 10, 1))
+    cancelled = travel_to(Time.zone.local(2026, 10, 5, 12)) { play_list.add(create(:movie)).tap(&:cancel) }
+    watched_late = play_list.add(create(:movie))
+    WatchRecorder.call(group: group, episode: watched_late.title.episodes.first, date: Date.new(2026, 10, 9))
+    play_list.add(create(:movie))
+
+    assert_equal [ watched_late, cancelled, watched_early ], play_list.history
+  end
+
   test "belongs to a group, which can have several playlists" do
     group = create(:group)
     play_lists = create_list(:play_list, 2, group: group)

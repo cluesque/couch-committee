@@ -9,6 +9,12 @@ class PlayList < ApplicationRecord
     list_entries.create(title: title, sequence: list_entries.maximum(:sequence).to_i + 1)
   end
 
+  # Watched and cancelled entries, most recently ended first.
+  def history
+    list_entries.where(state: %i[ watched cancelled ]).includes(:viewings, title: :episodes)
+      .sort_by { |entry| [ entry.ended_on, entry.updated_at ] }.reverse
+  end
+
   # Puts the given active entries first, in the given order. Ids that aren't active entries here are
   # ignored. An entry added since the client loaded the list is left at the end, where it already is.
   def reorder(list_entry_ids)
