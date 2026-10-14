@@ -83,7 +83,8 @@ of scope for now; most of what might have lived there instead lives on `ListEntr
 - `belongs_to :list_entry`
 
 A `Viewing` is a single episode-watch event, scoped to the specific `ListEntry` (watch-through) it
-advances. The `list_entry` association is what lets a half-finished season and a full rewatch of
+advances. Its `episode` must belong to the entry's Title, and its `group` must own the entry's
+PlayList. The `list_entry` association is what lets a half-finished season and a full rewatch of
 that same season coexist without the old cycle's `Viewing`s being mistaken for progress on the new
 one.
 

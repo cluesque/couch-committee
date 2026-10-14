@@ -3,6 +3,7 @@ class ListEntry < ApplicationRecord
 
   belongs_to :play_list
   belongs_to :title
+  has_many :viewings
 
   enum :state, { not_started: 0, in_progress: 1, watched: 2, cancelled: 3 }, validate: true
 
