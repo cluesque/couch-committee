@@ -64,7 +64,7 @@ class Groups::PlayLists::ListEntriesControllerTest < ActionDispatch::Integration
     assert_redirected_to group_play_list_path(@group, @play_list)
     assert_equal "Added Arrival.", flash[:notice]
     follow_redirect!
-    assert_equal [ "First", "Arrival" ], css_select("ol li").map { |item| item.text.strip }
+    assert_equal [ "First", "Arrival" ], css_select("ol > li .fw-medium").map(&:text)
     assert @play_list.list_entries.find_by!(title: movie).not_started?
   end
 
