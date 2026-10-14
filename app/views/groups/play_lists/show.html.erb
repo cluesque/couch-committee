@@ -1,0 +1,15 @@
+<% content_for :title, "#{@play_list.name} · Couch Committee" %>
+
+<div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+  <div>
+    <h1 class="h3 mb-1"><%= @play_list.name %></h1>
+    <% if @play_list.description.present? %>
+      <p class="text-body-secondary mb-0"><%= @play_list.description %></p>
+    <% end %>
+  </div>
+  <%= link_to "Edit", edit_group_play_list_path(Current.group, @play_list), class: "btn btn-outline-secondary btn-sm" %>
+</div>
+
+<p class="text-body-secondary">Nothing on this playlist yet.</p>
+
+<%= link_to Current.group.name, Current.group %>

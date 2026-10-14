@@ -1,0 +1,19 @@
+<%= form_with model: [ Current.group, play_list ] do |form| %>
+  <div class="mb-3">
+    <%= form.label :name, class: "form-label" %>
+    <%= form.text_field :name, required: true, autofocus: true, placeholder: "e.g. Friday movie night",
+          class: [ "form-control", { "is-invalid": play_list.errors.include?(:name) } ] %>
+    <% play_list.errors.full_messages_for(:name).each do |message| %>
+      <div class="invalid-feedback"><%= message %></div>
+    <% end %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :description, class: "form-label" %>
+    <%= form.text_area :description, rows: 3, class: "form-control" %>
+    <div class="form-text">Optional.</div>
+  </div>
+
+  <%= form.submit play_list.persisted? ? "Save playlist" : "Create playlist", class: "btn btn-primary" %>
+  <%= link_to "Cancel", play_list.persisted? ? [ Current.group, play_list ] : Current.group, class: "btn btn-link" %>
+<% end %>

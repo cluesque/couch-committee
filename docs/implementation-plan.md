@@ -55,7 +55,8 @@ and behavior rules this implements.
   lookup/autocomplete — explicitly out of scope, see architecture doc §6.)
 
 ## Phase 5 — PlayLists and the default (active) view
-- `Groups::PlayListsController` (index, show, new/create, edit/update).
+- `Groups::PlayListsController` (show, new/create, edit/update). The group's own page lists its
+  playlists, so there's no separate playlist index.
 - `PlayLists::ListEntriesController#create` — add an existing Title to a playlist as a new
   `ListEntry` (`state: not_started`, `sequence` appended at the end); enforce the "no second active
   entry for the same (playlist, title)" rule. Titles are a shared, growing catalog (data model

@@ -90,7 +90,7 @@ feature that's out of scope for now.
 SessionsController          # google_sign_in callback, destroy (logout)
 GroupsController             # index (my groups), show, new, create
 Groups::MembershipsController   # invite/remove users, nested under group
-Groups::PlayListsController     # index, show, new, create, edit, update — nested under group
+Groups::PlayListsController     # show, new, create, edit, update — nested under group (the group page lists them)
 TitlesController                # the global catalog: browse, plus manual create of a movie/season
                                 # (+ nested episodes) — not group-nested, since Titles are global
 PlayLists::ListEntriesController  # create (add a title), reorder, cancel — nested under playlist
