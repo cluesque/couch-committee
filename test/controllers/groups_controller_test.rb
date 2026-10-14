@@ -17,10 +17,11 @@ class GroupsControllerTest < ActionDispatch::IntegrationTest
     assert_equal [ "Alpha", "Zeta" ], css_select(".list-group-item").map { |item| item.text.strip }
   end
 
-  test "the home page is my list of groups" do
+  test "the home page is my list of groups, under the logo banner" do
     get root_path
 
     assert_response :success
+    assert_select "img[src=?]", "/logo_with_name.png"
     assert_select "h1", "Your groups"
   end
 

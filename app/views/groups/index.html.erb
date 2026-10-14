@@ -1,5 +1,9 @@
 <% content_for :title, "Your groups · Couch Committee" %>
 
+<%= image_tag "/logo_with_name.png",
+              alt: "Couch Committee — what should we watch tonight?",
+              class: "img-fluid mx-auto d-block mb-4" %>
+
 <div class="d-flex justify-content-between align-items-center mb-3">
   <h1 class="h3 mb-0">Your groups</h1>
   <%= link_to "New group", new_group_path, class: "btn btn-primary btn-sm" %>
