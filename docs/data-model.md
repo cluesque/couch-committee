@@ -61,10 +61,10 @@ movies and seasons — everything watchable is an `Episode`, everything listable
 - `belongs_to :group`
 
 ### ListEntry
-- `belongs_to :playlist`
+- `belongs_to :play_list`
 - `belongs_to :title`
 - `sequence` — integer, drag-reorder position within the playlist's default (active) view
-- `state` — enum: `not_started`, `in_progress`, `watched`, `cancelled`
+- `state` — enum: `not_started` (default), `in_progress`, `watched`, `cancelled`
 - `cancelled_at`
 - `cancel_note`
 
@@ -91,7 +91,8 @@ one.
 
 ### Re-watching
 A new `ListEntry` may be created for a (playlist, title) pair only if no existing `ListEntry` for
-that pair is currently `not_started` or `in_progress`. Re-watching a Title that's already fully
+that pair is currently `not_started` or `in_progress`. This is enforced by a model validation and
+by a partial unique index (supported by both SQLite and Postgres). Re-watching a Title that's already fully
 `watched` (or was `cancelled`) in a playlist means adding a fresh `ListEntry` (`state: not_started`),
 not mutating the old one. The old entry, with its own `Viewing`s intact, remains visible in the
 historical view exactly as it was.

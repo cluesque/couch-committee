@@ -1,5 +1,6 @@
 class Title < ApplicationRecord
   has_many :episodes, -> { order(:number) }, dependent: :destroy, inverse_of: :title
+  has_many :list_entries
 
   enum :kind, { movie: 0, series: 1, book: 2, podcast: 3 }, validate: true
 
