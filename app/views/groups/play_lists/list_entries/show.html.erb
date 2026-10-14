@@ -16,6 +16,12 @@
   <% end %>
 </p>
 
+<% if @entry.cancelled? %>
+  <div class="alert alert-secondary">
+    Cancelled <%= l @entry.cancelled_at.to_date, format: :long %><% if @entry.cancel_note %>: “<%= @entry.cancel_note %>”<% end %>
+  </div>
+<% end %>
+
 <% if @entry.active? %>
   <%= turbo_frame_tag "watch", class: "d-block mb-3" do %>
     <%= link_to "Watch", new_group_play_list_list_entry_viewing_path(Current.group, @play_list, @entry),
@@ -46,4 +52,11 @@
       </li>
     <% end %>
   </ol>
+<% end %>
+
+<% if @entry.active? %>
+  <%= turbo_frame_tag "cancellation", class: "d-block mt-4" do %>
+    <%= link_to "Cancel…", new_group_play_list_list_entry_cancellation_path(Current.group, @play_list, @entry),
+          class: "btn btn-outline-danger btn-sm" %>
+  <% end %>
 <% end %>

@@ -76,10 +76,41 @@ class PlayListTest < ActiveSupport::TestCase
     assert_equal [ b, a, newer ], play_list.list_entries.active.order(:sequence).to_a
   end
 
+  test "history is every viewing plus each cancellation, most recent first" do
+    play_list = create(:play_list)
+    season = create(:season, episode_count: 3)
+    play_list.add(season)
+    movie = create(:movie)
+    play_list.add(movie)
+    first = watch(play_list, season.episodes.first, on: Date.new(2026, 10, 1))
+    cancelled = travel_to(Time.zone.local(2026, 10, 5, 12)) { play_list.add(create(:movie)).tap(&:cancel) }
+    second = watch(play_list, season.episodes.second, on: Date.new(2026, 10, 9))
+    finished = watch(play_list, movie.episodes.first, on: Date.new(2026, 9, 20))
+    play_list.add(create(:movie))
+
+    assert_equal [ second, cancelled, first, finished ], play_list.history
+  end
+
+  test "history breaks same-day ties by which happened later" do
+    play_list = create(:play_list)
+    season = create(:season, episode_count: 2)
+    play_list.add(season)
+    earlier = travel_to(Time.zone.local(2026, 10, 9, 20)) { watch(play_list, season.episodes.first, on: Date.new(2026, 10, 9)) }
+    later = travel_to(Time.zone.local(2026, 10, 9, 21)) { watch(play_list, season.episodes.second, on: Date.new(2026, 10, 9)) }
+
+    assert_equal [ later, earlier ], play_list.history
+  end
+
   test "belongs to a group, which can have several playlists" do
     group = create(:group)
     play_lists = create_list(:play_list, 2, group: group)
 
     assert_equal play_lists.sort, group.play_lists.sort
   end
+
+  private
+    def watch(play_list, episode, on:)
+      WatchRecorder.call(group: play_list.group, episode: episode, date: on)
+      Viewing.where(episode: episode).sole
+    end
 end

@@ -1,12 +1,23 @@
 class PlayList < ApplicationRecord
   belongs_to :group
   has_many :list_entries
+  has_many :viewings, through: :list_entries
 
   validates :name, presence: true
 
   # Returns the new entry, unsaved with errors if the title is already active here.
   def add(title)
     list_entries.create(title: title, sequence: list_entries.maximum(:sequence).to_i + 1)
+  end
+
+  # Every viewing on this playlist, whether or not its entry is finished, plus each cancelled entry,
+  # most recent first. A mix of Viewings and ListEntries.
+  def history
+    events = viewings.includes(:episode, list_entry: :title) + list_entries.cancelled.includes(:title)
+
+    events.sort_by do |event|
+      event.is_a?(Viewing) ? [ event.date, event.created_at ] : [ event.cancelled_at.to_date, event.cancelled_at ]
+    end.reverse
   end
 
   # Puts the given active entries first, in the given order. Ids that aren't active entries here are

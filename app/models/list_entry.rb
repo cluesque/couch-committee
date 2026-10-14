@@ -10,11 +10,18 @@ class ListEntry < ApplicationRecord
   scope :active, -> { where(state: ACTIVE_STATES) }
 
   validates :sequence, numericality: { only_integer: true }
+  validates :cancelled_at, presence: true, if: :cancelled?
   validates :title, uniqueness: { scope: :play_list, conditions: -> { active }, message: "is already on this playlist" },
     if: :active?
 
   def active?
     state.in?(ACTIVE_STATES)
+  end
+
+  # "We decided not to watch this", as opposed to finishing it. The entry stays, with its note, in
+  # the playlist's history.
+  def cancel(note: nil)
+    update(state: :cancelled, cancelled_at: Time.current, cancel_note: note.presence)
   end
 
   # Only this entry's viewings count, so a rewatch starts from the first episode again.

@@ -92,8 +92,8 @@ and behavior rules this implements.
   episode, removes a completed season/movie from the default view) pass.
 
 ## Phase 8 — Historical view & cancel
-- Historical playlist view: `watched`/`cancelled` entries, ordered by viewing date (for watched) /
-  `cancelled_at` (for cancelled), each showing its note if cancelled.
+- Historical playlist view: a flat log, newest first, with one row per `Viewing` (each episode of a
+  series, including seasons still in progress) and one per cancelled entry with its note.
 - Cancel action on an active `ListEntry` (sets `cancelled_at`/`cancel_note`).
 - System tests covering cancel-with-note and its appearance in the historical view.
 - **Done when**: the historical view story and the cancel-with-note story both pass.

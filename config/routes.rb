@@ -17,9 +17,13 @@ Rails.application.routes.draw do
     scope module: :groups do
       resources :memberships, only: %i[ create destroy ]
       resources :play_lists, only: %i[ show new create edit update ] do
+        resource :history, only: :show, module: :play_lists
         resources :list_entries, only: %i[ show new create ], module: :play_lists do
           patch :reorder, on: :collection
-          resources :viewings, only: %i[ new create ], module: :list_entries
+          scope module: :list_entries do
+            resources :viewings, only: %i[ new create ]
+            resource :cancellation, only: %i[ new create ]
+          end
         end
       end
     end
