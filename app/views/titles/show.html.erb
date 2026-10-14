@@ -1,0 +1,27 @@
+<% content_for :title, "#{@title.full_name} · Couch Committee" %>
+
+<h1 class="h3 mb-1"><%= @title.full_name %></h1>
+<p class="text-body-secondary mb-3"><%= @title.kind.humanize %></p>
+
+<% if @title.movie? %>
+  <% if (released_on = @title.episodes.first&.available_on) %>
+    <p>Released <%= l released_on, format: :long %></p>
+  <% end %>
+<% else %>
+  <h2 class="h5">Episodes</h2>
+  <ol class="list-group mb-3">
+    <% @title.episodes.each do |episode| %>
+      <li class="list-group-item d-flex justify-content-between align-items-start gap-2">
+        <span class="me-auto">
+          <span class="text-body-secondary"><%= episode.number %>.</span>
+          <%= episode.name.presence || "Episode #{episode.number}" %>
+        </span>
+        <% if episode.available_on %>
+          <small class="text-body-secondary text-nowrap"><%= l episode.available_on, format: :short %></small>
+        <% end %>
+      </li>
+    <% end %>
+  </ol>
+<% end %>
+
+<%= link_to "All titles", titles_path %>

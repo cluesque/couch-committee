@@ -16,6 +16,11 @@ class TitleTest < ActiveSupport::TestCase
     assert_equal [ 1, 2, 3 ], season.episodes.map(&:number)
   end
 
+  test "full name includes the season when there is one" do
+    assert_equal "Arrival", build(:movie, name: "Arrival").full_name
+    assert_equal "The Bear: Season 3", build(:season, name: "The Bear", season: 3).full_name
+  end
+
   test "requires a name" do
     assert_not build(:movie, name: "").valid?
   end

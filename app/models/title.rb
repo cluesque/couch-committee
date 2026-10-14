@@ -8,4 +8,8 @@ class Title < ApplicationRecord
   validates :season, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validates :season, presence: true, if: :series?
   validates :season, absence: true, if: :movie?
+
+  def full_name
+    season ? "#{name}: Season #{season}" : name
+  end
 end

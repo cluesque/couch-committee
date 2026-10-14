@@ -44,7 +44,9 @@ and behavior rules this implements.
   group list; a non-member is blocked.
 
 ## Phase 4 — Manual Title/Episode entry
-- `Groups::TitlesController#new/create` for a **movie** (Title + its one Episode, one form).
+- `TitlesController#new/create` for a **movie** (Title + its one Episode, one form). Top-level
+  rather than group-nested, since Titles are a global catalog; `index`/`show` give it a minimal
+  browsable home until Phase 5's search.
 - Separate flow (or a type toggle on the same form) for a **series season** (Title with `season`
   set + a repeating nested-episode form — small Stimulus "add another episode" controller).
 - Validation: a movie's Title always ends up with exactly one Episode.

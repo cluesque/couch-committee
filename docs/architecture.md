@@ -91,7 +91,8 @@ SessionsController          # google_sign_in callback, destroy (logout)
 GroupsController             # index (my groups), show, new, create
 Groups::MembershipsController   # invite/remove users, nested under group
 Groups::PlayListsController     # index, show, new, create, edit, update — nested under group
-Groups::TitlesController        # manual create of a movie/season (+ nested episodes)
+TitlesController                # the global catalog: browse, plus manual create of a movie/season
+                                # (+ nested episodes) — not group-nested, since Titles are global
 PlayLists::ListEntriesController  # create (add a title), reorder, cancel — nested under playlist
 Groups::ViewingsController         # create — the "Watch" form submit, resolves across playlists
 ```
