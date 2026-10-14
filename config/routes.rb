@@ -19,6 +19,7 @@ Rails.application.routes.draw do
       resources :play_lists, only: %i[ show new create edit update ] do
         resources :list_entries, only: %i[ show new create ], module: :play_lists do
           patch :reorder, on: :collection
+          resources :viewings, only: %i[ new create ], module: :list_entries
         end
       end
     end

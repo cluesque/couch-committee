@@ -84,8 +84,8 @@ and behavior rules this implements.
   1. finds every active `ListEntry` for that Title across the Group's PlayLists,
   2. creates a `Viewing` per entry (data model §"Recording a watch"),
   3. recomputes each entry's `state` (`not_started` → `in_progress` → `watched`).
-- `Groups::ViewingsController#create` calls `WatchRecorder`, redirects/Turbo-Streams the updated
-  row(s) in every affected playlist.
+- `Groups::PlayLists::ListEntries::ViewingsController#create` calls `WatchRecorder` and redirects
+  back to the playlist, which re-renders with every affected entry's new state.
 - This is the highest-value area for test coverage — unit-test `WatchRecorder` directly across:
   movie watch, mid-season episode, season-completing episode, and the multi-playlist fan-out.
 - **Done when**: all of the watch-related user stories (checks off across playlists, advances next

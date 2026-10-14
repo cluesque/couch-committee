@@ -16,6 +16,13 @@
   <% end %>
 </p>
 
+<% if @entry.active? %>
+  <%= turbo_frame_tag "watch", class: "d-block mb-3" do %>
+    <%= link_to "Watch", new_group_play_list_list_entry_viewing_path(Current.group, @play_list, @entry),
+          class: "btn btn-primary" %>
+  <% end %>
+<% end %>
+
 <% if title.movie? %>
   <% if (released_on = title.episodes.first&.available_on) %>
     <p>Released <%= l released_on, format: :long %></p>

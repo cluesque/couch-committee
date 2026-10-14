@@ -60,10 +60,12 @@ object framework (dry-rb, interactor, etc.) — just a plain class with a `.call
 
 ### 3. Turbo-first UI
 - Turbo Drive for ordinary navigation.
-- Turbo Frames for the recommendation detail view and the "Watch" form, so drilling into a
-  recommendation or recording a watch doesn't feel like a full page reload on mobile.
-- Turbo Streams to update a playlist row in place after a watch is recorded or a reorder happens,
-  instead of a full-page refresh.
+- A Turbo Frame for the "Watch" form, which opens in place on an entry's detail page. The detail
+  view itself is an ordinary Turbo Drive page: a frame inside the sortable playlist would fight the
+  drag handles, and Drive already avoids a full reload.
+- No Turbo Streams so far. Recording a watch redirects back to the playlist, which re-renders with
+  the new state, and a reorder is already reflected in the DOM before it's saved. Streams would earn
+  their place only if other members' open pages had to update live.
 
 ### 4. Drag-and-drop reorder is the one place with real custom JS
 A single Stimulus controller wraps SortableJS (pinned via importmap) and posts the new order to a
@@ -98,7 +100,8 @@ Groups::PlayListsController     # show, new, create, edit, update — nested und
 TitlesController                # the global catalog: browse, plus manual create of a movie/season
                                 # (+ nested episodes) — not group-nested, since Titles are global
 Groups::PlayLists::ListEntriesController  # new (search the catalog), create (add a title), reorder, cancel — nested under playlist
-Groups::ViewingsController         # create — the "Watch" form submit, resolves across playlists
+Groups::PlayLists::ListEntries::ViewingsController  # new/create — the "Watch" form, from an entry;
+                                # WatchRecorder resolves it across the group's playlists
 ```
 
 ## Testing strategy
