@@ -6,6 +6,7 @@ class User < ApplicationRecord
   normalizes :email, with: ->(email) { email.strip.downcase }
 
   validates :email, presence: true, uniqueness: true
+  validates :email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_blank: true
   validates :google_id, uniqueness: true, allow_nil: true
 
   # Returns nil when the identity can't be trusted to sign in as anyone.

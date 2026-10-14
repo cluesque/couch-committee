@@ -5,7 +5,7 @@ class GroupsController < ApplicationController
 
   def show
     @group = Current.user.groups.find(params[:id])
-    @members = @group.users.sort_by { |user| user.name.downcase }
+    @memberships = @group.group_memberships.includes(:user).sort_by { |membership| membership.user.name.downcase }
   end
 
   def new
