@@ -56,7 +56,8 @@ and behavior rules this implements.
 - `Groups::PlayListsController` (index, show, new/create, edit/update).
 - `PlayLists::ListEntriesController#create` — add an existing Title to a playlist as a new
   `ListEntry` (`state: not_started`, `sequence` appended at the end); enforce the "no second active
-  entry for the same (playlist, title)" rule.
+  entry for the same (playlist, title)" rule. Titles are a shared, growing catalog (data model
+  doc), so choosing one should be a search by name rather than a pick-list of every Title.
 - Default playlist view: active entries (`not_started`/`in_progress`) ordered by `sequence`,
   showing title, next episode (derived — see data model), last viewing (derived), and the
   "upcoming season" badge (architecture doc §5).

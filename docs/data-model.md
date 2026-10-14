@@ -32,17 +32,24 @@ no separate per-PlayList membership.
 A User is a member of a given Group at most once.
 
 ### Title
-- `type` — enum: `movie`, `series`, `book`, `podcast`
+- `kind` — enum: `movie`, `series`, `book`, `podcast` (not `type`, which Rails reserves for
+  single-table inheritance)
 - `name`
-- `season` — integer, optional
+- `season` — positive integer; required for a series, absent for a movie
 
-A "season" is not a separate model. A season of a series is its own `Title` row (`type: :series`,
+A "season" is not a separate model. A season of a series is its own `Title` row (`kind: :series`,
 `season` set to that season's number). A movie is a `Title` with exactly one `Episode`.
 
+Titles are a global catalog, not owned by a Group. The intent is to eventually import them from
+authoritative sources (IMDb and the like). Manual Title entry (Phase 4) is scaffolding until
+then, so hand-entered Titles are visible to every Group in the meantime. Group-specific "bespoke"
+Titles may come later as the exception. Because the catalog is shared and will grow, adding a
+Title to a PlayList should be a search, not a pick-list of every Title.
+
 ### Episode
-- `name`
-- `number`
-- `available_on` — date
+- `name` — optional
+- `number` — positive integer, unique within its Title
+- `available_on` — date, optional (unknown until announced)
 - `belongs_to :title`
 
 A movie's `Title` has exactly one `Episode`. This keeps `Viewing` and `ListEntry` uniform across
