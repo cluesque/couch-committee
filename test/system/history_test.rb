@@ -29,7 +29,6 @@ class HistoryTest < ApplicationSystemTestCase
       assert_text "Saw It"
       assert_text "Too scary for a weeknight."
       assert_text "Arrival"
-      assert_text "Watched"
     end
 
     click_on "Saw It"

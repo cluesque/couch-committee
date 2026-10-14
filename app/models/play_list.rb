@@ -1,6 +1,7 @@
 class PlayList < ApplicationRecord
   belongs_to :group
   has_many :list_entries
+  has_many :viewings, through: :list_entries
 
   validates :name, presence: true
 
@@ -9,10 +10,14 @@ class PlayList < ApplicationRecord
     list_entries.create(title: title, sequence: list_entries.maximum(:sequence).to_i + 1)
   end
 
-  # Watched and cancelled entries, most recently ended first.
+  # Every viewing on this playlist, whether or not its entry is finished, plus each cancelled entry,
+  # most recent first. A mix of Viewings and ListEntries.
   def history
-    list_entries.where(state: %i[ watched cancelled ]).includes(:viewings, title: :episodes)
-      .sort_by { |entry| [ entry.ended_on, entry.updated_at ] }.reverse
+    events = viewings.includes(:episode, list_entry: :title) + list_entries.cancelled.includes(:title)
+
+    events.sort_by do |event|
+      event.is_a?(Viewing) ? [ event.date, event.created_at ] : [ event.cancelled_at.to_date, event.cancelled_at ]
+    end.reverse
   end
 
   # Puts the given active entries first, in the given order. Ids that aren't active entries here are
