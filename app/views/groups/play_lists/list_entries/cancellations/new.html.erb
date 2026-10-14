@@ -1,0 +1,23 @@
+<% title = @list_entry.title %>
+<% content_for :title, "Cancel #{title.full_name} · Couch Committee" %>
+
+<p class="small mb-1"><%= link_to "← #{title.full_name}", [ Current.group, @play_list, @list_entry ] %></p>
+<h1 class="h3 mb-3">Cancel <%= title.full_name %>?</h1>
+
+<%= turbo_frame_tag "cancellation" do %>
+  <%= form_with scope: :cancellation,
+        url: group_play_list_list_entry_cancellation_path(Current.group, @play_list, @list_entry),
+        data: { turbo_frame: "_top" }, class: "card card-body" do |form| %>
+    <p class="mb-2">
+      It comes off <%= @play_list.name %> and moves to the playlist's history, along with your note.
+    </p>
+    <div class="mb-3">
+      <%= form.label :note, "Why? (optional)", class: "form-label" %>
+      <%= form.text_area :note, rows: 2, class: "form-control" %>
+    </div>
+    <div>
+      <%= form.submit "Cancel it", class: "btn btn-danger" %>
+      <%= link_to "Keep it", [ Current.group, @play_list, @list_entry ], class: "btn btn-link" %>
+    </div>
+  <% end %>
+<% end %>

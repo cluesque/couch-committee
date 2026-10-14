@@ -12,6 +12,32 @@ class ListEntryTest < ActiveSupport::TestCase
     assert build(:list_entry, :cancelled).valid?
   end
 
+  test "a cancelled entry records when it was cancelled" do
+    assert_not build(:list_entry, state: :cancelled, cancelled_at: nil).valid?
+  end
+
+  test "cancelling keeps the entry, with when and why" do
+    travel_to Time.zone.local(2026, 10, 14, 21, 0) do
+      entry = create(:list_entry, state: :in_progress)
+
+      assert entry.cancel(note: "Too grim for a weeknight.")
+
+      entry.reload
+      assert entry.cancelled?
+      assert_equal Time.zone.local(2026, 10, 14, 21, 0), entry.cancelled_at
+      assert_equal "Too grim for a weeknight.", entry.cancel_note
+    end
+  end
+
+  test "the cancel note is optional" do
+    entry = create(:list_entry)
+
+    entry.cancel(note: "  ")
+
+    assert entry.reload.cancelled?
+    assert_nil entry.cancel_note
+  end
+
   test "requires a whole-number sequence" do
     assert_not build(:list_entry, sequence: nil).valid?
     assert_not build(:list_entry, sequence: 1.5).valid?
@@ -22,7 +48,8 @@ class ListEntryTest < ActiveSupport::TestCase
   end
 
   test "active means not started or in progress" do
-    entries = %i[ not_started in_progress watched cancelled ].index_with { |state| create(:list_entry, state: state) }
+    entries = %i[ not_started in_progress watched ].index_with { |state| create(:list_entry, state: state) }
+    entries[:cancelled] = create(:list_entry, :cancelled)
 
     assert_equal entries.values_at(:not_started, :in_progress).sort, ListEntry.active.sort
     assert_equal [ true, true, false, false ], entries.values.map(&:active?)
