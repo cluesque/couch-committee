@@ -18,6 +18,7 @@ first, since a Google account's email can change. Failing that, it claims an exi
 the same (verified) email and no `google_id` yet; failing that, it creates a new User.
 
 ### Group
+- `name`
 - `has_many :users`, through `GroupMembership`
 - `has_many :play_lists`
 
@@ -27,6 +28,8 @@ no separate per-PlayList membership.
 ### GroupMembership
 - `belongs_to :user`
 - `belongs_to :group`
+
+A User is a member of a given Group at most once.
 
 ### Title
 - `type` — enum: `movie`, `series`, `book`, `podcast`
