@@ -39,3 +39,6 @@
 
 # Claude config has full explicit paths, inappropriate for checking in
 .claude
+
+# Finder!
+.DS_Store
