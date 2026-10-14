@@ -29,6 +29,15 @@ class TitleTest < ActiveSupport::TestCase
     assert_not build(:movie, kind: "opera").valid?
   end
 
+  test "a movie has exactly one episode" do
+    assert_not build(:movie, episodes: []).valid?
+
+    movie = build(:movie)
+    movie.episodes.build(number: 2)
+    assert_not movie.valid?
+    assert_includes movie.errors[:base], "A movie has exactly one episode"
+  end
+
   test "a series title needs a season number" do
     assert_not build(:season, season: nil).valid?
   end

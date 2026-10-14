@@ -1,6 +1,9 @@
 <% content_for :title, "Titles · Couch Committee" %>
 
-<h1 class="h3 mb-3">Titles</h1>
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Titles</h1>
+  <%= link_to "Add a movie", new_title_path, class: "btn btn-primary btn-sm" %>
+</div>
 
 <% if @titles.any? %>
   <div class="list-group mb-3">

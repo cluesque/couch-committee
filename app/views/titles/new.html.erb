@@ -1,0 +1,27 @@
+<% content_for :title, "Add a #{@title.kind} · Couch Committee" %>
+
+<h1 class="h3 mb-3">Add a <%= @title.kind %></h1>
+
+<%= form_with model: @title do |form| %>
+  <% if @title.errors.any? %>
+    <div class="alert alert-danger">
+      <ul class="mb-0">
+        <% @title.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form.hidden_field :kind %>
+
+  <div class="mb-3">
+    <%= form.label :name, class: "form-label" %>
+    <%= form.text_field :name, required: true, autofocus: true, class: "form-control" %>
+  </div>
+
+  <%= render "#{@title.kind}_fields", form: form %>
+
+  <%= form.submit "Add #{@title.kind}", class: "btn btn-primary" %>
+  <%= link_to "Cancel", titles_path, class: "btn btn-link" %>
+<% end %>
