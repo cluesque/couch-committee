@@ -11,7 +11,8 @@
 </div>
 
 <% if @entries.any? %>
-  <ol class="list-group mb-3">
+  <ol class="list-group mb-3" data-controller="sortable"
+      data-sortable-url-value="<%= reorder_group_play_list_list_entries_path(Current.group, @play_list) %>">
     <%= render partial: "list_entry", collection: @entries %>
   </ol>
 <% else %>

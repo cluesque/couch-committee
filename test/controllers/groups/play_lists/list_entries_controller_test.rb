@@ -64,7 +64,7 @@ class Groups::PlayLists::ListEntriesControllerTest < ActionDispatch::Integration
     assert_redirected_to group_play_list_path(@group, @play_list)
     assert_equal "Added Arrival.", flash[:notice]
     follow_redirect!
-    assert_equal [ "First", "Arrival" ], css_select("ol li").map { |item| item.text.strip }
+    assert_equal [ "First", "Arrival" ], css_select("ol > li .fw-medium").map(&:text)
     assert @play_list.list_entries.find_by!(title: movie).not_started?
   end
 
@@ -78,6 +78,27 @@ class Groups::PlayLists::ListEntriesControllerTest < ActionDispatch::Integration
 
     assert_redirected_to new_group_play_list_list_entry_path(@group, @play_list, q: "Arr")
     assert_equal "Arrival is already on this playlist.", flash[:alert]
+  end
+
+  test "reordering saves the new order" do
+    first, second, third = %w[ First Second Third ].map { |name| @play_list.add(create(:movie, name: name)) }
+
+    patch reorder_group_play_list_list_entries_path(@group, @play_list),
+      params: { list_entry_ids: [ third.id, first.id, second.id ] }, as: :json
+
+    assert_response :no_content
+    get group_play_list_path(@group, @play_list)
+    assert_equal [ "Third", "First", "Second" ], css_select("ol > li .fw-medium").map(&:text)
+  end
+
+  test "another group's playlist can't be reordered" do
+    others = create(:play_list)
+    a, b = 2.times.map { others.add(create(:movie)) }
+
+    patch reorder_group_play_list_list_entries_path(others.group, others), params: { list_entry_ids: [ b.id, a.id ] }, as: :json
+
+    assert_response :not_found
+    assert_equal [ a, b ], others.list_entries.order(:sequence).to_a
   end
 
   test "another group's playlist can't be searched or added to" do

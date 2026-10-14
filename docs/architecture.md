@@ -67,7 +67,9 @@ object framework (dry-rb, interactor, etc.) — just a plain class with a `.call
 
 ### 4. Drag-and-drop reorder is the one place with real custom JS
 A single Stimulus controller wraps SortableJS (pinned via importmap) and posts the new order to a
-`reorder` action on drop. This is the one genuinely custom bit of JS in the app, deliberately kept
+`reorder` action on drop. It uses SortableJS's pointer-event mode (`forceFallback`) rather than
+native HTML5 drag-and-drop, so desktop and touch share one code path and system tests can drive a
+real drag. This is the one genuinely custom bit of JS in the app, deliberately kept
 to one controller with one responsibility — everything else leans on Turbo + Bootstrap's own JS.
 
 ### 5. "Upcoming season" badge is computed, not stored
