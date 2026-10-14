@@ -21,6 +21,11 @@ class Groups::PlayLists::ListEntriesController < ApplicationController
     end
   end
 
+  def reorder
+    @play_list.reorder(params.expect(list_entry_ids: []))
+    head :no_content
+  end
+
   private
     def set_play_list
       @play_list = Current.group.play_lists.find(params[:play_list_id])

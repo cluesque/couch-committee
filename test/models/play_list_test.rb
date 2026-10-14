@@ -35,6 +35,47 @@ class PlayListTest < ActiveSupport::TestCase
     assert_includes entry.errors[:title], "is already on this playlist"
   end
 
+  test "reorder puts active entries in the given order" do
+    play_list = create(:play_list)
+    a, b, c = 3.times.map { play_list.add(create(:movie)) }
+
+    play_list.reorder([ c.id, a.id, b.id ])
+
+    assert_equal [ c, a, b ], play_list.list_entries.active.order(:sequence).to_a
+  end
+
+  test "reorder accepts ids as strings, as they arrive in params" do
+    play_list = create(:play_list)
+    a, b = 2.times.map { play_list.add(create(:movie)) }
+
+    play_list.reorder([ b.id.to_s, a.id.to_s ])
+
+    assert_equal [ b, a ], play_list.list_entries.order(:sequence).to_a
+  end
+
+  test "reorder ignores entries that aren't active on this playlist" do
+    play_list = create(:play_list)
+    a, b = 2.times.map { play_list.add(create(:movie)) }
+    watched = create(:list_entry, play_list: play_list, state: :watched, sequence: 99)
+    elsewhere = create(:list_entry, sequence: 42)
+
+    play_list.reorder([ elsewhere.id, watched.id, b.id, a.id ])
+
+    assert_equal [ 1, 2 ], [ b.reload.sequence, a.reload.sequence ]
+    assert_equal 99, watched.reload.sequence
+    assert_equal 42, elsewhere.reload.sequence
+  end
+
+  test "an entry added since the list was loaded stays at the end" do
+    play_list = create(:play_list)
+    a, b = 2.times.map { play_list.add(create(:movie)) }
+    newer = play_list.add(create(:movie))
+
+    play_list.reorder([ b.id, a.id ])
+
+    assert_equal [ b, a, newer ], play_list.list_entries.active.order(:sequence).to_a
+  end
+
   test "belongs to a group, which can have several playlists" do
     group = create(:group)
     play_lists = create_list(:play_list, 2, group: group)
