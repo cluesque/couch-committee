@@ -8,8 +8,14 @@ from.
 ## Models
 
 ### User
-- `email`
-- `display_name`
+- `email` — unique, normalized to lowercase
+- `display_name` — optional; filled from the Google profile on first sign-in
+- `google_id` — optional, unique; Google's stable account ID (the ID token's `sub`)
+
+A User can exist before they've ever signed in (Phase 3 invites create one by email), so
+`google_id` and `display_name` are blank until first sign-in. Sign-in matches on `google_id`
+first, since a Google account's email can change. Failing that, it claims an existing User with
+the same (verified) email and no `google_id` yet; failing that, it creates a new User.
 
 ### Group
 - `has_many :users`, through `GroupMembership`
