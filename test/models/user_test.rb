@@ -9,6 +9,10 @@ class UserTest < ActiveSupport::TestCase
     assert_not build(:user, email: "").valid?
   end
 
+  test "requires a plausible email address" do
+    assert_not build(:user, email: "pat at example.com").valid?
+  end
+
   test "normalizes email to lowercase without surrounding whitespace" do
     assert_equal "pat@example.com", create(:user, email: "  Pat@Example.COM ").email
   end

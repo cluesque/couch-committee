@@ -1,0 +1,47 @@
+<% content_for :title, "#{@group.name} · Couch Committee" %>
+
+<h1 class="h3 mb-3"><%= @group.name %></h1>
+
+<h2 class="h5">Members</h2>
+<ul class="list-group mb-3">
+  <% @memberships.each do |membership| %>
+    <% member = membership.user %>
+    <li class="list-group-item d-flex justify-content-between align-items-center gap-2" id="<%= dom_id(membership) %>">
+      <div class="text-break">
+        <%= member.name %>
+        <% if member.google_id.nil? %>
+          <span class="badge text-bg-secondary">Hasn't signed in yet</span>
+        <% end %>
+        <% if member.display_name.present? %>
+          <div class="small text-body-secondary"><%= member.email %></div>
+        <% end %>
+      </div>
+
+      <% if @memberships.many? %>
+        <% if member == Current.user %>
+          <%= button_to "Leave", group_membership_path(@group, membership), method: :delete,
+                class: "btn btn-sm btn-outline-danger text-nowrap",
+                form: { data: { turbo_confirm: "Leave #{@group.name}?" } } %>
+        <% else %>
+          <%= button_to "Remove", group_membership_path(@group, membership), method: :delete,
+                class: "btn btn-sm btn-outline-danger text-nowrap",
+                form: { data: { turbo_confirm: "Remove #{member.name} from #{@group.name}?" } } %>
+        <% end %>
+      <% end %>
+    </li>
+  <% end %>
+</ul>
+
+<%= form_with url: group_memberships_path(@group), class: "mb-4" do |form| %>
+  <%= form.label :email, "Add someone by email", class: "form-label" %>
+  <div class="input-group">
+    <%= form.email_field :email, required: true, autocomplete: "off", placeholder: "name@example.com",
+          class: "form-control" %>
+    <%= form.submit "Add", class: "btn btn-primary" %>
+  </div>
+  <div class="form-text">
+    No email is sent. They'll see this group when they sign in with Google using that address.
+  </div>
+<% end %>
+
+<%= link_to "All groups", groups_path %>
