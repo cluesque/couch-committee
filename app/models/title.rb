@@ -13,6 +13,9 @@ class Title < ApplicationRecord
 
   accepts_nested_attributes_for :episodes
 
+  # Case-insensitive on both SQLite (LIKE) and Postgres (ILIKE).
+  scope :search, ->(query) { where(arel_table[:name].matches("%#{sanitize_sql_like(query)}%")).order(:name, :season) }
+
   def full_name
     season ? "#{name}: Season #{season}" : name
   end

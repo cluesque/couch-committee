@@ -1,0 +1,23 @@
+<% upcoming = list_entry.upcoming? %>
+<li class="list-group-item <%= "bg-body-tertiary text-body-secondary" if upcoming %>" id="<%= dom_id(list_entry) %>">
+  <div class="d-flex justify-content-between align-items-start gap-2">
+    <span class="fw-medium"><%= list_entry.title.full_name %></span>
+    <% if upcoming %>
+      <span class="badge text-bg-warning text-nowrap">
+        Coming <%= l list_entry.next_episode.available_on, format: :short %>
+      </span>
+    <% end %>
+  </div>
+
+  <% next_episode = list_entry.next_episode unless list_entry.title.movie? %>
+  <% if next_episode || list_entry.last_viewed_on %>
+    <div class="small text-body-secondary d-flex flex-wrap column-gap-3">
+      <% if next_episode %>
+        <span>Next: <%= next_episode.name.present? ? "#{next_episode.number}. #{next_episode.name}" : "episode #{next_episode.number}" %></span>
+      <% end %>
+      <% if list_entry.last_viewed_on %>
+        <span>Last watched <%= l list_entry.last_viewed_on, format: :short %></span>
+      <% end %>
+    </div>
+  <% end %>
+</li>

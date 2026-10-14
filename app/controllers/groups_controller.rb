@@ -5,6 +5,7 @@ class GroupsController < ApplicationController
 
   def show
     @group = Current.user.groups.find(params[:id])
+    @play_lists = @group.play_lists.order(:name)
     @memberships = @group.group_memberships.includes(:user).sort_by { |membership| membership.user.name.downcase }
   end
 

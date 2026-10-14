@@ -72,7 +72,9 @@ to one controller with one responsibility — everything else leans on Turbo + B
 
 ### 5. "Upcoming season" badge is computed, not stored
 A season `ListEntry` is visually flagged as "upcoming" when every one of its not-yet-watched
-Episodes has `available_on` in the future. This is a presenter/view-layer computation against
+Episodes has `available_on` in the future. The same rule covers a movie with a future release
+date. An Episode with no `available_on` counts as available, since the date is optional and
+usually skipped for things already out. This is a presenter/view-layer computation against
 today's date — not a stored column — since a stored flag would go stale as dates pass.
 
 ### 6. Manual Title/Episode entry (a gap the user stories don't cover)
@@ -90,10 +92,10 @@ feature that's out of scope for now.
 SessionsController          # google_sign_in callback, destroy (logout)
 GroupsController             # index (my groups), show, new, create
 Groups::MembershipsController   # invite/remove users, nested under group
-Groups::PlayListsController     # index, show, new, create, edit, update — nested under group
+Groups::PlayListsController     # show, new, create, edit, update — nested under group (the group page lists them)
 TitlesController                # the global catalog: browse, plus manual create of a movie/season
                                 # (+ nested episodes) — not group-nested, since Titles are global
-PlayLists::ListEntriesController  # create (add a title), reorder, cancel — nested under playlist
+Groups::PlayLists::ListEntriesController  # new (search the catalog), create (add a title), reorder, cancel — nested under playlist
 Groups::ViewingsController         # create — the "Watch" form submit, resolves across playlists
 ```
 

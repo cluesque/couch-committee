@@ -14,7 +14,12 @@ Rails.application.routes.draw do
   get "session/google", to: "sessions#create", as: :google_session
 
   resources :groups, only: %i[ index show new create ] do
-    resources :memberships, only: %i[ create destroy ], module: :groups
+    scope module: :groups do
+      resources :memberships, only: %i[ create destroy ]
+      resources :play_lists, only: %i[ show new create edit update ] do
+        resources :list_entries, only: %i[ new create ], module: :play_lists
+      end
+    end
   end
 
   resources :titles, only: %i[ index show new create ]
