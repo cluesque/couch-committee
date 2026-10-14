@@ -16,4 +16,24 @@ class ListEntry < ApplicationRecord
   def active?
     state.in?(ACTIVE_STATES)
   end
+
+  # Only this entry's viewings count, so a rewatch starts from the first episode again.
+  def remaining_episodes
+    watched_episode_ids = viewings.map(&:episode_id)
+    title.episodes.reject { |episode| episode.id.in?(watched_episode_ids) }
+  end
+
+  def next_episode
+    remaining_episodes.first
+  end
+
+  def last_viewed_on
+    viewings.map(&:date).max
+  end
+
+  # Nothing left to watch is out yet. An episode without a date is assumed to be available.
+  def upcoming?(today = Date.current)
+    remaining = remaining_episodes
+    remaining.any? && remaining.all? { |episode| episode.available_on&.after?(today) }
+  end
 end

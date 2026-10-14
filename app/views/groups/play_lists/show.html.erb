@@ -12,9 +12,7 @@
 
 <% if @entries.any? %>
   <ol class="list-group mb-3">
-    <% @entries.each do |entry| %>
-      <li class="list-group-item" id="<%= dom_id(entry) %>"><%= entry.title.full_name %></li>
-    <% end %>
+    <%= render partial: "list_entry", collection: @entries %>
   </ol>
 <% else %>
   <p class="text-body-secondary">Nothing on this playlist yet.</p>

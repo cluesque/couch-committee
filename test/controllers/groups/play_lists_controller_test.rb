@@ -48,6 +48,31 @@ class Groups::PlayListsControllerTest < ActionDispatch::IntegrationTest
     assert_select "p", "Fridays"
   end
 
+  test "the default view shows active entries in order with what's next" do
+    travel_to Date.new(2026, 10, 14) do
+      play_list = create(:play_list, group: @group)
+      season = create(:season, name: "The Bear", season: 3, episode_count: 0)
+      first = create(:episode, title: season, number: 1, name: "Tomorrow", available_on: Date.new(2026, 6, 26))
+      create(:episode, title: season, number: 2, name: "Next", available_on: Date.new(2026, 6, 26))
+      upcoming = create(:movie, name: "Sequel")
+      upcoming.episodes.first.update!(available_on: Date.new(2026, 12, 25))
+
+      entry = play_list.add(season)
+      play_list.add(upcoming)
+      play_list.add(create(:movie, name: "Done")).update!(state: :watched)
+      create(:viewing, list_entry: entry, episode: first, date: Date.new(2026, 10, 12))
+
+      get group_play_list_path(@group, play_list)
+
+      rows = css_select("ol > li")
+      assert_equal [ "The Bear: Season 3", "Sequel" ], rows.map { |row| row.at_css(".fw-medium").text }
+      assert_equal "Next: 2. Next Last watched Oct 12", rows.first.at_css(".small").text.squish
+      assert_nil rows.first.at_css(".badge")
+      assert_equal "Coming Dec 25", rows[1].at_css(".badge").text.squish
+      assert_includes rows[1]["class"], "bg-body-tertiary"
+    end
+  end
+
   test "editing a playlist" do
     play_list = create(:play_list, group: @group, name: "Movie night")
 
