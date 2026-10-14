@@ -1,0 +1,24 @@
+<% content_for :title, "Titles · Couch Committee" %>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Titles</h1>
+  <div class="d-flex gap-2">
+    <%= link_to "Add a movie", new_title_path, class: "btn btn-primary btn-sm" %>
+    <%= link_to "Add a season", new_title_path(kind: "series"), class: "btn btn-primary btn-sm" %>
+  </div>
+</div>
+
+<% if @titles.any? %>
+  <div class="list-group mb-3">
+    <% @titles.each do |title| %>
+      <%= link_to title, class: "list-group-item list-group-item-action d-flex justify-content-between align-items-center gap-2" do %>
+        <span><%= title.full_name %></span>
+        <span class="badge text-bg-light"><%= title.kind.humanize %></span>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <p class="text-body-secondary">No titles yet.</p>
+<% end %>
+
+<%= link_to "Your groups", root_path %>

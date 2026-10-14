@@ -16,12 +16,34 @@ class TitleTest < ActiveSupport::TestCase
     assert_equal [ 1, 2, 3 ], season.episodes.map(&:number)
   end
 
+  test "full name includes the season when there is one" do
+    assert_equal "Arrival", build(:movie, name: "Arrival").full_name
+    assert_equal "The Bear: Season 3", build(:season, name: "The Bear", season: 3).full_name
+  end
+
   test "requires a name" do
     assert_not build(:movie, name: "").valid?
   end
 
   test "rejects an unknown kind" do
     assert_not build(:movie, kind: "opera").valid?
+  end
+
+  test "a movie has exactly one episode" do
+    assert_not build(:movie, episodes: []).valid?
+
+    movie = build(:movie)
+    movie.episodes.build(number: 2)
+    assert_not movie.valid?
+    assert_includes movie.errors[:base], "A movie has exactly one episode"
+  end
+
+  test "episode numbers are unique, even before anything is saved" do
+    season = build(:season, episode_count: 0)
+    2.times { season.episodes.build(number: 1) }
+
+    assert_not season.valid?
+    assert_includes season.errors[:base], "Episode numbers must be unique"
   end
 
   test "a series title needs a season number" do
