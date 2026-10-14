@@ -2,6 +2,8 @@ require "application_system_test_case"
 
 class HomeTest < ApplicationSystemTestCase
   test "home page renders with Turbo loaded" do
+    sign_in_as create(:user)
+
     visit root_path
 
     assert_selector ".navbar-brand", text: "Couch Committee"

@@ -9,5 +9,9 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
+  resource :session, only: %i[ new destroy ]
+  # google_sign_in's proceed_to target: it redirects here (a GET) once Google has answered.
+  get "session/google", to: "sessions#create", as: :google_session
+
   root "home#index"
 end

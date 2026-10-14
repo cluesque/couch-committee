@@ -1,0 +1,14 @@
+<% content_for :title, "Sign in · Couch Committee" %>
+
+<h1 class="visually-hidden">Sign in</h1>
+
+<div class="text-center">
+  <%= image_tag "/logo_with_name.png",
+                alt: "Couch Committee — what should we watch tonight?",
+                class: "img-fluid mx-auto d-block mb-4" %>
+
+  <%= google_sign_in_button "Sign in with Google",
+                            proceed_to: google_session_url,
+                            class: "btn btn-primary btn-lg",
+                            data: { turbo: false } %>
+</div>
