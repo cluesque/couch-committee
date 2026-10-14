@@ -1,6 +1,6 @@
 class TitlesController < ApplicationController
   # Kinds that have an entry form (app/views/titles/_<kind>_fields).
-  ENTERABLE_KINDS = %w[ movie ].freeze
+  ENTERABLE_KINDS = %w[ movie series ].freeze
 
   def index
     @titles = Title.order(:name, :season)

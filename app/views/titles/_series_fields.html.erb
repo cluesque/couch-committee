@@ -1,0 +1,24 @@
+<div class="mb-3">
+  <%= form.label :season, "Season number", class: "form-label" %>
+  <%= form.number_field :season, min: 1, required: true, class: "form-control", style: "max-width: 8rem" %>
+</div>
+
+<fieldset class="mb-3" data-controller="episode-fields">
+  <legend class="fs-5">Episodes</legend>
+
+  <div data-episode-fields-target="list">
+    <%= form.fields_for :episodes do |episode_form| %>
+      <%= render "episode_fields", form: episode_form %>
+    <% end %>
+  </div>
+
+  <template data-episode-fields-target="template">
+    <%= form.fields_for :episodes, Episode.new, child_index: "NEW_EPISODE" do |episode_form| %>
+      <%= render "episode_fields", form: episode_form %>
+    <% end %>
+  </template>
+
+  <button type="button" class="btn btn-outline-secondary btn-sm" data-action="episode-fields#add">
+    Add another episode
+  </button>
+</fieldset>

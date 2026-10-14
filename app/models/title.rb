@@ -9,6 +9,7 @@ class Title < ApplicationRecord
   validates :season, presence: true, if: :series?
   validates :season, absence: true, if: :movie?
   validate :movie_has_exactly_one_episode, if: :movie?
+  validate :episode_numbers_are_unique
 
   accepts_nested_attributes_for :episodes
 
@@ -19,5 +20,11 @@ class Title < ApplicationRecord
   private
     def movie_has_exactly_one_episode
       errors.add(:base, "A movie has exactly one episode") unless episodes.reject(&:marked_for_destruction?).one?
+    end
+
+    # Episode's own uniqueness validation can't see unsaved siblings, e.g. in one season form.
+    def episode_numbers_are_unique
+      numbers = episodes.reject(&:marked_for_destruction?).filter_map(&:number)
+      errors.add(:base, "Episode numbers must be unique") if numbers.uniq.size < numbers.size
     end
 end

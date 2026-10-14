@@ -38,6 +38,14 @@ class TitleTest < ActiveSupport::TestCase
     assert_includes movie.errors[:base], "A movie has exactly one episode"
   end
 
+  test "episode numbers are unique, even before anything is saved" do
+    season = build(:season, episode_count: 0)
+    2.times { season.episodes.build(number: 1) }
+
+    assert_not season.valid?
+    assert_includes season.errors[:base], "Episode numbers must be unique"
+  end
+
   test "a series title needs a season number" do
     assert_not build(:season, season: nil).valid?
   end
