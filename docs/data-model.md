@@ -18,6 +18,7 @@ first, since a Google account's email can change. Failing that, it claims an exi
 the same (verified) email and no `google_id` yet; failing that, it creates a new User.
 
 ### Group
+- `name`
 - `has_many :users`, through `GroupMembership`
 - `has_many :play_lists`
 
@@ -28,18 +29,27 @@ no separate per-PlayList membership.
 - `belongs_to :user`
 - `belongs_to :group`
 
-### Title
-- `type` — enum: `movie`, `series`, `book`, `podcast`
-- `name`
-- `season` — integer, optional
+A User is a member of a given Group at most once.
 
-A "season" is not a separate model. A season of a series is its own `Title` row (`type: :series`,
+### Title
+- `kind` — enum: `movie`, `series`, `book`, `podcast` (not `type`, which Rails reserves for
+  single-table inheritance)
+- `name`
+- `season` — positive integer; required for a series, absent for a movie
+
+A "season" is not a separate model. A season of a series is its own `Title` row (`kind: :series`,
 `season` set to that season's number). A movie is a `Title` with exactly one `Episode`.
 
+Titles are a global catalog, not owned by a Group. The intent is to eventually import them from
+authoritative sources (IMDb and the like). Manual Title entry (Phase 4) is scaffolding until
+then, so hand-entered Titles are visible to every Group in the meantime. Group-specific "bespoke"
+Titles may come later as the exception. Because the catalog is shared and will grow, adding a
+Title to a PlayList should be a search, not a pick-list of every Title.
+
 ### Episode
-- `name`
-- `number`
-- `available_on` — date
+- `name` — optional
+- `number` — positive integer, unique within its Title
+- `available_on` — date, optional (unknown until announced)
 - `belongs_to :title`
 
 A movie's `Title` has exactly one `Episode`. This keeps `Viewing` and `ListEntry` uniform across
@@ -51,10 +61,10 @@ movies and seasons — everything watchable is an `Episode`, everything listable
 - `belongs_to :group`
 
 ### ListEntry
-- `belongs_to :playlist`
+- `belongs_to :play_list`
 - `belongs_to :title`
 - `sequence` — integer, drag-reorder position within the playlist's default (active) view
-- `state` — enum: `not_started`, `in_progress`, `watched`, `cancelled`
+- `state` — enum: `not_started` (default), `in_progress`, `watched`, `cancelled`
 - `cancelled_at`
 - `cancel_note`
 
@@ -73,7 +83,8 @@ of scope for now; most of what might have lived there instead lives on `ListEntr
 - `belongs_to :list_entry`
 
 A `Viewing` is a single episode-watch event, scoped to the specific `ListEntry` (watch-through) it
-advances. The `list_entry` association is what lets a half-finished season and a full rewatch of
+advances. Its `episode` must belong to the entry's Title, and its `group` must own the entry's
+PlayList. The `list_entry` association is what lets a half-finished season and a full rewatch of
 that same season coexist without the old cycle's `Viewing`s being mistaken for progress on the new
 one.
 
@@ -81,7 +92,8 @@ one.
 
 ### Re-watching
 A new `ListEntry` may be created for a (playlist, title) pair only if no existing `ListEntry` for
-that pair is currently `not_started` or `in_progress`. Re-watching a Title that's already fully
+that pair is currently `not_started` or `in_progress`. This is enforced by a model validation and
+by a partial unique index (supported by both SQLite and Postgres). Re-watching a Title that's already fully
 `watched` (or was `cancelled`) in a playlist means adding a fresh `ListEntry` (`state: not_started`),
 not mutating the old one. The old entry, with its own `Viewing`s intact, remains visible in the
 historical view exactly as it was.
