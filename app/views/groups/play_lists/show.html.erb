@@ -10,6 +10,16 @@
   <%= link_to "Edit", edit_group_play_list_path(Current.group, @play_list), class: "btn btn-outline-secondary btn-sm" %>
 </div>
 
-<p class="text-body-secondary">Nothing on this playlist yet.</p>
+<% if @entries.any? %>
+  <ol class="list-group mb-3">
+    <% @entries.each do |entry| %>
+      <li class="list-group-item" id="<%= dom_id(entry) %>"><%= entry.title.full_name %></li>
+    <% end %>
+  </ol>
+<% else %>
+  <p class="text-body-secondary">Nothing on this playlist yet.</p>
+<% end %>
+
+<p><%= link_to "Add a title", new_group_play_list_list_entry_path(Current.group, @play_list), class: "btn btn-primary" %></p>
 
 <%= link_to Current.group.name, Current.group %>

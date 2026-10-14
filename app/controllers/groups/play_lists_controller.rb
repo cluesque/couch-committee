@@ -4,6 +4,7 @@ class Groups::PlayListsController < ApplicationController
   before_action :set_play_list, only: %i[ show edit update ]
 
   def show
+    @entries = @play_list.list_entries.active.includes(:title).order(:sequence)
   end
 
   def new

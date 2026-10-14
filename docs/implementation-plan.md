@@ -57,7 +57,7 @@ and behavior rules this implements.
 ## Phase 5 — PlayLists and the default (active) view
 - `Groups::PlayListsController` (show, new/create, edit/update). The group's own page lists its
   playlists, so there's no separate playlist index.
-- `PlayLists::ListEntriesController#create` — add an existing Title to a playlist as a new
+- `Groups::PlayLists::ListEntriesController#create` — add an existing Title to a playlist as a new
   `ListEntry` (`state: not_started`, `sequence` appended at the end); enforce the "no second active
   entry for the same (playlist, title)" rule. Titles are a shared, growing catalog (data model
   doc), so choosing one should be a search by name rather than a pick-list of every Title.
@@ -70,7 +70,7 @@ and behavior rules this implements.
 
 ## Phase 6 — Drag-and-drop reorder
 - Stimulus controller wrapping SortableJS (imported via importmap); drag handle per row.
-- `PlayLists::ListEntriesController#reorder` — accepts the new ordering, updates `sequence` in a
+- `Groups::PlayLists::ListEntriesController#reorder` — accepts the new ordering, updates `sequence` in a
   transaction.
 - System test exercising an actual drag (or a direct POST test plus a lighter JS smoke test,
   depending on how reliable drag simulation proves in CI).
