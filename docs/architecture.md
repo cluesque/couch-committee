@@ -18,8 +18,11 @@ over extra gems/frameworks wherever plain Rails is enough.
   pattern, not bespoke JS. This gets mobile-first layout and a full set of ready components (cards,
   list-groups, badges, buttons) essentially for free, which maps directly onto this app's UI
   (playlist rows, status badges, forms).
-- **Auth**: `google_sign_in` gem (OmniAuth-based Google OAuth). `User` is found-or-created by email
-  on successful callback. No password auth at all.
+- **Auth**: Basecamp's `google_sign_in` gem (a small Rails engine over the `oauth2` gem, not
+  OmniAuth). On a successful callback the `User` is found by Google account ID, else claimed by
+  verified email, else created (see `docs/data-model.md`). A sign-in is a `Session` row plus a
+  permanent signed cookie, in the shape of Rails 8's authentication generator. No password auth
+  at all.
 - **Database**: SQLite in development, test, *and* production, via the standard `sqlite3` adapter.
   All migrations use only database-agnostic Rails migration DSL — standard column types
   (`string`, `text`, `integer`, `date`, `datetime`, `boolean`), Rails-native `enum` (integer-backed,

@@ -8,7 +8,8 @@ them together — no more scrolling every streaming app arguing about it.
 
 ## Status
 
-Early days — Phase 0 (project scaffolding) is done. Phase 1 (Google sign-in) is next. See
+Early days — scaffolding (Phase 0) and Google sign-in (Phase 1) are done; groups and playlists
+come next. See
 [`docs/implementation-plan.md`](docs/implementation-plan.md) for the roadmap, and
 [`docs/architecture.md`](docs/architecture.md) / [`docs/data-model.md`](docs/data-model.md) for
 the design.
@@ -18,7 +19,7 @@ the design.
 - Ruby on Rails, with Hotwire (Turbo + Stimulus) and as little custom JavaScript as possible
 - Bootstrap for styling
 - SQLite in development and test, keeping schema/migrations Postgres-compatible
-- Google OAuth via `google_sign_in` (coming in Phase 1)
+- Google sign-in via `google_sign_in`; there are no passwords
 - Minitest, with Capybara + Cuprite (headless Chromium) for system tests
 - Brakeman, bundler-audit, and RuboCop in CI
 
@@ -29,6 +30,25 @@ bin/setup
 ```
 
 This installs gems, prepares the database, and starts the dev server (`bin/dev`).
+
+### Google sign-in credentials
+
+Signing in needs a Google OAuth client. Tests don't (they fake Google), so this is only needed
+to run the app.
+
+1. In the [Google Cloud console](https://console.cloud.google.com/apis/credentials), configure
+   the OAuth consent screen, then create an **OAuth client ID** of type **Web application**.
+2. Add `http://localhost:3000/google_sign_in/callback` as an authorized redirect URI (plus the
+   equivalent URL for each deployed host).
+3. Add the client's ID and secret to the app's credentials with `bin/rails credentials:edit`:
+
+   ```yaml
+   google_sign_in:
+     client_id: 1234-abcd.apps.googleusercontent.com
+     client_secret: your-client-secret
+   ```
+
+Anyone with a Google account can sign in; what they can see is limited by group membership.
 
 ## Running tests
 
