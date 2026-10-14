@@ -80,6 +80,37 @@ class Groups::PlayLists::ListEntriesControllerTest < ActionDispatch::Integration
     assert_equal "Arrival is already on this playlist.", flash[:alert]
   end
 
+  test "each playlist row links to the entry's details" do
+    entry = @play_list.add(create(:movie, name: "Arrival"))
+
+    get group_play_list_path(@group, @play_list)
+
+    assert_select "li a[href=?]", group_play_list_list_entry_path(@group, @play_list, entry), text: /Arrival/
+  end
+
+  test "an entry's details show its progress through the season" do
+    season = create(:season, name: "The Bear", season: 3, episode_count: 3)
+    entry = @play_list.add(season)
+    WatchRecorder.call(group: @group, episode: season.episodes.first, date: Date.new(2026, 10, 12))
+
+    get group_play_list_list_entry_path(@group, @play_list, entry)
+
+    assert_response :success
+    assert_select "h1", "The Bear: Season 3"
+    assert_select "p", text: /Series · In progress · Last watched Oct 12/
+    assert_equal [ "Watched: #{season.episodes.first.label}", season.episodes.second.label, season.episodes.third.label ],
+      css_select("ol li .me-auto").map { |item| item.text.gsub("✓", "").squish }
+    assert_select "li.fw-semibold", text: /#{season.episodes.second.label}/
+  end
+
+  test "an entry from another playlist is not found under this one" do
+    other = create(:play_list, group: @group).add(create(:movie))
+
+    get group_play_list_list_entry_path(@group, @play_list, other)
+
+    assert_response :not_found
+  end
+
   test "reordering saves the new order" do
     first, second, third = %w[ First Second Third ].map { |name| @play_list.add(create(:movie, name: name)) }
 

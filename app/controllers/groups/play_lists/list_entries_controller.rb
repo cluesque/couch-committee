@@ -3,6 +3,10 @@ class Groups::PlayLists::ListEntriesController < ApplicationController
 
   before_action :set_play_list
 
+  def show
+    @entry = @play_list.list_entries.includes(:viewings, title: :episodes).find(params[:id])
+  end
+
   def new
     @query = params[:q].to_s.strip
     @titles = @query.present? ? Title.search(@query).limit(25) : Title.none

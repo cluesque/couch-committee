@@ -19,8 +19,11 @@ class ListEntry < ApplicationRecord
 
   # Only this entry's viewings count, so a rewatch starts from the first episode again.
   def remaining_episodes
-    watched_episode_ids = viewings.map(&:episode_id)
-    title.episodes.reject { |episode| episode.id.in?(watched_episode_ids) }
+    title.episodes.reject { |episode| viewed?(episode) }
+  end
+
+  def viewed?(episode)
+    viewings.any? { |viewing| viewing.episode_id == episode.id }
   end
 
   def next_episode
