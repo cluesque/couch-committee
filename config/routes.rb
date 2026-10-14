@@ -13,5 +13,7 @@ Rails.application.routes.draw do
   # google_sign_in's proceed_to target: it redirects here (a GET) once Google has answered.
   get "session/google", to: "sessions#create", as: :google_session
 
-  root "home#index"
+  resources :groups, only: %i[ index show new create ]
+
+  root "groups#index"
 end

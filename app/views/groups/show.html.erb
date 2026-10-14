@@ -1,0 +1,17 @@
+<% content_for :title, "#{@group.name} · Couch Committee" %>
+
+<h1 class="h3 mb-3"><%= @group.name %></h1>
+
+<h2 class="h5">Members</h2>
+<ul class="list-group mb-4">
+  <% @members.each do |member| %>
+    <li class="list-group-item">
+      <%= member.name %>
+      <% if member.display_name.present? %>
+        <div class="small text-body-secondary"><%= member.email %></div>
+      <% end %>
+    </li>
+  <% end %>
+</ul>
+
+<%= link_to "All groups", groups_path %>
