@@ -5,6 +5,7 @@ class Groups::PlayLists::ListEntriesController < ApplicationController
 
   def show
     @entry = @play_list.list_entries.includes(:viewings, title: :episodes).find(params[:id])
+    @active_entry = @play_list.list_entries.active.find_by(title_id: @entry.title_id) unless @entry.active?
   end
 
   def new
@@ -18,7 +19,8 @@ class Groups::PlayLists::ListEntriesController < ApplicationController
     entry = @play_list.add(title)
 
     if entry.persisted?
-      redirect_to [ Current.group, @play_list ], notice: "Added #{title.full_name}."
+      again = " again" if @play_list.list_entries.where(title: title).where.not(id: entry.id).exists?
+      redirect_to [ Current.group, @play_list ], notice: "Added #{title.full_name}#{again}."
     else
       redirect_to new_group_play_list_list_entry_path(Current.group, @play_list, q: params[:q]),
         alert: "#{title.full_name} #{entry.errors[:title].to_sentence}."
