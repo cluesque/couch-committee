@@ -8,8 +8,8 @@ them together — no more scrolling every streaming app arguing about it.
 
 ## Status
 
-Early days — scaffolding (Phase 0) and Google sign-in (Phase 1) are done; groups and playlists
-come next. See
+Usable end to end: groups, playlists, adding titles, drag-to-reorder, recording watches, history,
+and cancelling are done (Phases 0–8). Rewatching and a polish pass come next. See
 [`docs/implementation-plan.md`](docs/implementation-plan.md) for the roadmap, and
 [`docs/architecture.md`](docs/architecture.md) / [`docs/data-model.md`](docs/data-model.md) for
 the design.
@@ -18,7 +18,7 @@ the design.
 
 - Ruby on Rails, with Hotwire (Turbo + Stimulus) and as little custom JavaScript as possible
 - Bootstrap for styling
-- SQLite in development and test, keeping schema/migrations Postgres-compatible
+- SQLite everywhere, production included, keeping schema/migrations Postgres-compatible
 - Google sign-in via `google_sign_in`; there are no passwords
 - Minitest, with Capybara + Cuprite (headless Chromium) for system tests
 - Brakeman, bundler-audit, and RuboCop in CI
@@ -49,6 +49,71 @@ to run the app.
    ```
 
 Anyone with a Google account can sign in; what they can see is limited by group membership.
+
+## Deploying to Fly.io
+
+The app runs on [Fly.io](https://fly.io) as a single machine, with its SQLite database on a
+persistent volume. `fly.toml` holds the configuration. These steps are one-time setup.
+
+Don't run `fly launch`: this repo already has a Dockerfile and `fly.toml`, and `fly launch` would
+try to regenerate them.
+
+1. Install `flyctl` and sign in:
+
+   ```bash
+   brew install flyctl
+   fly auth login
+   ```
+
+2. Pick an app name (it must be unique across Fly) and a region near you (`fly platform regions`
+   lists them). Set `app` and `primary_region` in `fly.toml`, then create the app:
+
+   ```bash
+   fly apps create <app-name>
+   ```
+
+3. Create the volume for the database, in that same region. The name must match `[[mounts]]` in
+   `fly.toml`:
+
+   ```bash
+   fly volumes create couch_committee_data --region <region> --size 1
+   ```
+
+   Fly warns that a single volume has no redundancy. That's expected with SQLite. Fly snapshots
+   volumes daily and keeps the snapshots for 5 days.
+
+4. Give the app the key that decrypts `config/credentials.yml.enc` (which holds the Google client
+   ID and secret):
+
+   ```bash
+   fly secrets set RAILS_MASTER_KEY="$(cat config/master.key)"
+   ```
+
+5. In the [Google Cloud console](https://console.cloud.google.com/apis/credentials), add
+   `https://<app-name>.fly.dev/google_sign_in/callback` to the OAuth client's authorized redirect
+   URIs. If the OAuth consent screen is still in **Testing**, only the test users listed there can
+   sign in. Add your household, or publish the app.
+
+6. Deploy, and open it:
+
+   ```bash
+   fly deploy --ha=false
+   fly apps open
+   ```
+
+   Every boot runs `bin/rails db:prepare` (see `bin/docker-entrypoint`). That creates the database
+   on the first deploy and runs any new migrations on later ones.
+
+After that, `fly deploy` ships a new version. Some other useful commands:
+
+```bash
+fly logs                                                   # tail the app's logs
+fly ssh console --user rails -C "/rails/bin/rails console" # a production console
+fly volumes list                                           # the database volume and its ID
+```
+
+Run the console as the `rails` user, as above. As root, it could create database files the app
+can't write to.
 
 ## Running tests
 

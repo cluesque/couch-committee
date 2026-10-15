@@ -1,0 +1,42 @@
+# Fly.io configuration. See the README's "Deploying to Fly.io" section for first-time setup.
+#
+# `app` must be your own (globally unique) Fly app name, and the volume named under [[mounts]]
+# must exist in `primary_region`.
+
+app = "couch-committee"
+primary_region = "iad"
+
+[build]
+  # Uses the Dockerfile in this directory.
+
+[env]
+  # Thruster (in front of Puma, see the Dockerfile's CMD) defaults to port 80, but the app runs as
+  # a non-root user, which can't bind ports below 1024 on a Fly machine.
+  THRUSTER_HTTP_PORT = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  # Stop the machine when idle and start it on the next request. Cheap for a household app; the
+  # first request after a quiet spell takes a few seconds.
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    grace_period = "15s"
+    interval = "30s"
+    method = "GET"
+    path = "/up"
+    timeout = "5s"
+
+# The SQLite database lives in storage/ (config/database.yml), so storage/ must be a persistent
+# volume. A volume attaches to one machine, so this app runs exactly one machine.
+[[mounts]]
+  source = "couch_committee_data"
+  destination = "/rails/storage"
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1
