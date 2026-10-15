@@ -17,50 +17,50 @@ class GroupsControllerTest < ActionDispatch::IntegrationTest
     assert_equal [ "Alpha", "Zeta" ], section_items("Groups")
   end
 
-  test "the home page shows my playlists, then my groups, under the logo banner" do
+  test "the home page shows my lists, then my groups, under the logo banner" do
     group = create(:group, name: "The Smiths", members: [ @user ])
-    create(:play_list, group: group, name: "Movie night")
+    create(:list, group: group, name: "Movie night")
 
     get root_path
 
     assert_response :success
     assert_select "img[src=?]", "/logo_with_name.png"
-    assert_equal [ "Playlists", "Groups" ], css_select("h2").map(&:text)
-    assert_equal [ "Movie night" ], section_items("Playlists")
+    assert_equal [ "Lists", "Groups" ], css_select("h2").map(&:text)
+    assert_equal [ "Movie night" ], section_items("Lists")
     assert_equal [ "The Smiths" ], section_items("Groups")
   end
 
-  test "home lists the playlists of all my groups, alphabetically, linking to each" do
+  test "home lists the lists of all my groups, alphabetically, linking to each" do
     smiths = create(:group, name: "The Smiths", members: [ @user ])
     book_club = create(:group, name: "Book club", members: [ @user ])
-    movie_night = create(:play_list, group: smiths, name: "Movie night")
-    create(:play_list, group: book_club, name: "Audiobooks")
-    create(:play_list, name: "Someone else's")
+    movie_night = create(:list, group: smiths, name: "Movie night")
+    create(:list, group: book_club, name: "Audiobooks")
+    create(:list, name: "Someone else's")
 
     get root_path
 
-    assert_equal [ "Audiobooks Book club", "Movie night The Smiths" ], section_items("Playlists")
-    assert_select "a[href=?]", group_play_list_path(smiths, movie_night)
+    assert_equal [ "Audiobooks Book club", "Movie night The Smiths" ], section_items("Lists")
+    assert_select "a[href=?]", group_list_path(smiths, movie_night)
   end
 
-  test "with a single group, home doesn't repeat its name on every playlist" do
+  test "with a single group, home doesn't repeat its name on every list" do
     group = create(:group, name: "The Smiths", members: [ @user ])
-    create(:play_list, group: group, name: "Movie night")
+    create(:list, group: group, name: "Movie night")
 
     get root_path
 
-    assert_equal [ "Movie night" ], section_items("Playlists")
+    assert_equal [ "Movie night" ], section_items("Lists")
   end
 
-  test "home suggests starting a playlist when my groups have none" do
+  test "home suggests starting a list when my groups have none" do
     create(:group, members: [ @user ])
 
     get root_path
 
-    assert_select "p", "No playlists yet. Open a group below to start one."
+    assert_select "p", "No lists yet. Open a group below to start one."
   end
 
-  test "home has no playlists section before I'm in any group" do
+  test "home has no lists section before I'm in any group" do
     get root_path
 
     assert_equal [ "Groups" ], css_select("h2").map(&:text)

@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :list_entry do
-    play_list
+    list
     title factory: :movie
     sequence(:sequence)
 

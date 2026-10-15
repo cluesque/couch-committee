@@ -2,7 +2,7 @@ class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
   has_many :group_memberships, dependent: :destroy
   has_many :groups, through: :group_memberships
-  has_many :play_lists, through: :groups
+  has_many :lists, through: :groups
 
   normalizes :email, with: ->(email) { email.strip.downcase }
 

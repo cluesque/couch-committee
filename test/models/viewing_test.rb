@@ -16,11 +16,11 @@ class ViewingTest < ActiveSupport::TestCase
     assert_includes viewing.errors[:episode], "isn't part of this entry's title"
   end
 
-  test "the group must own the entry's playlist" do
+  test "the group must own the entry's list" do
     viewing = build(:viewing, group: create(:group))
 
     assert_not viewing.valid?
-    assert_includes viewing.errors[:group], "doesn't own this entry's playlist"
+    assert_includes viewing.errors[:group], "doesn't own this entry's list"
   end
 
   test "is reachable from its entry, episode, and group" do

@@ -18,7 +18,7 @@ class LayoutTest < ApplicationSystemTestCase
     click_on "Create group"
     assert_text "Created The Smiths."
 
-    click_on "New playlist"
+    click_on "New list"
     go_back
 
     assert_selector "h1", text: "The Smiths"

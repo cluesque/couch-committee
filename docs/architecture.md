@@ -18,7 +18,7 @@ over extra gems/frameworks wherever plain Rails is enough.
   tooltips and popovers, which need explicit initialization, would need a small Stimulus
   controller. (The navbar's account menu is a Bootstrap dropdown.) This gets mobile-first layout and a full set of ready components (cards,
   list-groups, badges, buttons) essentially for free, which maps directly onto this app's UI
-  (playlist rows, status badges, forms).
+  (list rows, status badges, forms).
 - **Auth**: Basecamp's `google_sign_in` gem (a small Rails engine over the `oauth2` gem, not
   OmniAuth). On a successful callback the `User` is found by Google account ID, else claimed by
   verified email, else created (see `docs/data-model.md`). A sign-in is a `Session` row plus a
@@ -46,7 +46,7 @@ over extra gems/frameworks wherever plain Rails is enough.
 
 ### 1. "Current Group" is a URL concept, not session state
 A `User` can belong to multiple `Group`s, so routes are nested under the group:
-`/groups/:group_id/play_lists`, `/groups/:group_id/play_lists/:id`, etc. A controller concern
+`/groups/:group_id/lists`, `/groups/:group_id/lists/:id`, etc. A controller concern
 (`SetCurrentGroup`) resolves `params[:group_id]` against `current_user.groups`, 404s or redirects
 if the user isn't a member, and exposes it as `Current.group`
 (`ActiveSupport::CurrentAttributes`). This keeps multi-group use safe across multiple tabs/bookmarks
@@ -62,9 +62,9 @@ object framework (dry-rb, interactor, etc.) — just a plain class with a `.call
 ### 3. Turbo-first UI
 - Turbo Drive for ordinary navigation.
 - A Turbo Frame for the "Watch" form, which opens in place on an entry's detail page. The detail
-  view itself is an ordinary Turbo Drive page: a frame inside the sortable playlist would fight the
+  view itself is an ordinary Turbo Drive page: a frame inside the sortable list would fight the
   drag handles, and Drive already avoids a full reload.
-- No Turbo Streams so far. Recording a watch redirects back to the playlist, which re-renders with
+- No Turbo Streams so far. Recording a watch redirects back to the list, which re-renders with
   the new state, and a reorder is already reflected in the DOM before it's saved. Streams would earn
   their place only if other members' open pages had to update live.
 
@@ -83,7 +83,7 @@ usually skipped for things already out. This is a presenter/view-layer computati
 today's date — not a stored column — since a stored flag would go stale as dates pass.
 
 ### 6. Manual Title/Episode entry (a gap the user stories don't cover)
-The user stories describe adding an *existing* Title/season to a playlist, but nothing describes
+The user stories describe adding an *existing* Title/season to a list, but nothing describes
 how a Title and its Episodes get created in the first place — "importing seasons and episodes" is
 explicitly future scope, but *manual* entry isn't optional, since without it no Title could ever
 exist. MVP needs a minimal manual-entry flow: create a movie (Title + one Episode in one step) or
@@ -97,21 +97,21 @@ feature that's out of scope for now.
 SessionsController          # google_sign_in callback, destroy (logout)
 GroupsController             # index (my groups), show, new, create
 Groups::MembershipsController   # invite/remove users, nested under group
-Groups::PlayListsController     # show, new, create, edit, update — nested under group (the group page lists them)
+Groups::ListsController     # show, new, create, edit, update — nested under group (the group page lists them)
 TitlesController                # the global catalog: browse, plus manual create of a movie/season
                                 # (+ nested episodes) — not group-nested, since Titles are global
-Groups::PlayLists::ListEntriesController  # new (search the catalog), create (add a title), reorder, cancel — nested under playlist
-Groups::PlayLists::ListEntries::ViewingsController  # new/create — the "Watch" form, from an entry;
-                                # WatchRecorder resolves it across the group's playlists
+Groups::Lists::ListEntriesController  # new (search the catalog), create (add a title), reorder, cancel — nested under list
+Groups::Lists::ListEntries::ViewingsController  # new/create — the "Watch" form, from an entry;
+                                # WatchRecorder resolves it across the group's lists
 ```
 
 ## Testing strategy
 
 - **Model tests**: validations/associations, and — most importantly — `WatchRecorder` transition
-  behavior (movie watch, mid-season watch, last-episode-of-season watch, rewatch, multi-playlist
+  behavior (movie watch, mid-season watch, last-episode-of-season watch, rewatch, multi-list
   fan-out).
 - **Request tests**: every controller action, including the Group-membership guard.
-- **System tests** (Capybara, headless): login/logout (OAuth stubbed), add a title to a playlist,
+- **System tests** (Capybara, headless): login/logout (OAuth stubbed), add a title to a list,
   record a watch (movie / mid-season / season-completing episode), drag-reorder, cancel an entry,
   rewatch after completion.
 - `factory_bot` factories for every model.

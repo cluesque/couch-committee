@@ -4,11 +4,11 @@ class ReorderingTest < ApplicationSystemTestCase
   test "dragging an entry to a new place, and it stays there" do
     pat = create(:user)
     group = create(:group, members: [ pat ])
-    @play_list = create(:play_list, group: group, name: "Movie night")
-    %w[ First Second Third ].each { |name| @play_list.add(create(:movie, name: name)) }
+    @list = create(:list, group: group, name: "Movie night")
+    %w[ First Second Third ].each { |name| @list.add(create(:movie, name: name)) }
     sign_in_as pat
 
-    visit group_play_list_path(group, @play_list)
+    visit group_list_path(group, @list)
     drag "Third", before: "First"
 
     assert_equal %w[ Third First Second ], entry_names
@@ -44,7 +44,7 @@ class ReorderingTest < ApplicationSystemTestCase
     end
 
     def saved_order
-      @play_list.list_entries.active.order(:sequence).map { |entry| entry.title.name }
+      @list.list_entries.active.order(:sequence).map { |entry| entry.title.name }
     end
 
     # The save is a fetch that finishes after the drop.

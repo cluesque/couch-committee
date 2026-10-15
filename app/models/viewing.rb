@@ -4,7 +4,7 @@ class Viewing < ApplicationRecord
   belongs_to :list_entry
 
   validates :date, presence: true
-  validate :episode_belongs_to_the_entrys_title, :group_owns_the_entrys_play_list
+  validate :episode_belongs_to_the_entrys_title, :group_owns_the_entrys_list
 
   private
     def episode_belongs_to_the_entrys_title
@@ -13,9 +13,9 @@ class Viewing < ApplicationRecord
       end
     end
 
-    def group_owns_the_entrys_play_list
-      if group && list_entry && group.id != list_entry.play_list.group_id
-        errors.add(:group, "doesn't own this entry's playlist")
+    def group_owns_the_entrys_list
+      if group && list_entry && group.id != list_entry.list.group_id
+        errors.add(:group, "doesn't own this entry's list")
       end
     end
 end

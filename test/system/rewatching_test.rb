@@ -5,18 +5,18 @@ class RewatchingTest < ApplicationSystemTestCase
     travel_to Date.new(2026, 10, 15)
     pat = create(:user)
     group = create(:group, members: [ pat ])
-    play_list = create(:play_list, group: group, name: "Movie night")
-    play_list.add(create(:movie, name: "Arrival"))
+    list = create(:list, group: group, name: "Movie night")
+    list.add(create(:movie, name: "Arrival"))
     sign_in_as pat
 
-    visit group_play_list_path(group, play_list)
+    visit group_list_path(group, list)
     click_on "Arrival"
     click_on "Watch"
     within("turbo-frame#watch") do
       fill_in "Watched on", with: Date.new(2026, 10, 1)
       click_on "Record watch"
     end
-    assert_text "Nothing on this playlist yet."
+    assert_text "Nothing on this list yet."
 
     click_on "History"
     click_on "Arrival"
