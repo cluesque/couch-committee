@@ -1,6 +1,6 @@
 <% content_for :title, "#{@play_list.name} history · Couch Committee" %>
 
-<p class="small mb-1"><%= link_to "← #{@play_list.name}", [ Current.group, @play_list ] %></p>
+<%= back_link @play_list.name, [ Current.group, @play_list ] %>
 <h1 class="h3 mb-3">History</h1>
 
 <% if @events.any? %>

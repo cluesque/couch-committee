@@ -1,5 +1,7 @@
 <% content_for :title, "Add to #{@play_list.name} · Couch Committee" %>
 
+<%= back_link @play_list.name, [ Current.group, @play_list ] %>
+
 <h1 class="h3 mb-3">Add to <%= @play_list.name %></h1>
 
 <%= form_with url: new_group_play_list_list_entry_path(Current.group, @play_list), method: :get, class: "mb-3" do |form| %>
@@ -39,4 +41,3 @@
   <%= link_to "season", new_title_path(kind: "series") %> to the catalog first.
 </p>
 
-<%= link_to "Back to #{@play_list.name}", [ Current.group, @play_list ] %>

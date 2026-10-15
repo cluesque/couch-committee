@@ -1,5 +1,7 @@
 <% content_for :title, "#{@title.full_name} · Couch Committee" %>
 
+<%= back_link "Titles", titles_path %>
+
 <h1 class="h3 mb-1"><%= @title.full_name %></h1>
 <p class="text-body-secondary mb-3"><%= @title.kind.humanize %></p>
 
@@ -24,4 +26,3 @@
   </ol>
 <% end %>
 
-<%= link_to "All titles", titles_path %>

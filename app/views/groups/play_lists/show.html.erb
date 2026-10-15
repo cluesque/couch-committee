@@ -1,5 +1,7 @@
 <% content_for :title, "#{@play_list.name} · Couch Committee" %>
 
+<%= back_link Current.group.name, Current.group %>
+
 <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
   <div>
     <h1 class="h3 mb-1"><%= @play_list.name %></h1>
@@ -19,9 +21,8 @@
     <%= render partial: "list_entry", collection: @entries %>
   </ol>
 <% else %>
-  <p class="text-body-secondary">Nothing on this playlist yet.</p>
+  <p class="text-body-secondary">Nothing on this playlist yet. Add a title to get started.</p>
 <% end %>
 
 <p><%= link_to "Add a title", new_group_play_list_list_entry_path(Current.group, @play_list), class: "btn btn-primary" %></p>
 
-<%= link_to Current.group.name, Current.group %>

@@ -8,9 +8,9 @@ them together — no more scrolling every streaming app arguing about it.
 
 ## Status
 
-Usable end to end: groups, playlists, adding titles, drag-to-reorder, recording watches, history,
-and cancelling are done (Phases 0–8). Rewatching and a polish pass come next. See
-[`docs/implementation-plan.md`](docs/implementation-plan.md) for the roadmap, and
+Every phase of [`docs/implementation-plan.md`](docs/implementation-plan.md) is done: groups,
+playlists, adding titles, drag-to-reorder, recording watches, history, cancelling, rewatching, and
+a phone-width polish pass. The plan's "Explicitly deferred" list is what's next. See
 [`docs/architecture.md`](docs/architecture.md) / [`docs/data-model.md`](docs/data-model.md) for
 the design.
 
