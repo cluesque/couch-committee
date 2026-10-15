@@ -118,8 +118,9 @@ and behavior rules this implements.
   viewport.
 
 ## Explicitly deferred (per requirements doc + this conversation)
-- Automated import of seasons/episodes from an external source.
-- Streaming-service availability awareness.
+- Automated import of seasons/episodes from an external source. Researched 2026-10-15: use TMDB,
+  see `docs/title-metadata.md`.
+- Streaming-service availability awareness. TMDB's watch-provider data covers this too.
 - User avatars.
 - The `Recommendation` model (suggester + reason) — `ListEntry` covers its MVP duties for now.
 - Deployment target selection.
