@@ -1,7 +1,7 @@
 <% title = @list_entry.title %>
 <% content_for :title, "Cancel #{title.full_name} · Couch Committee" %>
 
-<p class="small mb-1"><%= link_to "← #{title.full_name}", [ Current.group, @play_list, @list_entry ] %></p>
+<%= back_link title.full_name, [ Current.group, @play_list, @list_entry ] %>
 <h1 class="h3 mb-3">Cancel <%= title.full_name %>?</h1>
 
 <%= turbo_frame_tag "cancellation" do %>

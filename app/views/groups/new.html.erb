@@ -1,5 +1,7 @@
 <% content_for :title, "New group · Couch Committee" %>
 
+<%= back_link "Your groups", groups_path %>
+
 <h1 class="h3 mb-3">New group</h1>
 
 <%= form_with model: @group do |form| %>

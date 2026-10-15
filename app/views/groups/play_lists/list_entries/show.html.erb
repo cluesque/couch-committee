@@ -1,7 +1,7 @@
 <% title = @entry.title %>
 <% content_for :title, "#{title.full_name} · Couch Committee" %>
 
-<p class="small mb-1"><%= link_to "← #{@play_list.name}", [ Current.group, @play_list ] %></p>
+<%= back_link @play_list.name, [ Current.group, @play_list ] %>
 
 <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
   <h1 class="h3 mb-0"><%= title.full_name %></h1>

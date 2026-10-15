@@ -1,6 +1,8 @@
 <% noun = @title.series? ? "season" : "movie" %>
 <% content_for :title, "Add a #{noun} · Couch Committee" %>
 
+<%= back_link "Titles", titles_path %>
+
 <h1 class="h3 mb-3">Add a <%= noun %></h1>
 
 <%= form_with model: @title do |form| %>
