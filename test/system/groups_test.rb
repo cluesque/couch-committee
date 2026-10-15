@@ -14,7 +14,7 @@ class GroupsTest < ApplicationSystemTestCase
     assert_text "Added sam@example.com."
     assert_text "Hasn't signed in yet"
 
-    click_on "Sign out"
+    sign_out
     sign_in_with_google(sub: "g-sam", email: "sam@example.com", name: "Sam")
 
     click_on "The Smiths"

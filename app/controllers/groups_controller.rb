@@ -1,6 +1,7 @@
 class GroupsController < ApplicationController
   def index
     @groups = Current.user.groups.order(:name)
+    @play_lists = Current.user.play_lists.includes(:group).order(:name)
   end
 
   def show

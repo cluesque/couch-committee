@@ -30,9 +30,20 @@
         <% end %>
 
         <% if authenticated? %>
-          <div class="d-flex align-items-center gap-2">
-            <span class="navbar-text small text-truncate" style="max-width: 10rem"><%= Current.user.name %></span>
-            <%= button_to "Sign out", session_path, method: :delete, class: "btn btn-outline-secondary btn-sm" %>
+          <div class="dropdown">
+            <button type="button" class="btn btn-outline-secondary rounded-circle p-0 fw-medium"
+                    style="width: 2.25rem; height: 2.25rem" data-bs-toggle="dropdown" aria-expanded="false"
+                    aria-label="Account menu">
+              <%= Current.user.name.first.upcase %>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end">
+              <div class="dropdown-item-text text-truncate" style="max-width: 16rem">
+                <%= Current.user.display_name.presence || "Signed in" %>
+                <div class="small text-body-secondary text-truncate"><%= Current.user.email %></div>
+              </div>
+              <div class="dropdown-divider"></div>
+              <%= button_to "Sign out", session_path, method: :delete, class: "dropdown-item" %>
+            </div>
           </div>
         <% end %>
       </div>

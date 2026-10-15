@@ -1,11 +1,32 @@
-<% content_for :title, "Your groups · Couch Committee" %>
+<% content_for :title, "Couch Committee" %>
+
+<h1 class="visually-hidden">Home</h1>
 
 <%= image_tag "/logo_with_name.png",
               alt: "Couch Committee — what should we watch tonight?",
               class: "img-fluid mx-auto d-block mb-4" %>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h1 class="h3 mb-0">Your groups</h1>
+<% if @groups.any? %>
+  <h2 class="h4 mb-2">Playlists</h2>
+  <% if @play_lists.any? %>
+    <div class="list-group mb-4">
+      <% @play_lists.each do |play_list| %>
+        <%= link_to [ play_list.group, play_list ],
+              class: "list-group-item list-group-item-action d-flex justify-content-between align-items-center gap-2" do %>
+          <span><%= play_list.name %></span>
+          <% if @groups.many? %>
+            <small class="text-body-secondary text-nowrap"><%= play_list.group.name %></small>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-body-secondary mb-4">No playlists yet. Open a group below to start one.</p>
+  <% end %>
+<% end %>
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+  <h2 class="h4 mb-0">Groups</h2>
   <%= link_to "New group", new_group_path, class: "btn btn-primary btn-sm" %>
 </div>
 

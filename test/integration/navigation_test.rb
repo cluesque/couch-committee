@@ -10,8 +10,8 @@ class NavigationTest < ActionDispatch::IntegrationTest
     sign_in_as user
 
     {
-      new_group_path => [ groups_path, "Your groups" ],
-      group_path(group) => [ groups_path, "Your groups" ],
+      new_group_path => [ groups_path, "Home" ],
+      group_path(group) => [ groups_path, "Home" ],
       new_group_play_list_path(group) => [ group_path(group), "The Smiths" ],
       group_play_list_path(group, play_list) => [ group_path(group), "The Smiths" ],
       edit_group_play_list_path(group, play_list) => [ group_play_list_path(group, play_list), "Movie night" ],
@@ -22,7 +22,7 @@ class NavigationTest < ActionDispatch::IntegrationTest
         [ group_play_list_list_entry_path(group, play_list, entry), "Arrival" ],
       new_group_play_list_list_entry_cancellation_path(group, play_list, entry) =>
         [ group_play_list_list_entry_path(group, play_list, entry), "Arrival" ],
-      titles_path => [ root_path, "Your groups" ],
+      titles_path => [ root_path, "Home" ],
       title_path(movie) => [ titles_path, "Titles" ],
       new_title_path => [ titles_path, "Titles" ]
     }.each do |page, (parent, label)|
