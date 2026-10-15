@@ -21,7 +21,7 @@
     <%= render partial: "list_entry", collection: @entries %>
   </ol>
 <% else %>
-  <p class="text-body-secondary">Nothing on this playlist yet.</p>
+  <p class="text-body-secondary">Nothing on this playlist yet. Add a title to get started.</p>
 <% end %>
 
 <p><%= link_to "Add a title", new_group_play_list_list_entry_path(Current.group, @play_list), class: "btn btn-primary" %></p>

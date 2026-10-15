@@ -98,9 +98,9 @@ class Groups::PlayLists::ListEntriesControllerTest < ActionDispatch::Integration
     assert_response :success
     assert_select "h1", "The Bear: Season 3"
     assert_select "p", text: /Series · In progress · Last watched Oct 12/
-    assert_equal [ "Watched: #{season.episodes.first.label}", season.episodes.second.label, season.episodes.third.label ],
+    assert_equal [ "Watched: #{season.episodes.first.label}", "#{season.episodes.second.label} Next", season.episodes.third.label ],
       css_select("ol li .me-auto").map { |item| item.text.gsub("✓", "").squish }
-    assert_select "li.fw-semibold", text: /#{season.episodes.second.label}/
+    assert_select "li .badge", text: "Next", count: 1
   end
 
   test "an entry from another playlist is not found under this one" do
