@@ -14,7 +14,7 @@ class TitlesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_equal [ "Arrival", "The Bear: Season 1", "The Bear: Season 2" ],
-      css_select(".list-group-item span:first-child").map { |name| name.text.strip }
+      css_select(".list-group-item .title-name").map(&:text)
   end
 
   test "is reachable from the home page" do

@@ -3,7 +3,7 @@
 <%= back_link "Titles", titles_path %>
 
 <h1 class="h3 mb-1"><%= @title.full_name %></h1>
-<p class="text-body-secondary mb-3"><%= @title.kind.humanize %></p>
+<p class="text-body-secondary mb-3"><%= kind_icon(@title, decorative: true) %> <%= @title.kind.humanize %></p>
 
 <% if @title.movie? %>
   <% if (released_on = @title.episodes.first&.available_on) %>

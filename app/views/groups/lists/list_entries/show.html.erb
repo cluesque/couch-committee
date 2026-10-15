@@ -10,7 +10,7 @@
   <% end %>
 </div>
 <p class="text-body-secondary">
-  <%= title.kind.humanize %> · <%= @entry.state.humanize %>
+  <%= kind_icon(title, decorative: true) %> <%= title.kind.humanize %> · <%= @entry.state.humanize %>
   <% if @entry.last_viewed_on %>
     · Last watched <%= l @entry.last_viewed_on, format: :short %>
   <% end %>

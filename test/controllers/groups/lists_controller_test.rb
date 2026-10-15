@@ -69,7 +69,8 @@ class Groups::ListsControllerTest < ActionDispatch::IntegrationTest
       assert_equal "Next: 2. Next Last watched Oct 12", rows.first.at_css(".small").text.squish
       assert_nil rows.first.at_css(".badge")
       assert_equal "Coming Dec 25", rows[1].at_css(".badge").text.squish
-      assert_includes rows[1]["class"], "bg-body-tertiary"
+      assert_includes rows[1]["class"], "text-body-secondary"
+      assert_equal [ "Series", "Movie" ], rows.map { |row| row.at_css("svg.kind-icon")["aria-label"] }
     end
   end
 

@@ -17,9 +17,9 @@
     <ul class="list-group mb-3">
       <% @titles.each do |title| %>
         <li class="list-group-item d-flex justify-content-between align-items-center gap-2">
-          <span>
-            <%= title.full_name %>
-            <span class="badge text-bg-light"><%= title.kind.humanize %></span>
+          <span class="d-flex align-items-baseline gap-2">
+            <%= kind_icon(title) %>
+            <span class="title-name"><%= title.full_name %></span>
           </span>
           <% if @active_title_ids.include?(title.id) %>
             <span class="small text-body-secondary text-nowrap">On this list</span>
