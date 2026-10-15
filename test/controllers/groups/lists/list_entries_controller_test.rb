@@ -145,6 +145,6 @@ class Groups::Lists::ListEntriesControllerTest < ActionDispatch::IntegrationTest
 
   private
     def result_names
-      css_select("li > span:first-child").map { |name| name.children.first.text.strip }
+      css_select("li .title-name").map(&:text)
     end
 end

@@ -1,1 +1,19 @@
 @import "bootstrap";
+
+// Zebra-stripe every list: rows were hard to tell apart on a phone. Setting Bootstrap's own variable
+// (rather than background-color) keeps the hover highlight of clickable rows working. It's pure CSS,
+// so the stripes follow along when a row is dragged to a new place.
+.list-group > .list-group-item:nth-child(even) {
+  --bs-list-group-bg: rgba(var(--bs-emphasis-color-rgb), 0.05);
+}
+
+.kind-icon {
+  flex-shrink: 0;
+  vertical-align: -0.125em;
+}
+
+// Brand colors (the logo's orange and navy), darkened enough to read against the stripes.
+.kind-icon-movie { color: #c2410c; }
+.kind-icon-series { color: #1e4b8f; }
+.kind-icon-book,
+.kind-icon-podcast { color: var(--bs-secondary-color); }
