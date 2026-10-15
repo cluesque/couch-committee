@@ -13,9 +13,10 @@ over extra gems/frameworks wherever plain Rails is enough.
   toolchain needed).
 - **Styling: Bootstrap 5**, compiled via `dartsass-rails` (standalone Sass binary, no Node
   required) on top of Propshaft. Bootstrap's bundled JS (modals, collapses, dropdowns — built on
-  Popper) is pinned via importmap from a CDN. It needs a small `turbo:load` / Stimulus adapter so
-  components re-initialize correctly across Turbo page visits — a well-known, well-documented
-  pattern, not bespoke JS. This gets mobile-first layout and a full set of ready components (cards,
+  Popper) is vendored via importmap. Its data-attribute components (collapse, dropdown, modal)
+  use event delegation, so they keep working across Turbo page visits without an adapter; only
+  tooltips and popovers, which need explicit initialization, would need a small Stimulus
+  controller. (No Bootstrap JS component is in use yet.) This gets mobile-first layout and a full set of ready components (cards,
   list-groups, badges, buttons) essentially for free, which maps directly onto this app's UI
   (playlist rows, status badges, forms).
 - **Auth**: Basecamp's `google_sign_in` gem (a small Rails engine over the `oauth2` gem, not
