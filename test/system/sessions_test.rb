@@ -7,10 +7,16 @@ class SessionsTest < ApplicationSystemTestCase
 
     sign_in_with_google(sub: "g-1", email: "pat@example.com", name: "Pat")
 
-    assert_text "Pat"
     assert_current_path root_path
+    assert_button "Account menu", text: "P"
+    within("nav") { assert_no_text "pat@example.com" }
 
-    click_on "Sign out"
+    click_on "Account menu"
+    within(".dropdown-menu") do
+      assert_text "Pat"
+      assert_text "pat@example.com"
+      click_on "Sign out"
+    end
 
     assert_text "You've been signed out."
     assert_button "Sign in with Google"

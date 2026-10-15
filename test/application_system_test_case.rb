@@ -24,7 +24,12 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
 
   def sign_in_as(user)
     sign_in_with_google(sub: user.google_id, email: user.email, name: user.display_name)
-    assert_button "Sign out"
+    assert_button "Account menu"
+  end
+
+  def sign_out
+    click_on "Account menu"
+    click_on "Sign out"
   end
 end
 
