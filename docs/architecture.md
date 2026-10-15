@@ -16,7 +16,7 @@ over extra gems/frameworks wherever plain Rails is enough.
   Popper) is vendored via importmap. Its data-attribute components (collapse, dropdown, modal)
   use event delegation, so they keep working across Turbo page visits without an adapter; only
   tooltips and popovers, which need explicit initialization, would need a small Stimulus
-  controller. (No Bootstrap JS component is in use yet.) This gets mobile-first layout and a full set of ready components (cards,
+  controller. (The navbar's account menu is a Bootstrap dropdown.) This gets mobile-first layout and a full set of ready components (cards,
   list-groups, badges, buttons) essentially for free, which maps directly onto this app's UI
   (playlist rows, status badges, forms).
 - **Auth**: Basecamp's `google_sign_in` gem (a small Rails engine over the `oauth2` gem, not

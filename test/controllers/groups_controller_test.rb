@@ -14,15 +14,56 @@ class GroupsControllerTest < ActionDispatch::IntegrationTest
     get groups_path
 
     assert_response :success
-    assert_equal [ "Alpha", "Zeta" ], css_select(".list-group-item").map { |item| item.text.strip }
+    assert_equal [ "Alpha", "Zeta" ], section_items("Groups")
   end
 
-  test "the home page is my list of groups, under the logo banner" do
+  test "the home page shows my playlists, then my groups, under the logo banner" do
+    group = create(:group, name: "The Smiths", members: [ @user ])
+    create(:play_list, group: group, name: "Movie night")
+
     get root_path
 
     assert_response :success
     assert_select "img[src=?]", "/logo_with_name.png"
-    assert_select "h1", "Your groups"
+    assert_equal [ "Playlists", "Groups" ], css_select("h2").map(&:text)
+    assert_equal [ "Movie night" ], section_items("Playlists")
+    assert_equal [ "The Smiths" ], section_items("Groups")
+  end
+
+  test "home lists the playlists of all my groups, alphabetically, linking to each" do
+    smiths = create(:group, name: "The Smiths", members: [ @user ])
+    book_club = create(:group, name: "Book club", members: [ @user ])
+    movie_night = create(:play_list, group: smiths, name: "Movie night")
+    create(:play_list, group: book_club, name: "Audiobooks")
+    create(:play_list, name: "Someone else's")
+
+    get root_path
+
+    assert_equal [ "Audiobooks Book club", "Movie night The Smiths" ], section_items("Playlists")
+    assert_select "a[href=?]", group_play_list_path(smiths, movie_night)
+  end
+
+  test "with a single group, home doesn't repeat its name on every playlist" do
+    group = create(:group, name: "The Smiths", members: [ @user ])
+    create(:play_list, group: group, name: "Movie night")
+
+    get root_path
+
+    assert_equal [ "Movie night" ], section_items("Playlists")
+  end
+
+  test "home suggests starting a playlist when my groups have none" do
+    create(:group, members: [ @user ])
+
+    get root_path
+
+    assert_select "p", "No playlists yet. Open a group below to start one."
+  end
+
+  test "home has no playlists section before I'm in any group" do
+    get root_path
+
+    assert_equal [ "Groups" ], css_select("h2").map(&:text)
   end
 
   test "explains what to do when I'm in no groups" do
@@ -75,4 +116,12 @@ class GroupsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :not_found
   end
+
+  private
+    # The link texts of the list-group that follows the heading with the given text.
+    def section_items(heading)
+      heading_node = css_select("h2").find { |node| node.text == heading }
+      list = heading_node.xpath("following::div[contains(@class, 'list-group')][1]").first
+      list.css("a").map { |item| item.text.squish }
+    end
 end
