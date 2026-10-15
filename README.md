@@ -3,13 +3,13 @@
 ![Logo](public/logo_with_name.png)
 
 Couch Committee helps a household (or any small group) agree on what to watch next. Add
-movies and show seasons to a shared playlist, reorder them, and check things off as you watch
+movies and show seasons to a shared list, reorder them, and check things off as you watch
 them together — no more scrolling every streaming app arguing about it.
 
 ## Status
 
 Every phase of [`docs/implementation-plan.md`](docs/implementation-plan.md) is done: groups,
-playlists, adding titles, drag-to-reorder, recording watches, history, cancelling, rewatching, and
+lists, adding titles, drag-to-reorder, recording watches, history, cancelling, rewatching, and
 a phone-width polish pass. The plan's "Explicitly deferred" list is what's next. See
 [`docs/architecture.md`](docs/architecture.md) / [`docs/data-model.md`](docs/data-model.md) for
 the design.

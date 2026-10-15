@@ -4,12 +4,12 @@ class HistoryTest < ApplicationSystemTestCase
   test "cancelling with a note, finishing a movie, and finding both in the history" do
     pat = create(:user)
     group = create(:group, members: [ pat ])
-    play_list = create(:play_list, group: group, name: "Movie night")
-    play_list.add(create(:movie, name: "Saw It"))
-    play_list.add(create(:movie, name: "Arrival"))
+    list = create(:list, group: group, name: "Movie night")
+    list.add(create(:movie, name: "Saw It"))
+    list.add(create(:movie, name: "Arrival"))
     sign_in_as pat
 
-    visit group_play_list_path(group, play_list)
+    visit group_list_path(group, list)
     click_on "Saw It"
     click_on "Cancel…"
     within "turbo-frame#cancellation" do

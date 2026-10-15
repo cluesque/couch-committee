@@ -1,7 +1,7 @@
 class ListEntry < ApplicationRecord
   ACTIVE_STATES = %w[ not_started in_progress ].freeze
 
-  belongs_to :play_list
+  belongs_to :list
   belongs_to :title
   has_many :viewings
 
@@ -11,7 +11,7 @@ class ListEntry < ApplicationRecord
 
   validates :sequence, numericality: { only_integer: true }
   validates :cancelled_at, presence: true, if: :cancelled?
-  validates :title, uniqueness: { scope: :play_list, conditions: -> { active }, message: "is already on this playlist" },
+  validates :title, uniqueness: { scope: :list, conditions: -> { active }, message: "is already on this list" },
     if: :active?
 
   def active?
@@ -19,7 +19,7 @@ class ListEntry < ApplicationRecord
   end
 
   # "We decided not to watch this", as opposed to finishing it. The entry stays, with its note, in
-  # the playlist's history.
+  # the list's history.
   def cancel(note: nil)
     update(state: :cancelled, cancelled_at: Time.current, cancel_note: note.presence)
   end

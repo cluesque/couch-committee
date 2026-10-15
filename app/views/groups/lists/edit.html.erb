@@ -1,0 +1,7 @@
+<% content_for :title, "Edit #{@list.name} · Couch Committee" %>
+
+<%= back_link @list.name, [ Current.group, @list ] %>
+
+<h1 class="h3 mb-3">Edit list</h1>
+
+<%= render "form", list: @list %>

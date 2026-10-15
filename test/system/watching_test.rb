@@ -4,7 +4,7 @@ class WatchingTest < ApplicationSystemTestCase
   setup do
     @pat = create(:user)
     @group = create(:group, members: [ @pat ])
-    @movie_night = create(:play_list, group: @group, name: "Movie night")
+    @movie_night = create(:list, group: @group, name: "Movie night")
   end
 
   test "watching a season episode by episode until it's finished" do
@@ -14,7 +14,7 @@ class WatchingTest < ApplicationSystemTestCase
     @movie_night.add(season)
     sign_in_as @pat
 
-    visit group_play_list_path(@group, @movie_night)
+    visit group_list_path(@group, @movie_night)
     click_on "The Bear: Season 3"
     detail_path = current_path
     click_on "Watch"
@@ -24,7 +24,7 @@ class WatchingTest < ApplicationSystemTestCase
       click_on "Record watch"
     end
     assert_text "Watched episode 1 of The Bear: Season 3."
-    assert_current_path group_play_list_path(@group, @movie_night)
+    assert_current_path group_list_path(@group, @movie_night)
     assert_text "Next: 2. Next"
 
     click_on "The Bear: Season 3"
@@ -34,23 +34,23 @@ class WatchingTest < ApplicationSystemTestCase
 
     assert_text "Finished The Bear: Season 3."
     assert_no_text "Next: 2. Next"
-    assert_text "Nothing on this playlist yet."
+    assert_text "Nothing on this list yet."
   end
 
-  test "watching a movie checks it off on every playlist it's on" do
+  test "watching a movie checks it off on every list it's on" do
     movie = create(:movie, name: "Arrival")
-    anime = create(:play_list, group: @group, name: "Anime")
+    anime = create(:list, group: @group, name: "Anime")
     @movie_night.add(movie)
     anime.add(movie)
     sign_in_as @pat
 
-    visit group_play_list_path(@group, @movie_night)
+    visit group_list_path(@group, @movie_night)
     click_on "Arrival"
     click_on "Watch"
     within("turbo-frame#watch") { click_on "Record watch" }
 
     assert_text "Watched Arrival. Also recorded on Anime."
-    visit group_play_list_path(@group, anime)
+    visit group_list_path(@group, anime)
     assert_no_text "Arrival"
   end
 end

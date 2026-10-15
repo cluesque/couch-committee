@@ -24,7 +24,7 @@ and behavior rules this implements.
 - **Done when**: a real user can sign in with Google, see a signed-in shell, and sign out.
 
 ## Phase 2 — Core domain models
-- Migrations + models for `Group`, `GroupMembership`, `Title`, `Episode`, `PlayList`, `ListEntry`,
+- Migrations + models for `Group`, `GroupMembership`, `Title`, `Episode`, `List`, `ListEntry`,
   `Viewing`, per `docs/data-model.md` (associations, enums, validations).
 - Factories for all of the above.
 - Model tests for associations/validations (behavior/state-machine logic comes in Phase 7, once
@@ -54,23 +54,23 @@ and behavior rules this implements.
 - **Done when**: a member can manually create a movie or a season with its episodes. (No metadata
   lookup/autocomplete — explicitly out of scope, see architecture doc §6.)
 
-## Phase 5 — PlayLists and the default (active) view
-- `Groups::PlayListsController` (show, new/create, edit/update). The group's own page lists its
-  playlists, so there's no separate playlist index.
-- `Groups::PlayLists::ListEntriesController#create` — add an existing Title to a playlist as a new
+## Phase 5 — Lists and the default (active) view
+- `Groups::ListsController` (show, new/create, edit/update). The group's own page lists its
+  lists, so there's no separate list index.
+- `Groups::Lists::ListEntriesController#create` — add an existing Title to a list as a new
   `ListEntry` (`state: not_started`, `sequence` appended at the end); enforce the "no second active
-  entry for the same (playlist, title)" rule. Titles are a shared, growing catalog (data model
+  entry for the same (list, title)" rule. Titles are a shared, growing catalog (data model
   doc), so choosing one should be a search by name rather than a pick-list of every Title.
-- Default playlist view: active entries (`not_started`/`in_progress`) ordered by `sequence`,
+- Default list view: active entries (`not_started`/`in_progress`) ordered by `sequence`,
   showing title, next episode (derived — see data model), last viewing (derived), and the
   "upcoming season" badge (architecture doc §5).
-- System tests: add a movie and a season to a playlist, see them in the default view with correct
+- System tests: add a movie and a season to a list, see them in the default view with correct
   derived fields.
-- **Done when**: a playlist's default view matches the user stories for display and ordering.
+- **Done when**: a list's default view matches the user stories for display and ordering.
 
 ## Phase 6 — Drag-and-drop reorder
 - Stimulus controller wrapping SortableJS (imported via importmap); drag handle per row.
-- `Groups::PlayLists::ListEntriesController#reorder` — accepts the new ordering, updates `sequence` in a
+- `Groups::Lists::ListEntriesController#reorder` — accepts the new ordering, updates `sequence` in a
   transaction.
 - System test exercising an actual drag (or a direct POST test plus a lighter JS smoke test,
   depending on how reliable drag simulation proves in CI).
@@ -81,25 +81,25 @@ and behavior rules this implements.
   "Watch" button.
 - Watch form: defaults to the next unwatched Episode and today's date, both editable.
 - `WatchRecorder` service (architecture doc §2): given (Title, Episode, Group, date) —
-  1. finds every active `ListEntry` for that Title across the Group's PlayLists,
+  1. finds every active `ListEntry` for that Title across the Group's Lists,
   2. creates a `Viewing` per entry (data model §"Recording a watch"),
   3. recomputes each entry's `state` (`not_started` → `in_progress` → `watched`).
-- `Groups::PlayLists::ListEntries::ViewingsController#create` calls `WatchRecorder` and redirects
-  back to the playlist, which re-renders with every affected entry's new state.
+- `Groups::Lists::ListEntries::ViewingsController#create` calls `WatchRecorder` and redirects
+  back to the list, which re-renders with every affected entry's new state.
 - This is the highest-value area for test coverage — unit-test `WatchRecorder` directly across:
-  movie watch, mid-season episode, season-completing episode, and the multi-playlist fan-out.
-- **Done when**: all of the watch-related user stories (checks off across playlists, advances next
+  movie watch, mid-season episode, season-completing episode, and the multi-list fan-out.
+- **Done when**: all of the watch-related user stories (checks off across lists, advances next
   episode, removes a completed season/movie from the default view) pass.
 
 ## Phase 8 — Historical view & cancel
-- Historical playlist view: a flat log, newest first, with one row per `Viewing` (each episode of a
+- Historical list view: a flat log, newest first, with one row per `Viewing` (each episode of a
   series, including seasons still in progress) and one per cancelled entry with its note.
 - Cancel action on an active `ListEntry` (sets `cancelled_at`/`cancel_note`).
 - System tests covering cancel-with-note and its appearance in the historical view.
 - **Done when**: the historical view story and the cancel-with-note story both pass.
 
 ## Phase 9 — Rewatch
-- Allow creating a new `ListEntry` for a (playlist, title) pair once the existing one is
+- Allow creating a new `ListEntry` for a (list, title) pair once the existing one is
   `watched`/`cancelled` — reuses the Phase 5 creation path, since the guard is already "no active
   entry exists." A finished entry's page (reached from History) has a "Watch again" button for
   this; re-adding through search works too.
@@ -111,7 +111,7 @@ and behavior rules this implements.
 ## Phase 10 — Polish pass
 - Mobile responsive pass on every view built so far (this was supposed to be considered
   throughout, but do a dedicated pass once everything exists).
-- Empty states (no groups yet, empty playlist, etc.), flash messages, consistent error handling for
+- Empty states (no groups yet, empty list, etc.), flash messages, consistent error handling for
   the membership/ownership guards.
 - Full Rubocop/Brakeman clean pass; fill any system-test gaps found during the polish pass.
 - **Done when**: CI is green end-to-end and the app is usable top-to-bottom on a phone-width

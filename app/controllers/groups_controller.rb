@@ -1,12 +1,12 @@
 class GroupsController < ApplicationController
   def index
     @groups = Current.user.groups.order(:name)
-    @play_lists = Current.user.play_lists.includes(:group).order(:name)
+    @lists = Current.user.lists.includes(:group).order(:name)
   end
 
   def show
     @group = Current.user.groups.find(params[:id])
-    @play_lists = @group.play_lists.order(:name)
+    @lists = @group.lists.order(:name)
     @memberships = @group.group_memberships.includes(:user).sort_by { |membership| membership.user.name.downcase }
   end
 

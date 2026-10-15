@@ -1,5 +1,5 @@
 # Records that a group watched an episode on a date. The watch counts toward every active entry for
-# that episode's title across all of the group's playlists: each gets its own Viewing, then moves to
+# that episode's title across all of the group's lists: each gets its own Viewing, then moves to
 # in_progress, or to watched once every episode of the title has a Viewing on that entry.
 class WatchRecorder
   def self.call(...)
@@ -12,7 +12,7 @@ class WatchRecorder
 
   # Returns the entries the watch was recorded against.
   def call
-    entries = ListEntry.active.where(title_id: @episode.title_id, play_list: @group.play_lists).to_a
+    entries = ListEntry.active.where(title_id: @episode.title_id, list: @group.lists).to_a
 
     ListEntry.transaction do
       entries.each do |entry|

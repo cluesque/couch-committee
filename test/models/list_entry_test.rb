@@ -55,31 +55,31 @@ class ListEntryTest < ActiveSupport::TestCase
     assert_equal [ true, true, false, false ], entries.values.map(&:active?)
   end
 
-  test "a title can only be active once per playlist" do
+  test "a title can only be active once per list" do
     existing = create(:list_entry, state: :in_progress)
 
-    duplicate = build(:list_entry, play_list: existing.play_list, title: existing.title)
+    duplicate = build(:list_entry, list: existing.list, title: existing.title)
 
     assert_not duplicate.valid?
-    assert_includes duplicate.errors[:title], "is already on this playlist"
+    assert_includes duplicate.errors[:title], "is already on this list"
   end
 
   test "the database also refuses a second active entry" do
     existing = create(:list_entry)
-    duplicate = build(:list_entry, play_list: existing.play_list, title: existing.title)
+    duplicate = build(:list_entry, list: existing.list, title: existing.title)
 
     assert_raises(ActiveRecord::RecordNotUnique) { duplicate.save(validate: false) }
   end
 
   test "a title can be re-added once its earlier entry is watched or cancelled" do
-    play_list, title = create(:play_list), create(:movie)
-    create(:list_entry, play_list: play_list, title: title, state: :watched)
-    create(:list_entry, :cancelled, play_list: play_list, title: title)
+    list, title = create(:list), create(:movie)
+    create(:list_entry, list: list, title: title, state: :watched)
+    create(:list_entry, :cancelled, list: list, title: title)
 
-    assert build(:list_entry, play_list: play_list, title: title).valid?
+    assert build(:list_entry, list: list, title: title).valid?
   end
 
-  test "the same title can be active on different playlists" do
+  test "the same title can be active on different lists" do
     existing = create(:list_entry)
 
     assert build(:list_entry, title: existing.title).valid?
@@ -101,7 +101,7 @@ class ListEntryTest < ActiveSupport::TestCase
     earlier = create(:list_entry, title: season, state: :watched)
     season.episodes.each { |episode| view(earlier, episode) }
 
-    rewatch = create(:list_entry, play_list: earlier.play_list, title: season)
+    rewatch = create(:list_entry, list: earlier.list, title: season)
 
     assert_equal season.episodes.first, rewatch.next_episode
     assert_nil rewatch.last_viewed_on
