@@ -34,7 +34,10 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
 end
 
 # Has to follow the class above: loading ActionDispatch::SystemTestCase sets Capybara.app itself.
+FAKE_TMDB_IMAGE = Base64.decode64("R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==") # 1x1 gif
+
 Capybara.app = Rack::Builder.app do
   map("/fake_google/authorize") { run FakeGoogle::ConsentScreen }
+  map(FakeTmdb::IMAGE_BASE_URL.chomp("/")) { run ->(_env) { [ 200, { "content-type" => "image/gif" }, [ FAKE_TMDB_IMAGE ] ] } }
   run Rails.application
 end

@@ -53,5 +53,13 @@
       <%= render "layouts/flash" %>
       <%= yield %>
     </main>
+
+    <%# TMDB's terms require crediting it, with its logo, wherever its data appears. %>
+    <footer class="container small text-body-secondary border-top mt-5 py-3 d-flex align-items-center gap-3">
+      <%= link_to "https://www.themoviedb.org/", class: "flex-shrink-0", target: "_blank", rel: "noopener" do %>
+        <%= image_tag "tmdb-logo.svg", alt: "TMDB", height: 12, class: "d-block" %>
+      <% end %>
+      <span>Title data from TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.</span>
+    </footer>
   </body>
 </html>

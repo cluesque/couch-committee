@@ -50,6 +50,20 @@ to run the app.
 
 Anyone with a Google account can sign in; what they can see is limited by group membership.
 
+### TMDB credentials
+
+Titles (movies, shows, seasons, episodes) come from [TMDB](https://www.themoviedb.org/). Running
+the app needs a TMDB "API Read Access Token" (free with a TMDB account, under Settings → API).
+Tests don't need one: they answer TMDB's requests from recorded responses in
+`test/fixtures/files/tmdb/`. Add the token with `bin/rails credentials:edit`:
+
+```yaml
+tmdb:
+  api_read_access_token: eyJhbGciOi...
+```
+
+Production reads it from the same credentials file, so it needs no extra Fly secret.
+
 ## Deploying to Fly.io
 
 The app runs on [Fly.io](https://fly.io) as a single machine, with its SQLite database on a

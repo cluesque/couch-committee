@@ -1,0 +1,79 @@
+{
+  "id": 136315,
+  "name": "The Bear",
+  "overview": "Carmy, a young fine-dining chef, comes home to Chicago to run his family sandwich shop. As he fights to transform the shop and himself, he works alongside a rough-around-the-edges crew that ultimately reveal themselves as his chosen family.",
+  "genres": [
+    {
+      "id": 18,
+      "name": "Drama"
+    },
+    {
+      "id": 35,
+      "name": "Comedy"
+    }
+  ],
+  "networks": [
+    {
+      "id": 453,
+      "name": "Hulu",
+      "logo_path": "/pqUTCleNUiTLAVlelGxUgWn1ELh.png"
+    }
+  ],
+  "poster_path": "/eKfVzzEazSIjJMrw9ADa2x8ksLz.jpg",
+  "backdrop_path": "/aJtG4txtmiRHwAAqENQHZvBs6kY.jpg",
+  "first_air_date": "2022-06-23",
+  "seasons": [
+    {
+      "season_number": 1,
+      "name": "Season 1",
+      "episode_count": 8,
+      "air_date": "2022-06-23",
+      "poster_path": "/i6sJI3O1874FBdDtM0jn6fpPE0x.jpg",
+      "overview": ""
+    },
+    {
+      "season_number": 2,
+      "name": "Season 2",
+      "episode_count": 10,
+      "air_date": "2023-06-22",
+      "poster_path": "/3MVHF64rlvH1eofKefIoazXwOK0.jpg",
+      "overview": "In season two, Carmen 'Carmy' Berzatto, Sydney Adamu and Richard 'Richie' Jerimovich work to transform their grimy sandwich joint into a next-level spot. As they strip the restaurant down to its bones, the crew undertakes transformational journeys of their own, each forced to confront the past and reckon with who they want to be in the future."
+    },
+    {
+      "season_number": 3,
+      "name": "Season 3",
+      "episode_count": 10,
+      "air_date": "2024-06-26",
+      "poster_path": "/kmKOXOC6txne2tXjcnZPHNtsY9E.jpg",
+      "overview": "In season three, Carmen 'Carmy' Berzatto, Sydney Adamu, and Richard 'Richie' Jerimovich do what it takes to elevate The Bear, their beef stand turned fine dining establishment, to the highest level, all while doing their best just to stay in business. Our chefs have learned that every second counts, but this season we'll find out if they have what it takes to make it to tomorrow."
+    },
+    {
+      "season_number": 4,
+      "name": "Season 4",
+      "episode_count": 10,
+      "air_date": "2025-06-25",
+      "poster_path": "/eKfVzzEazSIjJMrw9ADa2x8ksLz.jpg",
+      "overview": "Season four finds Carmen \"Carmy\" Berzatto, Sydney Adamu and Richard \"Richie\" Jerimovich pushing forward, determined not only to survive, but also to take The Bear to the next level. With new challenges around every corner, the team must adapt, adjust and overcome. This season, the pursuit of excellence isn't just about getting better - it's about deciding what's worth holding on to."
+    },
+    {
+      "season_number": 5,
+      "name": "Season 5",
+      "episode_count": 8,
+      "air_date": "2026-06-25",
+      "poster_path": "/slheIKz2Xxw6ISUhRqlaT7q1Tpn.jpg",
+      "overview": "The fifth and final season picks up the morning after Sydney, Richie and Natalie 'Sugar' discover that Carmy has quit the food industry, leaving the restaurant to them. With no money, the threat of a sale and a torrential storm in their way, the new partners must band together with the rest of the team to achieve one last service, hoping they'll finally earn a Michelin star. Ultimately, they learn that what makes a restaurant \"perfect\" might not be the food, but the people."
+    }
+  ],
+  "external_ids": {
+    "imdb_id": "tt14452776"
+  },
+  "content_ratings": {
+    "results": [
+      {
+        "descriptors": [],
+        "iso_3166_1": "US",
+        "rating": "TV-MA"
+      }
+    ]
+  }
+}
