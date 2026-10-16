@@ -67,7 +67,7 @@ class Groups::Lists::ListEntriesControllerTest < ActionDispatch::IntegrationTest
     get new_group_list_list_entry_path(@group, @list, q: "baby reindeer")
 
     assert_select "ul:first-of-type li:first-child", text: /On this list/
-    assert_select "ul:first-of-type li:first-child button", count: 0
+    assert_select "ul:first-of-type li:first-child button:not(.result-details)", count: 0
   end
 
   test "nothing is listed until there's a search" do
@@ -107,7 +107,7 @@ class Groups::Lists::ListEntriesControllerTest < ActionDispatch::IntegrationTest
     get new_group_list_list_entry_path(@group, @list, q: "arrival")
 
     assert_select "ul:first-of-type li:first-child", text: /On this list/
-    assert_select "ul:first-of-type li:first-child button", count: 0
+    assert_select "ul:first-of-type li:first-child button:not(.result-details)", count: 0
   end
 
   test "when TMDB can't be reached, the search says so" do
@@ -138,7 +138,7 @@ class Groups::Lists::ListEntriesControllerTest < ActionDispatch::IntegrationTest
     get seasons_group_list_list_entries_path(@group, @list, tmdb_show_id: 136315)
 
     assert_select "li:first-child", text: /On this list/
-    assert_select "li:first-child button", count: 0
+    assert_select "li:first-child button:not(.result-details)", count: 0
   end
 
   test "when TMDB can't be reached, the seasons page sends you back to search" do

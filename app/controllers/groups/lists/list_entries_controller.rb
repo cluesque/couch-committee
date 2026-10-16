@@ -2,6 +2,7 @@ class Groups::Lists::ListEntriesController < ApplicationController
   include SetCurrentGroup
 
   TMDB_UNAVAILABLE = "Couldn't reach TMDB just now. Please try again."
+  PREVIEW_PARAMS = %i[ tmdb_movie_id tmdb_show_id season q recommendation from ].freeze
 
   before_action :set_list
 
@@ -43,6 +44,26 @@ class Groups::Lists::ListEntriesController < ApplicationController
     @active_title_ids = @list.list_entries.active.pluck(:title_id)
   rescue Tmdb::Error
     redirect_to new_group_list_list_entry_path(Current.group, @list, q: @query), alert: TMDB_UNAVAILABLE
+  end
+
+  # A TMDB movie or season, shown as its list entry would be, to look over before adding. Search
+  # and season-page buttons POST here (bringing any recommendation typed there) and are redirected.
+  def preview
+    if request.post?
+      return redirect_to preview_group_list_list_entries_path(Current.group, @list,
+        **params.slice(*PREVIEW_PARAMS).permit!.to_h.compact_blank.symbolize_keys)
+    end
+
+    @query = params[:q]
+    @title = if params[:tmdb_movie_id].present?
+      importer.build_movie(params[:tmdb_movie_id])
+    else
+      importer.build_season(params.expect(:tmdb_show_id), params.expect(:season))
+    end
+    @on_list = @title.persisted? && @list.list_entries.active.exists?(title: @title)
+    @providers = Tmdb::WatchProviders.for(@title, client: tmdb)
+  rescue Tmdb::Error
+    redirect_to search_again_path, alert: TMDB_UNAVAILABLE
   end
 
   # Adds a TMDB movie, a season of a TMDB show, or a title already in the catalog. TMDB titles are

@@ -2,13 +2,23 @@ module Tmdb
   # Brings a TMDB movie, or one season of a TMDB show, into the catalog as a Title with its
   # Episodes. Importing something already in the catalog refreshes it in place. Passing `into:` a
   # Title entered by hand links it to TMDB instead: its Episodes are matched by number, so the
-  # Viewings recorded against them stay put.
+  # Viewings recorded against them stay put. The build_ methods do everything but save, for
+  # previewing a title before it's added to a list.
   class Importer
     def initialize(client: Client.new)
       @client = client
     end
 
     def import_movie(tmdb_id, into: nil)
+      build_movie(tmdb_id, into: into).tap(&:save!)
+    end
+
+    def import_season(tmdb_show_id, season_number, into: nil)
+      build_season(tmdb_show_id, season_number, into: into).tap(&:save!)
+    end
+
+    # The catalog's Title for this movie (or a new one), filled in from TMDB but not saved.
+    def build_movie(tmdb_id, into: nil)
       movie = @client.movie(tmdb_id)
       title = into || Title.find_or_initialize_by(kind: :movie, tmdb_id: tmdb_id)
       title.episodes.reset if title.persisted? # match episodes as saved, not as the caller had them loaded
@@ -27,13 +37,12 @@ module Tmdb
       )
       episode_numbered(title, 1).assign_attributes(available_on: movie["release_date"].presence,
         runtime_minutes: title.runtime_minutes)
-
-      title.save!
       title
     end
 
-    # A season with no overview or poster of its own takes the show's.
-    def import_season(tmdb_show_id, season_number, into: nil)
+    # The same for one season of a show. A season with no overview or poster of its own takes the
+    # show's.
+    def build_season(tmdb_show_id, season_number, into: nil)
       show = @client.tv(tmdb_show_id)
       season = @client.season(tmdb_show_id, season_number)
       title = into || Title.find_or_initialize_by(kind: :series, tmdb_id: tmdb_show_id, season: season_number)
@@ -53,8 +62,6 @@ module Tmdb
         tmdb_synced_at: Time.current
       )
       sync_episodes(title, season["episodes"])
-
-      title.save!
       title
     end
 

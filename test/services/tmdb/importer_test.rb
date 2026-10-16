@@ -132,6 +132,23 @@ class Tmdb::ImporterTest < ActiveSupport::TestCase
     assert_equal Date.new(2022, 6, 23), season.episodes.first.available_on
   end
 
+  test "building fills in a title from TMDB without saving anything" do
+    assert_no_difference [ "Title.count", "Episode.count" ] do
+      movie = @importer.build_movie(329865)
+      assert movie.new_record?
+      assert_equal [ "Arrival", "PG-13" ], movie.values_at(:name, :rating)
+
+      season = @importer.build_season(136315, 1)
+      assert_equal 8, season.episodes.size
+    end
+  end
+
+  test "building something already in the catalog uses the catalog's title" do
+    arrival = @importer.import_movie(329865)
+
+    assert_equal arrival, @importer.build_movie(329865)
+  end
+
   test "a failed import creates nothing" do
     assert_no_difference "Title.count" do
       assert_raises(Tmdb::Error) { @importer.import_season(136315, 99) }
