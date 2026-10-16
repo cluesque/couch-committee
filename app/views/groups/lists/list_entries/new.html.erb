@@ -33,7 +33,14 @@
             <% end %>
           </span>
 
-          <% if result.kind == "series" %>
+          <% only_season = @only_seasons[result.tmdb_id] if result.kind == "series" %>
+          <% if only_season && @active_title_ids.include?(@seasons_in_catalog[[ result.tmdb_id, only_season ]]&.id) %>
+            <span class="small text-body-secondary text-nowrap">On this list</span>
+          <% elsif only_season %>
+            <%= button_tag "Add", form: "add_title", name: "tmdb_show_id", value: result.tmdb_id,
+                  formaction: group_list_list_entries_path(Current.group, @list, season: only_season),
+                  class: "btn btn-sm btn-outline-primary", "aria-label": "Add #{result.name}" %>
+          <% elsif result.kind == "series" %>
             <%= button_tag "Seasons ›", form: "add_title", name: "tmdb_show_id", value: result.tmdb_id,
                   formaction: seasons_group_list_list_entries_path(Current.group, @list),
                   class: "btn btn-sm btn-outline-primary text-nowrap", "aria-label": "Seasons of #{result.name}" %>

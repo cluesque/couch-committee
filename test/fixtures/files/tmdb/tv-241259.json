@@ -1,0 +1,43 @@
+{
+  "id": 241259,
+  "name": "Baby Reindeer",
+  "overview": "When a struggling comedian shows one act of kindness to a vulnerable woman, it sparks a suffocating obsession which threatens to wreck both their lives.",
+  "genres": [
+    {
+      "id": 18,
+      "name": "Drama"
+    }
+  ],
+  "networks": [
+    {
+      "id": 213,
+      "name": "Netflix",
+      "logo_path": "/wwemzKWzjKYJFfCeiB57q3r4Bcm.png"
+    }
+  ],
+  "poster_path": "/tN9OcbkAOPwHSr1sgMornZtQZBx.jpg",
+  "backdrop_path": "/2qLYxCyxf4fim0X5OqM5FjZqWXu.jpg",
+  "first_air_date": "2024-04-11",
+  "seasons": [
+    {
+      "season_number": 1,
+      "name": "Limited Series",
+      "episode_count": 7,
+      "air_date": "2024-04-11",
+      "poster_path": "/jNaaG6MbOqd8ma6WnCQ6ZafE09x.jpg",
+      "overview": ""
+    }
+  ],
+  "external_ids": {
+    "imdb_id": "tt13649112"
+  },
+  "content_ratings": {
+    "results": [
+      {
+        "descriptors": [],
+        "iso_3166_1": "US",
+        "rating": "TV-MA"
+      }
+    ]
+  }
+}

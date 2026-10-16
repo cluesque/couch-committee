@@ -20,6 +20,8 @@ class Groups::Lists::ListEntriesController < ApplicationController
     @results = tmdb.search(@query).first(20)
     movie_ids = @results.select { |result| result.kind == "movie" }.map(&:tmdb_id)
     @movies_in_catalog = Title.movie.where(tmdb_id: movie_ids).index_by(&:tmdb_id)
+    @only_seasons = only_seasons(@results.select { |result| result.kind == "series" })
+    @seasons_in_catalog = Title.series.where(tmdb_id: @only_seasons.keys).index_by { |title| [ title.tmdb_id, title.season ] }
   rescue Tmdb::Error
     @results = []
     @tmdb_unavailable = true
@@ -35,7 +37,7 @@ class Groups::Lists::ListEntriesController < ApplicationController
     end
 
     @query = params[:q]
-    @show = tmdb.tv(params.expect(:tmdb_show_id))
+    @show = show_details(params.expect(:tmdb_show_id))
     @seasons = @show["seasons"].reject { |season| season["season_number"].to_i.zero? }
     @seasons_in_catalog = Title.series.where(tmdb_id: @show["id"]).index_by(&:season)
     @active_title_ids = @list.list_entries.active.pluck(:title_id)
@@ -81,6 +83,28 @@ class Groups::Lists::ListEntriesController < ApplicationController
 
     def tmdb
       @tmdb ||= Tmdb::Client.new
+    end
+
+    # Search results don't say how many seasons a show has, so this asks TMDB about each show,
+    # briefly cached. A show TMDB can't tell us about just keeps its "Seasons ›" button.
+    def show_details(tmdb_show_id)
+      Rails.cache.fetch([ "tmdb-tv", tmdb_show_id.to_i ], expires_in: 1.hour) { tmdb.tv(tmdb_show_id) }
+    end
+
+    # For shows with exactly one season (not counting TMDB's "Season 0" specials), that season's
+    # number, by show ID. Those can be added straight from the results, without the season picker.
+    # The lookups run concurrently: one at a time, a search full of shows took seconds.
+    def only_seasons(shows)
+      lookups = shows.map do |show|
+        Thread.new do
+          numbers = show_details(show.tmdb_id)["seasons"].map { |season| season["season_number"].to_i }.reject(&:zero?)
+          [ show.tmdb_id, numbers.first ] if numbers.one?
+        rescue Tmdb::Error
+          nil
+        end
+      end
+
+      ActiveSupport::Dependencies.interlock.permit_concurrent_loads { lookups.filter_map(&:value) }.to_h
     end
 
     # Back to the search, keeping what was typed.

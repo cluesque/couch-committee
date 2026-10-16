@@ -1,0 +1,65 @@
+{
+  "season_number": 1,
+  "name": "Limited Series",
+  "overview": "",
+  "poster_path": "/jNaaG6MbOqd8ma6WnCQ6ZafE09x.jpg",
+  "air_date": "2024-04-11",
+  "episodes": [
+    {
+      "episode_number": 1,
+      "name": "Episode 1",
+      "air_date": "2024-04-11",
+      "overview": "Struggling comedian and barman Donny meets a lonely woman claiming to be a lawyer. He offers her a cup of tea on the house, and she's instantly obsessed.",
+      "still_path": "/cxZFsDNJYuXok0tbBr6wGRcHD8D.jpg",
+      "runtime": 33
+    },
+    {
+      "episode_number": 2,
+      "name": "Episode 2",
+      "air_date": "2024-04-11",
+      "overview": "On a date with Teri, Donny opens up about his stalker. Trying to be kind, he gives Martha false hope, which only encourages her further.",
+      "still_path": "/dYsm3wxygwwb6mSBvgaEIgSxN6O.jpg",
+      "runtime": 28
+    },
+    {
+      "episode_number": 3,
+      "name": "Episode 3",
+      "air_date": "2024-04-11",
+      "overview": "Donny takes some time off from the pub and tries to make amends with Teri. But no matter how much he avoids Martha, he can't escape her for long.",
+      "still_path": "/39YGnnlZisihAO5yJzo31StWWLm.jpg",
+      "runtime": 39
+    },
+    {
+      "episode_number": 4,
+      "name": "Episode 4",
+      "air_date": "2024-04-11",
+      "overview": "As Donny reports Martha to the police, it triggers the memory of a traumatic experience he had with a man he met at the Edinburgh Fringe years before.",
+      "still_path": "/jZBaF3biDBOxk7SzdsJF9EURWoq.jpg",
+      "runtime": 46
+    },
+    {
+      "episode_number": 5,
+      "name": "Episode 5",
+      "air_date": "2024-04-11",
+      "overview": "Liz learns the truth about Martha and asks Donny to move out. It's a fresh start for him and Teri, but his memories stop them from getting truly close.",
+      "still_path": "/juiYyuLtcaik792whB7jZYzWuAC.jpg",
+      "runtime": 29
+    },
+    {
+      "episode_number": 6,
+      "name": "Episode 6",
+      "air_date": "2024-04-11",
+      "overview": "Martha finds new ways to get to Donny: by hurting the people he loves. With the police still failing to intervene, he takes matters into his own hands.",
+      "still_path": "/pqQjoBNbE3VAZ6q3280zciI1Kmd.jpg",
+      "runtime": 35
+    },
+    {
+      "episode_number": 7,
+      "name": "Episode 7",
+      "air_date": "2024-04-11",
+      "overview": "For the first time in his career, Donny feels like he's going somewhere. Until he makes one careless mistake that lets Martha explode back into his life.",
+      "still_path": "/db23JLHDxQ4HSqlsuKFm3YWhlSA.jpg",
+      "runtime": 32
+    }
+  ]
+}
