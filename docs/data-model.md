@@ -36,6 +36,15 @@ A User is a member of a given Group at most once.
   single-table inheritance)
 - `name`
 - `season` — positive integer; required for a series, absent for a movie
+- `tmdb_id` — optional; a movie's TMDB movie ID, or a season's TMDB *show* ID
+- `imdb_id`, `overview`, `poster_path`, `backdrop_path`, `genres` (comma-separated names),
+  `runtime_minutes` (movies), `rating` (US certification or TV rating), `network` (series),
+  `tmdb_synced_at` — all optional, filled in by importing from TMDB (`Tmdb::Importer`)
+
+A TMDB movie is in the catalog at most once, and so is each season of a TMDB show. Two partial
+unique indexes enforce this: one on `tmdb_id` for movies, and one on `(tmdb_id, season)` for
+series. A single index on `(kind, tmdb_id, season)` wouldn't do, because a movie's `season` is
+NULL and unique indexes treat NULLs as distinct. Hand-entered Titles have no `tmdb_id`.
 
 A "season" is not a separate model. A season of a series is its own `Title` row (`kind: :series`,
 `season` set to that season's number). A movie is a `Title` with exactly one `Episode`.
@@ -50,7 +59,10 @@ Title to a List should be a search, not a pick-list of every Title.
 - `name` — optional
 - `number` — positive integer, unique within its Title
 - `available_on` — date, optional (unknown until announced)
+- `overview`, `still_path` (an episode image), `runtime_minutes` — optional, from TMDB
 - `belongs_to :title`
+
+Re-importing a season from TMDB removes episodes TMDB no longer lists, unless they have Viewings.
 
 A movie's `Title` has exactly one `Episode`. This keeps `Viewing` and `ListEntry` uniform across
 movies and seasons — everything watchable is an `Episode`, everything listable is a `Title`.

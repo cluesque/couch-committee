@@ -109,8 +109,11 @@ database-agnostic rule in `docs/architecture.md`.
   and each can be linked to its TMDB match later.
 - **One Title per season**, as in the data model today. Picking a TV show leads to a choice of its
   seasons. TMDB's "Season 0" (specials) is left out for now.
-- **Imports are idempotent.** A Title is identified by `(kind, tmdb_id, season)`, enforced by a
-  partial unique index, so importing again refreshes the existing Title instead of duplicating it.
+- **Imports are idempotent.** A Title is identified by `(kind, tmdb_id, season)`, so importing
+  again refreshes the existing Title instead of duplicating it. The database enforces this with
+  two partial unique indexes (movies on `tmdb_id`, seasons on `(tmdb_id, season)`). A single
+  three-column index would let a movie in twice, since unique indexes treat its NULL `season` as
+  distinct.
   A refresh never deletes an episode that has viewings.
 - **Keeping upcoming seasons current** starts with a "Refresh from TMDB" button. A scheduled job
   would need a job runner, and none is installed yet; it's worth adding only if stale air dates
