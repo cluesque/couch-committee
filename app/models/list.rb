@@ -6,8 +6,8 @@ class List < ApplicationRecord
   validates :name, presence: true
 
   # Returns the new entry, unsaved with errors if the title is already active here.
-  def add(title)
-    list_entries.create(title: title, sequence: list_entries.maximum(:sequence).to_i + 1)
+  def add(title, recommendation: nil)
+    list_entries.create(title: title, recommendation: recommendation, sequence: list_entries.maximum(:sequence).to_i + 1)
   end
 
   # Every viewing on this list, whether or not its entry is finished, plus each cancelled entry,

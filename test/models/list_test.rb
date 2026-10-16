@@ -24,6 +24,12 @@ class ListTest < ActiveSupport::TestCase
     assert first.not_started?
   end
 
+  test "adding a title can carry a recommendation" do
+    entry = create(:list).add(create(:movie), recommendation: "Pat loved it")
+
+    assert_equal "Pat loved it", entry.reload.recommendation
+  end
+
   test "adding a title that's already active returns the invalid entry" do
     list = create(:list)
     movie = create(:movie)

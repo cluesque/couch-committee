@@ -31,6 +31,9 @@
         <% end %>
       </div>
     <% end %>
+    <% if list_entry.recommendation %>
+      <div class="small fst-italic ps-4 recommendation">“<%= list_entry.recommendation %>”</div>
+    <% end %>
     </div>
   <% end %>
 </li>

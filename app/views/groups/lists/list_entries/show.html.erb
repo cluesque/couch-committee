@@ -17,6 +17,8 @@
   <% end %>
 </p>
 
+<%= render "recommendation", entry: @entry %>
+
 <% if @entry.cancelled? %>
   <div class="alert alert-secondary">
     Cancelled <%= l @entry.cancelled_at.to_date, format: :long %><% if @entry.cancel_note %>: “<%= @entry.cancel_note %>”<% end %>

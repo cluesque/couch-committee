@@ -9,8 +9,12 @@ class ListEntry < ApplicationRecord
 
   scope :active, -> { where(state: ACTIVE_STATES) }
 
+  # Why it's on the list, in the words of whoever added it. Optional.
+  normalizes :recommendation, with: ->(text) { text.squish.presence }
+
   validates :sequence, numericality: { only_integer: true }
   validates :cancelled_at, presence: true, if: :cancelled?
+  validates :recommendation, length: { maximum: 500 }
   validates :title, uniqueness: { scope: :list, conditions: -> { active }, message: "is already on this list" },
     if: :active?
 

@@ -192,5 +192,6 @@ phases are in `docs/title-metadata.md`.
 
 ## Explicitly deferred (per requirements doc + this conversation)
 - User avatars.
-- The `Recommendation` model (suggester + reason) — `ListEntry` covers its MVP duties for now.
+- Recording who recommended a title. The reason is covered by `ListEntry#recommendation` (added
+  2026-10-16), entered when adding a title or later.
 - Deployment target selection.

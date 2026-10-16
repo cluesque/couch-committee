@@ -26,8 +26,14 @@ class Groups::Lists::ListEntriesController < ApplicationController
     flash.now[:alert] = TMDB_UNAVAILABLE
   end
 
-  # A TV show's seasons, to pick one to add.
+  # A TV show's seasons, to pick one to add. The search page's "Seasons ›" buttons POST here (so a
+  # recommendation typed there comes along) and are redirected to the GET.
   def seasons
+    if request.post?
+      return redirect_to seasons_group_list_list_entries_path(Current.group, @list,
+        tmdb_show_id: params.expect(:tmdb_show_id), q: params[:q], recommendation: params[:recommendation].presence)
+    end
+
     @query = params[:q]
     @show = tmdb.tv(params.expect(:tmdb_show_id))
     @seasons = @show["seasons"].reject { |season| season["season_number"].to_i.zero? }
@@ -41,17 +47,16 @@ class Groups::Lists::ListEntriesController < ApplicationController
   # imported (or refreshed, if they're already in the catalog) on the way.
   def create
     title = title_to_add
-    entry = @list.add(title)
+    entry = @list.add(title, recommendation: params[:recommendation])
 
     if entry.persisted?
       again = " again" if @list.list_entries.where(title: title).where.not(id: entry.id).exists?
       redirect_to [ Current.group, @list ], notice: "Added #{title.full_name}#{again}."
     else
-      redirect_to new_group_list_list_entry_path(Current.group, @list, q: params[:q]),
-        alert: "#{title.full_name} #{entry.errors[:title].to_sentence}."
+      redirect_to search_again_path, alert: refusal(title, entry)
     end
   rescue Tmdb::Error, ActiveRecord::RecordInvalid
-    redirect_to new_group_list_list_entry_path(Current.group, @list, q: params[:q]), alert: TMDB_UNAVAILABLE
+    redirect_to search_again_path, alert: TMDB_UNAVAILABLE
   end
 
   def reorder
@@ -76,6 +81,19 @@ class Groups::Lists::ListEntriesController < ApplicationController
 
     def tmdb
       @tmdb ||= Tmdb::Client.new
+    end
+
+    # Back to the search, keeping what was typed.
+    def search_again_path
+      new_group_list_list_entry_path(Current.group, @list, q: params[:q], recommendation: params[:recommendation].presence)
+    end
+
+    def refusal(title, entry)
+      if entry.errors.include?(:title)
+        "#{title.full_name} #{entry.errors[:title].to_sentence}."
+      else
+        "Couldn't add #{title.full_name}: #{entry.errors.full_messages.to_sentence}."
+      end
     end
 
     def importer

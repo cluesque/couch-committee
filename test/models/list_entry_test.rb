@@ -38,6 +38,17 @@ class ListEntryTest < ActiveSupport::TestCase
     assert_nil entry.cancel_note
   end
 
+  test "a recommendation is optional, trimmed, and blank means none" do
+    assert build(:list_entry, recommendation: nil).valid?
+    assert_equal "Sam says the finale is wild", build(:list_entry, recommendation: "  Sam says  the finale is wild ").recommendation
+    assert_nil build(:list_entry, recommendation: "   ").recommendation
+  end
+
+  test "a recommendation is at most 500 characters" do
+    assert build(:list_entry, recommendation: "a" * 500).valid?
+    assert_not build(:list_entry, recommendation: "a" * 501).valid?
+  end
+
   test "requires a whole-number sequence" do
     assert_not build(:list_entry, sequence: nil).valid?
     assert_not build(:list_entry, sequence: 1.5).valid?

@@ -6,6 +6,8 @@
 <p class="text-body-secondary mb-3">Which season should go on <%= @list.name %>?</p>
 
 <% if @seasons.any? %>
+  <%= render "add_title_form", hidden: { q: @query, tmdb_show_id: @show["id"] } %>
+
   <ul class="list-group mb-3">
     <% @seasons.each do |season| %>
       <% number = season["season_number"] %>
@@ -22,8 +24,7 @@
         <% if in_catalog && @active_title_ids.include?(in_catalog.id) %>
           <span class="small text-body-secondary text-nowrap">On this list</span>
         <% else %>
-          <%= button_to "Add", group_list_list_entries_path(Current.group, @list),
-                params: { tmdb_show_id: @show["id"], season: number, q: @query },
+          <%= button_tag "Add", form: "add_title", name: "season", value: number,
                 class: "btn btn-sm btn-outline-primary", "aria-label": "Add #{@show["name"]}: Season #{number}" %>
         <% end %>
       </li>

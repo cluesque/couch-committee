@@ -83,14 +83,17 @@ and UI all became "list".
 - `state` — enum: `not_started` (default), `in_progress`, `watched`, `cancelled`
 - `cancelled_at`
 - `cancel_note`
+- `recommendation` — optional string (up to 500 characters): why it's on the list, entered when
+  adding the title or later
 
 A `ListEntry` represents one occurrence of a Title being listed in a List, and one watch-through
 ("cycle") of it. It persists indefinitely — it is never deleted — so the historical view can show
 watched and cancelled entries alongside active ones. The default (active) view is a filter on
 `state IN (not_started, in_progress)`.
 
-`Recommendation` (a planned future model to record who suggested a Title and why) is explicitly out
-of scope for now; most of what might have lived there instead lives on `ListEntry`.
+A recommendation is just the `recommendation` string on `ListEntry` (the reason). Recording *who*
+suggested a Title, which a separate `Recommendation` model was once planned for, is still out of
+scope.
 
 ### Viewing
 - `date`

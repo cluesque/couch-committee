@@ -14,6 +14,10 @@
 <% end %>
 
 <% if @query.present? %>
+  <% if @results.any? || @hand_entered_titles&.any? %>
+    <%= render "add_title_form", hidden: { q: @query } %>
+  <% end %>
+
   <% if @results.any? %>
     <ul class="list-group mb-3">
       <% @results.each do |result| %>
@@ -30,13 +34,13 @@
           </span>
 
           <% if result.kind == "series" %>
-            <%= link_to "Seasons ›", seasons_group_list_list_entries_path(Current.group, @list, tmdb_show_id: result.tmdb_id, q: @query),
+            <%= button_tag "Seasons ›", form: "add_title", name: "tmdb_show_id", value: result.tmdb_id,
+                  formaction: seasons_group_list_list_entries_path(Current.group, @list),
                   class: "btn btn-sm btn-outline-primary text-nowrap", "aria-label": "Seasons of #{result.name}" %>
           <% elsif @active_title_ids.include?(@movies_in_catalog[result.tmdb_id]&.id) %>
             <span class="small text-body-secondary text-nowrap">On this list</span>
           <% else %>
-            <%= button_to "Add", group_list_list_entries_path(Current.group, @list),
-                  params: { tmdb_movie_id: result.tmdb_id, q: @query },
+            <%= button_tag "Add", form: "add_title", name: "tmdb_movie_id", value: result.tmdb_id,
                   class: "btn btn-sm btn-outline-primary", "aria-label": "Add #{result.name}" %>
           <% end %>
         </li>
@@ -58,8 +62,7 @@
           <% if @active_title_ids.include?(title.id) %>
             <span class="small text-body-secondary text-nowrap">On this list</span>
           <% else %>
-            <%= button_to "Add", group_list_list_entries_path(Current.group, @list),
-                  params: { title_id: title.id, q: @query },
+            <%= button_tag "Add", form: "add_title", name: "title_id", value: title.id,
                   class: "btn btn-sm btn-outline-primary", "aria-label": "Add #{title.full_name}" %>
           <% end %>
         </li>
