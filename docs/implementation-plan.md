@@ -136,8 +136,9 @@ phases are in `docs/title-metadata.md`.
 
 ## Phase 12 — Metadata columns and the importer
 - Migration: `titles` gains `tmdb_id`, `imdb_id`, `overview`, `poster_path`, `backdrop_path`,
-  `genres`, `runtime_minutes`, `rating`, `network`, `tmdb_synced_at`, plus a partial unique index on
-  `(kind, tmdb_id, season)` where `tmdb_id` is present. `episodes` gains `overview`, `still_path`,
+  `genres`, `runtime_minutes`, `rating`, `network`, `tmdb_synced_at`, plus partial unique indexes
+  making a TMDB movie, and each season of a TMDB show, appear once (two indexes, since a movie's
+  NULL `season` would slip past a single one). `episodes` gains `overview`, `still_path`,
   `runtime_minutes`.
 - `Tmdb::Importer` service: `import_movie(tmdb_id)` and `import_season(tmdb_show_id, season_number)`.
   Each finds or creates the Title by `(kind, tmdb_id, season)`, fills in its fields (a season falls

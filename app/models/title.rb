@@ -10,6 +10,7 @@ class Title < ApplicationRecord
   validates :season, absence: true, if: :movie?
   validate :movie_has_exactly_one_episode, if: :movie?
   validate :episode_numbers_are_unique
+  validates :tmdb_id, uniqueness: { scope: %i[ kind season ], message: "is already in the catalog" }, allow_nil: true
 
   accepts_nested_attributes_for :episodes
 
@@ -18,6 +19,17 @@ class Title < ApplicationRecord
 
   def full_name
     season ? "#{name}: Season #{season}" : name
+  end
+
+  # A season links to its show on IMDb, which is where IMDb keeps seasons.
+  def imdb_url
+    "https://www.imdb.com/title/#{imdb_id}/" if imdb_id.present?
+  end
+
+  def tmdb_url
+    return if tmdb_id.blank?
+
+    series? ? "https://www.themoviedb.org/tv/#{tmdb_id}/season/#{season}" : "https://www.themoviedb.org/movie/#{tmdb_id}"
   end
 
   private

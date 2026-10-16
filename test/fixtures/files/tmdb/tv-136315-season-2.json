@@ -1,0 +1,89 @@
+{
+  "season_number": 2,
+  "name": "Season 2",
+  "overview": "In season two, Carmen 'Carmy' Berzatto, Sydney Adamu and Richard 'Richie' Jerimovich work to transform their grimy sandwich joint into a next-level spot. As they strip the restaurant down to its bones, the crew undertakes transformational journeys of their own, each forced to confront the past and reckon with who they want to be in the future.",
+  "poster_path": "/3MVHF64rlvH1eofKefIoazXwOK0.jpg",
+  "air_date": "2023-06-22",
+  "episodes": [
+    {
+      "episode_number": 1,
+      "name": "Beef",
+      "air_date": "2023-06-22",
+      "overview": "Faced with the reality of opening a new restaurant, the crew must make a plan.",
+      "still_path": "/bV51sdguQRlPyXGnvYXrQ6vqfeL.jpg",
+      "runtime": 30
+    },
+    {
+      "episode_number": 2,
+      "name": "Pasta",
+      "air_date": "2023-06-22",
+      "overview": "The crew splits up to work towards their new vision.",
+      "still_path": "/qolqC6exsNzIWEXKxdtzJUP6fTa.jpg",
+      "runtime": 31
+    },
+    {
+      "episode_number": 3,
+      "name": "Sundae",
+      "air_date": "2023-06-22",
+      "overview": "Sydney searches Chicago for culinary inspiration.",
+      "still_path": "/nX3Ss4VHQzI9VkjgbcrCMpu9Q1.jpg",
+      "runtime": 27
+    },
+    {
+      "episode_number": 4,
+      "name": "Honeydew",
+      "air_date": "2023-06-22",
+      "overview": "Marcus challenges himself.",
+      "still_path": "/iLEWUEG5nOZQeNeUY6dKPjuxdOn.jpg",
+      "runtime": 30
+    },
+    {
+      "episode_number": 5,
+      "name": "Pop",
+      "air_date": "2023-06-22",
+      "overview": "The renovation gets off track.",
+      "still_path": "/gohsyAFvncNUy04R4KAH51BVxHm.jpg",
+      "runtime": 34
+    },
+    {
+      "episode_number": 6,
+      "name": "Fishes",
+      "air_date": "2023-06-22",
+      "overview": "Feast of the Seven Fishes.",
+      "still_path": "/50p0dmUPIW1apDiirprhS0YvNch.jpg",
+      "runtime": 67
+    },
+    {
+      "episode_number": 7,
+      "name": "Forks",
+      "air_date": "2023-06-22",
+      "overview": "Richie stages.",
+      "still_path": "/6RGWaBn8dMmPDGToFoVBzsLoE3C.jpg",
+      "runtime": 36
+    },
+    {
+      "episode_number": 8,
+      "name": "Bolognese",
+      "air_date": "2023-06-22",
+      "overview": "The crew awaits a do-or-die fire suppression test.",
+      "still_path": "/nrvMFbf0IOkFP553zVv0eXAlc6d.jpg",
+      "runtime": 33
+    },
+    {
+      "episode_number": 9,
+      "name": "Omelette",
+      "air_date": "2023-06-22",
+      "overview": "Final preparations are made for The Bear's first service.",
+      "still_path": "/1YfjQ6wSrVtstkEfRlebfr9ioYr.jpg",
+      "runtime": 40
+    },
+    {
+      "episode_number": 10,
+      "name": "The Bear",
+      "air_date": "2023-06-22",
+      "overview": "Friends & Family night at The Bear.",
+      "still_path": "/zIx4VN6SyupkpEVXA5dQsGsysNa.jpg",
+      "runtime": 41
+    }
+  ]
+}
