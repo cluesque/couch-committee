@@ -292,6 +292,15 @@ class Groups::Lists::ListEntriesControllerTest < ActionDispatch::IntegrationTest
     assert_equal [ "Third", "First", "Second" ], css_select("ol > li .fw-medium").map(&:text)
   end
 
+  test "reordering a filtered list leaves the hidden entries where they were" do
+    first, series, second = [ create(:movie, name: "First"), create(:season, name: "Show"), create(:movie, name: "Second") ].map { |title| @list.add(title) }
+
+    patch reorder_group_list_list_entries_path(@group, @list), params: { list_entry_ids: [ second.id, first.id ] }, as: :json
+
+    get group_list_path(@group, @list)
+    assert_equal [ "Second", "Show", "First" ], css_select("ol > li .fw-medium").map(&:text)
+  end
+
   test "another group's list can't be reordered" do
     others = create(:list)
     a, b = 2.times.map { others.add(create(:movie)) }
