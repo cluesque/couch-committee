@@ -1,0 +1,40 @@
+<% content_for :title, "Find #{@title.full_name} on TMDB · Couch Committee" %>
+
+<%= back_link @title.full_name, return_to_path || @title %>
+
+<h1 class="h3 mb-1">Find <%= @title.full_name %> on TMDB</h1>
+<p class="text-body-secondary small mb-3">
+  Linking fills in its poster, details, and episodes from TMDB. What's been watched stays as it is.
+</p>
+
+<%= form_with url: new_title_tmdb_link_path(@title), method: :get, class: "mb-3" do |form| %>
+  <%= hidden_field_tag :return_to, return_to_path %>
+  <%= form.label :q, "Search TMDB", class: "visually-hidden" %>
+  <div class="input-group">
+    <%= form.search_field :q, value: @query, class: "form-control" %>
+    <%= form.submit "Search", name: nil, class: "btn btn-primary" %>
+  </div>
+<% end %>
+
+<% if @results.any? %>
+  <ul class="list-group mb-3">
+    <% @results.each do |result| %>
+      <li class="list-group-item d-flex align-items-center gap-2">
+        <%= poster_thumb(result.poster_path) %>
+        <span class="flex-grow-1">
+          <span class="d-flex align-items-baseline gap-2">
+            <%= kind_icon(result) %>
+            <span class="title-name"><%= result.name %></span>
+          </span>
+          <% if result.year %>
+            <span class="small text-body-secondary ps-4"><%= result.year %></span>
+          <% end %>
+        </span>
+        <%= button_to "Link", title_tmdb_link_path(@title), params: { tmdb_id: result.tmdb_id, return_to: return_to_path },
+              class: "btn btn-sm btn-outline-primary", "aria-label": "Link to #{result.name}" %>
+      </li>
+    <% end %>
+  </ul>
+<% elsif !flash.now[:alert] %>
+  <p class="text-body-secondary">No <%= @title.series? ? "shows" : "movies" %> on TMDB match “<%= @query %>”.</p>
+<% end %>

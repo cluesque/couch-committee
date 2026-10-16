@@ -30,7 +30,12 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :titles, only: %i[ index show ]
+  resources :titles, only: %i[ index show ] do
+    scope module: :titles do
+      resource :refresh, only: :create
+      resource :tmdb_link, only: %i[ new create ]
+    end
+  end
 
   root "groups#index"
 end

@@ -86,6 +86,52 @@ class Tmdb::ImporterTest < ActiveSupport::TestCase
     assert_equal (1..8).to_a + [ 10 ], season.reload.episodes.map(&:number)
   end
 
+  test "importing into a hand-entered movie links it, keeping its episode and viewings" do
+    movie = create(:movie, name: "arrival", tmdb_id: nil)
+    episode = movie.episodes.sole
+    list = create(:list)
+    list.add(movie)
+    WatchRecorder.call(group: list.group, episode: episode, date: Date.new(2026, 9, 1))
+
+    assert_no_difference [ "Title.count", "Episode.count", "Viewing.count" ] do
+      assert_equal movie, @importer.import_movie(329865, into: movie)
+    end
+    movie.reload
+    assert_equal [ 329865, "Arrival", "PG-13" ], movie.values_at(:tmdb_id, :name, :rating)
+    assert_equal episode, movie.episodes.sole
+    assert_equal Date.new(2016, 11, 10), episode.reload.available_on
+    assert_equal 1, episode.viewings.count
+  end
+
+  test "importing into a hand-entered season matches its episodes by number" do
+    season = create(:season, name: "Bear", season: 1, episode_count: 0, tmdb_id: nil)
+    watched = create(:episode, title: season, number: 2, name: "Ep two")
+    unwatched_extra = create(:episode, title: season, number: 12)
+    list = create(:list)
+    list.add(season)
+    WatchRecorder.call(group: list.group, episode: watched, date: Date.new(2026, 9, 1))
+
+    @importer.import_season(136315, 1, into: season)
+
+    season.reload
+    assert_equal [ 136315, 1, "The Bear" ], season.values_at(:tmdb_id, :season, :name)
+    assert_equal (1..8).to_a, season.episodes.map(&:number)
+    assert_equal "Hands", watched.reload.name
+    assert_equal 1, watched.viewings.count
+    assert_not Episode.exists?(unwatched_extra.id)
+  end
+
+  test "refresh re-imports a linked title, filling in episodes TMDB has added since" do
+    season = @importer.import_season(136315, 1)
+    season.episodes.where(number: 3..).destroy_all
+    season.episodes.first.update!(available_on: nil)
+
+    @importer.refresh(season.reload)
+
+    assert_equal (1..8).to_a, season.reload.episodes.map(&:number)
+    assert_equal Date.new(2022, 6, 23), season.episodes.first.available_on
+  end
+
   test "a failed import creates nothing" do
     assert_no_difference "Title.count" do
       assert_raises(Tmdb::Error) { @importer.import_season(136315, 99) }

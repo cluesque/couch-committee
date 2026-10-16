@@ -12,12 +12,17 @@
     <% if title.genres.present? %>
       <p class="small text-body-secondary mb-1"><%= title.genres %></p>
     <% end %>
-    <% if title.imdb_url || title.tmdb_url %>
-      <p class="small mb-0 d-flex gap-3">
-        <% if title.imdb_url %><%= link_to "IMDb", title.imdb_url, target: "_blank", rel: "noopener" %><% end %>
-        <% if title.tmdb_url %><%= link_to "TMDB", title.tmdb_url, target: "_blank", rel: "noopener" %><% end %>
-      </p>
-    <% end %>
+    <p class="small mb-0 d-flex flex-wrap align-items-center column-gap-3">
+      <% if title.imdb_url %><%= link_to "IMDb", title.imdb_url, target: "_blank", rel: "noopener" %><% end %>
+      <% if title.tmdb_url %>
+        <%= link_to "TMDB", title.tmdb_url, target: "_blank", rel: "noopener" %>
+        <%= button_to "Refresh", title_refresh_path(title), params: { return_to: request.path },
+              class: "btn btn-link btn-sm p-0 border-0 align-baseline", form_class: "d-inline",
+              title: ("Last updated from TMDB #{l title.tmdb_synced_at.to_date, format: :short}" if title.tmdb_synced_at) %>
+      <% else %>
+        <%= link_to "Find on TMDB", new_title_tmdb_link_path(title, return_to: request.path) %>
+      <% end %>
+    </p>
   </div>
 </div>
 

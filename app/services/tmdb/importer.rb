@@ -1,16 +1,20 @@
 module Tmdb
   # Brings a TMDB movie, or one season of a TMDB show, into the catalog as a Title with its
-  # Episodes. Importing something already in the catalog refreshes it in place.
+  # Episodes. Importing something already in the catalog refreshes it in place. Passing `into:` a
+  # Title entered by hand links it to TMDB instead: its Episodes are matched by number, so the
+  # Viewings recorded against them stay put.
   class Importer
     def initialize(client: Client.new)
       @client = client
     end
 
-    def import_movie(tmdb_id)
+    def import_movie(tmdb_id, into: nil)
       movie = @client.movie(tmdb_id)
-      title = Title.find_or_initialize_by(kind: :movie, tmdb_id: tmdb_id)
+      title = into || Title.find_or_initialize_by(kind: :movie, tmdb_id: tmdb_id)
+      title.episodes.reset if title.persisted? # match episodes as saved, not as the caller had them loaded
 
       title.assign_attributes(
+        tmdb_id: tmdb_id,
         name: movie["title"],
         overview: movie["overview"].presence,
         poster_path: movie["poster_path"],
@@ -29,12 +33,15 @@ module Tmdb
     end
 
     # A season with no overview or poster of its own takes the show's.
-    def import_season(tmdb_show_id, season_number)
+    def import_season(tmdb_show_id, season_number, into: nil)
       show = @client.tv(tmdb_show_id)
       season = @client.season(tmdb_show_id, season_number)
-      title = Title.find_or_initialize_by(kind: :series, tmdb_id: tmdb_show_id, season: season_number)
+      title = into || Title.find_or_initialize_by(kind: :series, tmdb_id: tmdb_show_id, season: season_number)
+      title.episodes.reset if title.persisted?
 
       title.assign_attributes(
+        tmdb_id: tmdb_show_id,
+        season: season_number,
         name: show["name"],
         overview: season["overview"].presence || show["overview"].presence,
         poster_path: season["poster_path"] || show["poster_path"],
@@ -49,6 +56,11 @@ module Tmdb
 
       title.save!
       title
+    end
+
+    # Re-imports a title already linked to TMDB.
+    def refresh(title)
+      title.series? ? import_season(title.tmdb_id, title.season, into: title) : import_movie(title.tmdb_id, into: title)
     end
 
     private

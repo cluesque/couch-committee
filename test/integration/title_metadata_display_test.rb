@@ -48,6 +48,26 @@ class TitleMetadataDisplayTest < ActionDispatch::IntegrationTest
     assert_select "p.title-overview", count: 0
   end
 
+  test "a linked title offers a refresh, back to the page it's on" do
+    entry = @list.add(@arrival)
+    path = group_list_list_entry_path(@group, @list, entry)
+
+    get path
+
+    assert_select "form[action=?] input[name=return_to][value=?]", title_refresh_path(@arrival), path
+    assert_select "a", text: "Find on TMDB", count: 0
+  end
+
+  test "a hand-entered title offers to find it on TMDB instead" do
+    movie = create(:movie, name: "Home movie", tmdb_id: nil)
+    path = group_list_list_entry_path(@group, @list, @list.add(movie))
+
+    get path
+
+    assert_select "a[href=?]", new_title_tmdb_link_path(movie, return_to: path), text: "Find on TMDB"
+    assert_select "form[action=?]", title_refresh_path(movie), count: 0
+  end
+
   test "list rows show a small poster, or a blank of the same size" do
     @list.add(@arrival)
     @list.add(create(:movie, name: "Home movie", tmdb_id: nil))
