@@ -1,0 +1,31 @@
+<%# Where to watch `title`; `providers` is nil when TMDB couldn't be reached. %>
+<h2 class="h6 mb-2">Where to watch<%= " #{title.name}" if title.series? %></h2>
+
+<% if providers.nil? %>
+  <p class="small text-body-secondary mb-0">Couldn't check where to watch just now.</p>
+<% elsif providers.any? %>
+  <dl class="mb-1">
+    <% { "Stream" => providers.stream, "Rent" => providers.rent, "Buy" => providers.buy }.each do |label, services| %>
+      <% next if services.empty? %>
+      <div class="d-flex align-items-start gap-2 mb-2">
+        <dt class="small text-body-secondary fw-normal pt-1 flex-shrink-0" style="width: 3.25rem"><%= label %></dt>
+        <dd class="mb-0 d-flex flex-wrap gap-1">
+          <% services.each do |provider| %>
+            <% if provider.logo_path.present? %>
+              <%= image_tag Tmdb.image_url(provider.logo_path, "w92"), alt: provider.name, title: provider.name,
+                    width: 32, height: 32, loading: "lazy", class: "provider-logo rounded" %>
+            <% else %>
+              <span class="badge text-bg-light"><%= provider.name %></span>
+            <% end %>
+          <% end %>
+        </dd>
+      </div>
+    <% end %>
+  </dl>
+  <p class="small text-body-secondary mb-0">
+    <% if providers.link %><%= link_to "More options", providers.link, target: "_blank", rel: "noopener" %> · <% end %>
+    Data from <%= link_to "JustWatch", "https://www.justwatch.com/", target: "_blank", rel: "noopener" %>
+  </p>
+<% else %>
+  <p class="small text-body-secondary mb-0">Not available to stream, rent, or buy in the US right now.</p>
+<% end %>

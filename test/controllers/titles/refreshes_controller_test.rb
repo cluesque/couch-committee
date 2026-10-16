@@ -16,7 +16,7 @@ class Titles::RefreshesControllerTest < ActionDispatch::IntegrationTest
     post title_refresh_path(@season), params: { return_to: "/somewhere/in/the/app" }
 
     assert_redirected_to "/somewhere/in/the/app"
-    assert_equal "Refreshed The Bear: Season 1 from TMDB.", flash[:notice]
+    assert_equal "Refreshed The Bear from TMDB.", flash[:notice]
     assert_equal 8, @season.episodes.count
   end
 

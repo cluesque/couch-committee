@@ -19,7 +19,7 @@ class ListsTest < ApplicationSystemTestCase
     click_on "Seasons of The Bear"
     assert_text "Which season should go on Movie night?"
     click_on "Add The Bear: Season 1"
-    assert_text "Added The Bear: Season 1."
+    assert_text "Added The Bear."
 
     click_on "Add a title"
     fill_in "Search movies and shows", with: "arrival"
@@ -29,7 +29,7 @@ class ListsTest < ApplicationSystemTestCase
 
     within "ol" do
       rows = all("li")
-      assert_equal [ "The Bear: Season 1", "Arrival" ], rows.map { |row| row.find(".fw-medium").text }
+      assert_equal [ "The Bear", "Arrival" ], rows.map { |row| row.find(".fw-medium").text }
       assert_includes rows[0].text, "Next: 1. System"
     end
   end

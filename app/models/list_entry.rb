@@ -37,6 +37,15 @@ class ListEntry < ApplicationRecord
     viewings.any? { |viewing| viewing.episode_id == episode.id }
   end
 
+  # The state this entry's viewings call for. A cancelled entry stays cancelled.
+  def state_from_viewings
+    if cancelled? then state
+    elsif viewings.none? then "not_started"
+    elsif remaining_episodes.empty? then "watched"
+    else "in_progress"
+    end
+  end
+
   def next_episode
     remaining_episodes.first
   end

@@ -79,6 +79,22 @@ class TitleMetadataDisplayTest < ActionDispatch::IntegrationTest
     assert rows[1].at_css("span.poster-thumb")
   end
 
+  test "list rows show how long whatever's next runs" do
+    @list.add(@arrival)
+    bear = @list.add(@the_bear)
+    @list.add(create(:movie, name: "Home movie", tmdb_id: nil))
+
+    get group_list_path(@group, @list)
+    rows = css_select("ol > li")
+    assert_equal "1h 56m", rows[0].at_css(".runtime").text
+    assert_equal "Next: 1. System · 28m", rows[1].at_css(".next-episode").text.squish
+    assert_nil rows[2].at_css(".runtime")
+
+    WatchRecorder.call(group: @group, episode: @the_bear.episodes.first, date: Date.new(2026, 10, 1))
+    get group_list_path(@group, @list)
+    assert_equal "Next: 2. Hands · 32m", css_select("li##{ActionView::RecordIdentifier.dom_id(bear)} .next-episode").first.text.squish
+  end
+
   test "history rows show a small poster" do
     @list.add(@arrival)
     WatchRecorder.call(group: @group, episode: @arrival.episodes.first, date: Date.new(2026, 10, 1))

@@ -17,8 +17,19 @@ class RecommendationsTest < ApplicationSystemTestCase
     assert_field "Why this one? (optional)", with: "Sam says it's the best show on TV"
     click_on "Add The Bear: Season 1"
 
-    assert_text "Added The Bear: Season 1."
+    assert_text "Added The Bear."
     within("ol") { assert_text "“Sam says it's the best show on TV”" }
+  end
+
+  test "a one-season show is added straight from the results, recommendation and all" do
+    visit new_group_list_list_entry_path(@group, @list)
+    fill_in "Search movies and shows", with: "baby reindeer"
+    click_on "Search"
+    fill_in "Why this one? (optional)", with: "Unsettling, in a good way"
+    click_on "Add Baby Reindeer"
+
+    assert_text "Added Baby Reindeer."
+    within("ol") { assert_text "“Unsettling, in a good way”" }
   end
 
   test "pressing Enter in the recommendation field doesn't add anything" do

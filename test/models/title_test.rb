@@ -16,9 +16,28 @@ class TitleTest < ActiveSupport::TestCase
     assert_equal [ 1, 2, 3 ], season.episodes.map(&:number)
   end
 
-  test "full name includes the season when there is one" do
+  test "a first season goes by the show's name, until another of its seasons is in the catalog" do
+    first = create(:season, name: "The Bear", season: 1)
+    assert_equal "The Bear", first.full_name
+
+    create(:season, name: "The Bear", season: 2)
+    assert_equal "The Bear: Season 1", first.full_name
+  end
+
+  test "a later season always says which season it is" do
+    assert_equal "The Bear: Season 3", create(:season, name: "The Bear", season: 3).full_name
+  end
+
+  test "only seasons of the same show count" do
+    first = create(:season, name: "The Bear", season: 1)
+    create(:season, name: "Severance", season: 2)
+    create(:movie, name: "The Bear")
+
+    assert_equal "The Bear", first.full_name
+  end
+
+  test "a movie's full name is its name" do
     assert_equal "Arrival", build(:movie, name: "Arrival").full_name
-    assert_equal "The Bear: Season 3", build(:season, name: "The Bear", season: 3).full_name
   end
 
   test "a TMDB movie can be in the catalog only once" do

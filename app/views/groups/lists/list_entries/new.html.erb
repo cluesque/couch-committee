@@ -21,19 +21,37 @@
   <% if @results.any? %>
     <ul class="list-group mb-3">
       <% @results.each do |result| %>
+        <% only_season = @only_seasons[result.tmdb_id] if result.kind == "series" %>
+        <%# Tapping the poster or name opens a preview; a show with several seasons opens its seasons. %>
+        <% details = if result.kind == "movie"
+             { name: "tmdb_movie_id", formaction: preview_group_list_list_entries_path(Current.group, @list) }
+           elsif only_season
+             { name: "tmdb_show_id", formaction: preview_group_list_list_entries_path(Current.group, @list, season: only_season) }
+           else
+             { name: "tmdb_show_id", formaction: seasons_group_list_list_entries_path(Current.group, @list) }
+           end %>
         <li class="list-group-item d-flex align-items-center gap-2">
-          <%= poster_thumb(result.poster_path) %>
-          <span class="flex-grow-1">
-            <span class="d-flex align-items-baseline gap-2">
-              <%= kind_icon(result) %>
-              <span class="title-name"><%= result.name %></span>
+          <%= button_tag form: "add_title", value: result.tmdb_id, **details, "aria-label": "#{result.name} details",
+                class: "result-details btn p-0 border-0 text-start text-reset d-flex align-items-center gap-2 flex-grow-1 min-w-0" do %>
+            <%= poster_thumb(result.poster_path) %>
+            <span class="flex-grow-1 min-w-0">
+              <span class="d-flex align-items-baseline gap-2">
+                <%= kind_icon(result) %>
+                <span class="title-name"><%= result.name %></span>
+              </span>
+              <% if result.year %>
+                <span class="small text-body-secondary ps-4"><%= result.year %></span>
+              <% end %>
             </span>
-            <% if result.year %>
-              <span class="small text-body-secondary ps-4"><%= result.year %></span>
-            <% end %>
-          </span>
+          <% end %>
 
-          <% if result.kind == "series" %>
+          <% if only_season && @active_title_ids.include?(@seasons_in_catalog[[ result.tmdb_id, only_season ]]&.id) %>
+            <span class="small text-body-secondary text-nowrap">On this list</span>
+          <% elsif only_season %>
+            <%= button_tag "Add", form: "add_title", name: "tmdb_show_id", value: result.tmdb_id,
+                  formaction: group_list_list_entries_path(Current.group, @list, season: only_season),
+                  class: "btn btn-sm btn-outline-primary", "aria-label": "Add #{result.name}" %>
+          <% elsif result.kind == "series" %>
             <%= button_tag "Seasons ›", form: "add_title", name: "tmdb_show_id", value: result.tmdb_id,
                   formaction: seasons_group_list_list_entries_path(Current.group, @list),
                   class: "btn btn-sm btn-outline-primary text-nowrap", "aria-label": "Seasons of #{result.name}" %>

@@ -1,0 +1,36 @@
+<% content_for :title, "#{@title.full_name} · Add to #{@list.name} · Couch Committee" %>
+
+<% if params[:from] == "seasons" %>
+  <%= back_link "#{@title.name} seasons", seasons_group_list_list_entries_path(Current.group, @list,
+        tmdb_show_id: @title.tmdb_id, q: @query, recommendation: params[:recommendation].presence) %>
+<% else %>
+  <%= back_link "Search results", new_group_list_list_entry_path(Current.group, @list,
+        q: @query, recommendation: params[:recommendation].presence) %>
+<% end %>
+
+<%= render "titles/header", title: @title %>
+
+<% if @on_list %>
+  <p class="text-body-secondary">Already on <%= @list.name %>.</p>
+<% else %>
+  <% hidden = @title.series? ? { tmdb_show_id: @title.tmdb_id, q: @query } : { q: @query } %>
+  <%= render "add_title_form", hidden: hidden %>
+  <%= button_tag "Add to #{@list.name}", form: "add_title",
+        name: @title.series? ? "season" : "tmdb_movie_id", value: @title.series? ? @title.season : @title.tmdb_id,
+        class: "btn btn-primary mb-4" %>
+<% end %>
+
+<div class="mb-3">
+  <%= render "titles/watch_providers/providers", title: @title, providers: @providers %>
+</div>
+
+<% if @title.movie? %>
+  <% if (released_on = @title.episodes.first&.available_on) %>
+    <p>Released <%= l released_on, format: :long %></p>
+  <% end %>
+<% elsif @title.episodes.any? %>
+  <h2 class="h5">Episodes</h2>
+  <ol class="list-group mb-3">
+    <%= render partial: "titles/episode", collection: @title.episodes %>
+  </ol>
+<% end %>

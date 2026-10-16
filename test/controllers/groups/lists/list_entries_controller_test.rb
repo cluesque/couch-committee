@@ -37,6 +37,39 @@ class Groups::Lists::ListEntriesControllerTest < ActionDispatch::IntegrationTest
     assert_not_includes result_names, "Bart the Bear"
   end
 
+  test "a show with only one season can be added straight from the results" do
+    get new_group_list_list_entry_path(@group, @list, q: "baby reindeer")
+
+    assert_equal "Baby Reindeer", result_names.first
+    assert_select "button[form=add_title][name=tmdb_show_id][value='241259'][formaction=?]",
+      group_list_list_entries_path(@group, @list, season: 1), text: "Add"
+    assert_select "button[value='241259']", text: "Seasons ›", count: 0
+  end
+
+  test "shows TMDB can't tell us more about keep the season picker" do
+    get new_group_list_list_entry_path(@group, @list, q: "the bear")
+
+    # FakeTmdb has no details for Masha and the Bear (46080), so its season count is unknown.
+    assert_select "button[name=tmdb_show_id][value='46080']", text: "Seasons ›"
+  end
+
+  test "adding a one-season show imports its season" do
+    post group_list_list_entries_path(@group, @list, season: 1), params: { tmdb_show_id: 241259, recommendation: "Unsettling" }
+
+    assert_equal "Added Baby Reindeer.", flash[:notice]
+    entry = @list.list_entries.sole
+    assert_equal [ 241259, 1, "Unsettling" ], [ entry.title.tmdb_id, entry.title.season, entry.recommendation ]
+  end
+
+  test "a one-season show already on the list says so" do
+    @list.add(Tmdb::Importer.new(client: Tmdb::Client.new(token: "test")).import_season(241259, 1))
+
+    get new_group_list_list_entry_path(@group, @list, q: "baby reindeer")
+
+    assert_select "ul:first-of-type li:first-child", text: /On this list/
+    assert_select "ul:first-of-type li:first-child button:not(.result-details)", count: 0
+  end
+
   test "nothing is listed until there's a search" do
     get new_group_list_list_entry_path(@group, @list)
 
@@ -74,7 +107,7 @@ class Groups::Lists::ListEntriesControllerTest < ActionDispatch::IntegrationTest
     get new_group_list_list_entry_path(@group, @list, q: "arrival")
 
     assert_select "ul:first-of-type li:first-child", text: /On this list/
-    assert_select "ul:first-of-type li:first-child button", count: 0
+    assert_select "ul:first-of-type li:first-child button:not(.result-details)", count: 0
   end
 
   test "when TMDB can't be reached, the search says so" do
@@ -105,7 +138,7 @@ class Groups::Lists::ListEntriesControllerTest < ActionDispatch::IntegrationTest
     get seasons_group_list_list_entries_path(@group, @list, tmdb_show_id: 136315)
 
     assert_select "li:first-child", text: /On this list/
-    assert_select "li:first-child button", count: 0
+    assert_select "li:first-child button:not(.result-details)", count: 0
   end
 
   test "when TMDB can't be reached, the seasons page sends you back to search" do
@@ -143,7 +176,7 @@ class Groups::Lists::ListEntriesControllerTest < ActionDispatch::IntegrationTest
   test "adding a season imports it with its episodes" do
     post group_list_list_entries_path(@group, @list), params: { tmdb_show_id: 136315, season: 1, q: "the bear" }
 
-    assert_equal "Added The Bear: Season 1.", flash[:notice]
+    assert_equal "Added The Bear.", flash[:notice]
     season = @list.list_entries.sole.title
     assert_equal [ 136315, 1, 8 ], [ season.tmdb_id, season.season, season.episodes.count ]
   end

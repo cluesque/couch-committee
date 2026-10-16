@@ -6,20 +6,25 @@
 <p class="text-body-secondary mb-3">Which season should go on <%= @list.name %>?</p>
 
 <% if @seasons.any? %>
-  <%= render "add_title_form", hidden: { q: @query, tmdb_show_id: @show["id"] } %>
+  <%= render "add_title_form", hidden: { q: @query, tmdb_show_id: @show["id"], from: "seasons" } %>
 
   <ul class="list-group mb-3">
     <% @seasons.each do |season| %>
       <% number = season["season_number"] %>
       <% in_catalog = @seasons_in_catalog[number] %>
       <li class="list-group-item d-flex align-items-center gap-2">
-        <%= poster_thumb(season["poster_path"] || @show["poster_path"]) %>
-        <span class="flex-grow-1">
-          <span class="title-name d-block"><%= season["name"].presence || "Season #{number}" %></span>
-          <span class="small text-body-secondary">
-            <%= [ season["air_date"].to_s[0, 4].presence, pluralize(season["episode_count"].to_i, "episode") ].compact.join(" · ") %>
+        <%= button_tag form: "add_title", name: "season", value: number,
+              formaction: preview_group_list_list_entries_path(Current.group, @list),
+              "aria-label": "Season #{number} details",
+              class: "result-details btn p-0 border-0 text-start text-reset d-flex align-items-center gap-2 flex-grow-1 min-w-0" do %>
+          <%= poster_thumb(season["poster_path"] || @show["poster_path"]) %>
+          <span class="flex-grow-1 min-w-0">
+            <span class="title-name d-block"><%= season["name"].presence || "Season #{number}" %></span>
+            <span class="small text-body-secondary">
+              <%= [ season["air_date"].to_s[0, 4].presence, pluralize(season["episode_count"].to_i, "episode") ].compact.join(" · ") %>
+            </span>
           </span>
-        </span>
+        <% end %>
 
         <% if in_catalog && @active_title_ids.include?(in_catalog.id) %>
           <span class="small text-body-secondary text-nowrap">On this list</span>

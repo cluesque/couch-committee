@@ -21,8 +21,9 @@ Rails.application.routes.draw do
         resources :list_entries, only: %i[ show new create ], module: :lists do
           patch :reorder, on: :collection
           match :seasons, on: :collection, via: %i[ get post ]
+          match :preview, on: :collection, via: %i[ get post ]
           scope module: :list_entries do
-            resources :viewings, only: %i[ new create ]
+            resources :viewings, only: %i[ new create destroy ]
             resource :cancellation, only: %i[ new create ]
             resource :recommendation, only: %i[ edit update ]
           end
