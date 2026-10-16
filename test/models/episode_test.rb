@@ -22,6 +22,12 @@ class EpisodeTest < ActiveSupport::TestCase
     assert_equal "Episode 3", build(:episode, number: 3, name: "").label
   end
 
+  test "a name that's just its number isn't repeated" do
+    assert_equal "Episode 1", build(:episode, number: 1, name: "Episode 1").label
+    assert_equal "Episode 1", build(:episode, number: 1, name: "episode 1").label
+    assert_equal "2. Episode 1", build(:episode, number: 2, name: "Episode 1").label
+  end
+
   test "name and availability date are optional" do
     assert build(:episode, name: nil, available_on: nil).valid?
   end
