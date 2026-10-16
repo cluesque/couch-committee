@@ -8,6 +8,18 @@ module TitlesHelper
                    "M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3" ]
   }.freeze
 
+  # "Movie · 2016 · 1h 56m · PG-13", or "Series · 2022 · TV-MA · Hulu", leaving out what's unknown.
+  def title_facts(title)
+    [ title.kind.humanize, title.year, runtime(title.runtime_minutes), title.rating, title.network ].compact.join(" · ")
+  end
+
+  def runtime(minutes)
+    return if minutes.blank?
+
+    hours, remainder = minutes.divmod(60)
+    [ ("#{hours}h" if hours.positive?), ("#{remainder}m" if remainder.positive?) ].compact.join(" ")
+  end
+
   # A small poster for rows of titles. Decorative (the name is always printed beside it), and blank
   # space of the same size when there's no poster, so rows stay aligned.
   def poster_thumb(poster_path)

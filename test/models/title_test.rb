@@ -43,6 +43,16 @@ class TitleTest < ActiveSupport::TestCase
     assert build(:movie, tmdb_id: nil).valid?
   end
 
+  test "year is when a movie came out, or a season started" do
+    season = create(:season, episode_count: 0)
+    create(:episode, title: season, number: 2, available_on: Date.new(2023, 1, 5))
+    create(:episode, title: season, number: 1, available_on: Date.new(2022, 12, 29))
+    create(:episode, title: season, number: 3, available_on: nil)
+
+    assert_equal 2022, season.reload.year
+    assert_nil create(:season, episode_count: 1).tap { |s| s.episodes.first.update!(available_on: nil) }.reload.year
+  end
+
   test "links to IMDb and TMDB come from the stored IDs" do
     movie = build(:movie, tmdb_id: 329865, imdb_id: "tt2543164")
     season = build(:season, tmdb_id: 136315, season: 3, imdb_id: "tt14452776")

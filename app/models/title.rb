@@ -20,6 +20,11 @@ class Title < ApplicationRecord
     season ? "#{name}: Season #{season}" : name
   end
 
+  # A movie's release year, or the year a season started.
+  def year
+    episodes.filter_map(&:available_on).min&.year
+  end
+
   # A season links to its show on IMDb, which is where IMDb keeps seasons.
   def imdb_url
     "https://www.imdb.com/title/#{imdb_id}/" if imdb_id.present?

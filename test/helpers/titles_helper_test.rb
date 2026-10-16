@@ -24,4 +24,19 @@ class TitlesHelperTest < ActionView::TestCase
     assert_includes kind_icon(build(:title, kind: :book, episodes: [])), 'aria-label="Book"'
     assert_includes kind_icon(build(:title, kind: :podcast, episodes: [])), 'aria-label="Podcast"'
   end
+
+  test "runtime reads as hours and minutes" do
+    assert_equal "1h 56m", runtime(116)
+    assert_equal "28m", runtime(28)
+    assert_equal "2h", runtime(120)
+    assert_nil runtime(nil)
+  end
+
+  test "title facts leave out what's unknown" do
+    movie = build(:movie, runtime_minutes: 116, rating: "PG-13")
+    movie.episodes.first.available_on = Date.new(2016, 11, 10)
+
+    assert_equal "Movie · 2016 · 1h 56m · PG-13", title_facts(movie)
+    assert_equal "Series", title_facts(build(:season, episode_count: 0))
+  end
 end

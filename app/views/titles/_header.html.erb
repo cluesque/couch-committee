@@ -1,0 +1,26 @@
+<%# A title's poster, name, facts, links, and overview, atop its page and its list entries' pages. %>
+<div class="d-flex gap-3 align-items-start mb-3">
+  <% if title.poster_path.present? %>
+    <%= image_tag Tmdb.image_url(title.poster_path, "w342"), alt: "", width: 100, height: 150,
+          class: "title-poster rounded flex-shrink-0 shadow-sm" %>
+  <% end %>
+  <div class="min-w-0">
+    <h1 class="h3 mb-1"><%= title.full_name %></h1>
+    <p class="small text-body-secondary mb-1">
+      <%= kind_icon(title, decorative: true) %> <%= title_facts(title) %>
+    </p>
+    <% if title.genres.present? %>
+      <p class="small text-body-secondary mb-1"><%= title.genres %></p>
+    <% end %>
+    <% if title.imdb_url || title.tmdb_url %>
+      <p class="small mb-0 d-flex gap-3">
+        <% if title.imdb_url %><%= link_to "IMDb", title.imdb_url, target: "_blank", rel: "noopener" %><% end %>
+        <% if title.tmdb_url %><%= link_to "TMDB", title.tmdb_url, target: "_blank", rel: "noopener" %><% end %>
+      </p>
+    <% end %>
+  </div>
+</div>
+
+<% if title.overview.present? %>
+  <p class="title-overview"><%= title.overview %></p>
+<% end %>

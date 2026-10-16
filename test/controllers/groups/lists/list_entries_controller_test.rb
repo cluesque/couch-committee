@@ -193,9 +193,10 @@ class Groups::Lists::ListEntriesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h1", "The Bear: Season 3"
-    assert_select "p", text: /Series · In progress · Last watched Oct 12/
+    assert_select "p", text: /Series · 2026/
+    assert_select "p", text: /In progress · Last watched Oct 12/
     assert_equal [ "Watched: #{season.episodes.first.label}", "#{season.episodes.second.label} Next", season.episodes.third.label ],
-      css_select("ol li .me-auto").map { |item| item.text.gsub("✓", "").squish }
+      css_select("ol li .episode-label").map { |item| item.text.gsub("✓", "").squish }
     assert_select "li .badge", text: "Next", count: 1
   end
 

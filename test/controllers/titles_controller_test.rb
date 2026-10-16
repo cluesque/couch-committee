@@ -32,7 +32,7 @@ class TitlesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "h1", "The Bear: Season 3"
-    assert_equal [ "1. Tomorrow", "2. Next" ], css_select("li .me-auto").map { |item| item.text.squish }
+    assert_equal [ "1. Tomorrow", "2. Next" ], css_select("li .episode-label").map { |item| item.text.squish }
     assert_select "li small", "Jun 26"
   end
 

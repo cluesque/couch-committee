@@ -1,0 +1,29 @@
+<%# One episode of a season. Given a list `entry`, also shows whether it's been watched on that
+    entry and whether it's next. %>
+<% entry = local_assigns[:entry] %>
+<li class="list-group-item d-flex gap-2 align-items-start">
+  <% if episode.still_path.present? %>
+    <%= image_tag Tmdb.image_url(episode.still_path, "w185"), alt: "", width: 96, height: 54, loading: "lazy",
+          class: "episode-still rounded flex-shrink-0" %>
+  <% end %>
+  <div class="flex-grow-1 min-w-0">
+    <div class="d-flex justify-content-between align-items-start gap-2">
+      <span class="episode-label">
+        <% if entry&.viewed?(episode) %>
+          <span class="text-success" title="Watched">✓</span>
+          <span class="visually-hidden">Watched:</span>
+        <% end %>
+        <%= episode.label %>
+        <% if entry && episode == local_assigns[:next_episode] %>
+          <span class="badge text-bg-primary">Next</span>
+        <% end %>
+      </span>
+      <% if episode.available_on %>
+        <small class="text-body-secondary text-nowrap"><%= l episode.available_on, format: :short %></small>
+      <% end %>
+    </div>
+    <% if episode.overview.present? %>
+      <p class="small text-body-secondary mb-0 mt-1"><%= episode.overview %></p>
+    <% end %>
+  </div>
+</li>
