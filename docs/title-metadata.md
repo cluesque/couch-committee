@@ -123,11 +123,13 @@ database-agnostic rule in `docs/architecture.md`.
 
 The build order is in `docs/implementation-plan.md` (Phases 11–16).
 
+## Settled with the user (2026-10-16)
+
+- **Posters:** small thumbnails in list rows and search results; full size only on a title's page.
+- **Streaming country:** US to start. It could become a per-group setting later.
+- **Specials:** TMDB's "Season 0" is left out for now.
+
 ## Open questions
 
-- **Posters in list rows:** small thumbnails make lists easier to scan but heavier on a phone.
-  Recommendation: thumbnails in list rows and search results, and full-size only on a title's
-  page.
-- **Streaming country:** presumably US to start. It could become a per-group setting.
-- **Books and podcasts** aren't covered by TMDB. Open Library and Podcast Index are the equivalent
+- Books and podcasts aren't covered by TMDB. Open Library and Podcast Index are the equivalent
   sources if those kinds ever get entry forms.

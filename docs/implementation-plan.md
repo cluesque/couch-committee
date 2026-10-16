@@ -166,8 +166,8 @@ phases are in `docs/title-metadata.md`.
   rating · genres · network), the overview, and links to IMDb and TMDB.
 - A season's episode list shows each episode's still and overview, kept compact on a phone, with
   the "Next" badge and watched ticks as today.
-- Small poster thumbnails in list rows, search results, and history (see `docs/title-metadata.md`,
-  "Open questions"). The kind icon stays for titles without a poster.
+- Small poster thumbnails in list rows, search results, and history. The kind icon stays for
+  titles without a poster.
 - Hand-entered titles without metadata still render cleanly.
 - **Done when**: phone-width screenshots of every changed page look right, with and without
   metadata, and request tests cover both.
