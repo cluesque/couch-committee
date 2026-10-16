@@ -8,76 +8,172 @@ class Groups::Lists::ListEntriesControllerTest < ActionDispatch::IntegrationTest
     sign_in_as @user
   end
 
+  teardown do
+    FakeTmdb.unreachable = false
+  end
+
   test "the list links to adding a title" do
     get group_list_path(@group, @list)
 
     assert_select "a[href=?]", new_group_list_list_entry_path(@group, @list), text: "Add a title"
   end
 
-  test "searching the catalog by part of a name, ignoring case" do
-    create(:season, name: "The Bear", season: 2)
-    create(:season, name: "The Bear", season: 1)
-    create(:movie, name: "Bear Story")
-    create(:movie, name: "Arrival")
-
-    get new_group_list_list_entry_path(@group, @list, q: "bEAr")
+  test "searching finds movies on TMDB, each with an Add button" do
+    get new_group_list_list_entry_path(@group, @list, q: "arrival")
 
     assert_response :success
-    assert_equal [ "Bear Story", "The Bear: Season 1", "The Bear: Season 2" ], result_names
+    assert_equal "Arrival", result_names.first
+    assert_select "ul:first-of-type li:first-child", text: /2016/
+    assert_select "form[action=?] input[name=tmdb_movie_id][value='329865']", group_list_list_entries_path(@group, @list)
+  end
+
+  test "a show leads to its seasons rather than an Add button" do
+    get new_group_list_list_entry_path(@group, @list, q: "the bear")
+
+    assert_equal "The Bear", result_names.first
+    assert_select "a[href=?]", seasons_group_list_list_entries_path(@group, @list, tmdb_show_id: 136315, q: "the bear"),
+      text: "Seasons ›"
+    assert_not_includes result_names, "Bart the Bear"
   end
 
   test "nothing is listed until there's a search" do
-    create(:movie)
-
     get new_group_list_list_entry_path(@group, @list)
 
     assert_select "li", count: 0
   end
 
+  test "a search nothing matches says so" do
+    get new_group_list_list_entry_path(@group, @list, q: "no such title anywhere")
+
+    assert_select "p", text: /No movies or shows match/
+  end
+
+  test "titles entered by hand before TMDB still turn up, until they're linked" do
+    hand_entered = create(:season, name: "The Bear", season: 2, tmdb_id: nil)
+    create(:season, name: "The Bear", season: 1, tmdb_id: 136315)
+
+    get new_group_list_list_entry_path(@group, @list, q: "bear")
+
+    assert_select "h2", "Entered by hand"
+    assert_select "form input[name=title_id][value=?]", hand_entered.id.to_s
+    assert_select "form input[name=title_id]", count: 1
+  end
+
   test "SQL wildcards in the search are taken literally" do
-    create(:movie, name: "Arrival")
+    create(:movie, name: "Arrival", tmdb_id: nil)
 
     get new_group_list_list_entry_path(@group, @list, q: "%")
 
-    assert_empty result_names
-    assert_select "p", text: /No titles match/
+    assert_select "h2", text: "Entered by hand", count: 0
   end
 
-  test "titles already active on the list can't be added again from the results" do
-    movie = create(:movie, name: "Arrival")
-    @list.add(movie)
+  test "a movie already active on the list says so instead of offering Add" do
+    @list.add(import_movie)
 
-    get new_group_list_list_entry_path(@group, @list, q: "Arrival")
+    get new_group_list_list_entry_path(@group, @list, q: "arrival")
 
-    assert_select "li", text: /On this list/
-    assert_select "li button", count: 0
+    assert_select "ul:first-of-type li:first-child", text: /On this list/
+    assert_select "ul:first-of-type li:first-child button", count: 0
   end
 
-  test "adding a title puts it at the end of the list, not yet started" do
+  test "when TMDB can't be reached, the search says so" do
+    FakeTmdb.unreachable = true
+
+    get new_group_list_list_entry_path(@group, @list, q: "arrival")
+
+    assert_response :success
+    assert_select ".alert-danger", "Couldn't reach TMDB just now. Please try again."
+    assert_select "p", text: /No movies or shows match/, count: 0
+  end
+
+  test "a show's seasons each have an Add button, without specials" do
+    get seasons_group_list_list_entries_path(@group, @list, tmdb_show_id: 136315, q: "the bear")
+
+    assert_response :success
+    assert_select "h1", "The Bear"
+    assert_equal [ "Season 1", "Season 2", "Season 3", "Season 4", "Season 5" ], css_select(".title-name").map(&:text)
+    assert_select "li:first-child", text: /2022 · 8 episodes/
+    assert_select "form input[name=season][value='1']"
+    assert_select "a[href=?]", new_group_list_list_entry_path(@group, @list, q: "the bear"), text: "← Search results"
+  end
+
+  test "a season already active on the list says so" do
+    @list.add(Tmdb::Importer.new(client: Tmdb::Client.new(token: "test")).import_season(136315, 1))
+
+    get seasons_group_list_list_entries_path(@group, @list, tmdb_show_id: 136315)
+
+    assert_select "li:first-child", text: /On this list/
+    assert_select "li:first-child button", count: 0
+  end
+
+  test "when TMDB can't be reached, the seasons page sends you back to search" do
+    FakeTmdb.unreachable = true
+
+    get seasons_group_list_list_entries_path(@group, @list, tmdb_show_id: 136315, q: "the bear")
+
+    assert_redirected_to new_group_list_list_entry_path(@group, @list, q: "the bear")
+    assert_equal "Couldn't reach TMDB just now. Please try again.", flash[:alert]
+  end
+
+  test "adding a TMDB movie imports it and puts it at the end of the list, not yet started" do
     @list.add(create(:movie, name: "First"))
-    movie = create(:movie, name: "Arrival")
 
-    assert_difference "@list.list_entries.count", 1 do
-      post group_list_list_entries_path(@group, @list), params: { title_id: movie.id }
+    assert_difference [ "Title.count", "@list.list_entries.count" ], 1 do
+      post group_list_list_entries_path(@group, @list), params: { tmdb_movie_id: 329865, q: "arrival" }
     end
 
     assert_redirected_to group_list_path(@group, @list)
     assert_equal "Added Arrival.", flash[:notice]
     follow_redirect!
     assert_equal [ "First", "Arrival" ], css_select("ol > li .fw-medium").map(&:text)
-    assert @list.list_entries.find_by!(title: movie).not_started?
+    assert @list.list_entries.find_by!(title: Title.find_by!(tmdb_id: 329865)).not_started?
+  end
+
+  test "adding a movie that's already in the catalog reuses it" do
+    import_movie
+
+    assert_no_difference "Title.count" do
+      post group_list_list_entries_path(@group, @list), params: { tmdb_movie_id: 329865 }
+    end
+    assert_equal "Added Arrival.", flash[:notice]
+  end
+
+  test "adding a season imports it with its episodes" do
+    post group_list_list_entries_path(@group, @list), params: { tmdb_show_id: 136315, season: 1, q: "the bear" }
+
+    assert_equal "Added The Bear: Season 1.", flash[:notice]
+    season = @list.list_entries.sole.title
+    assert_equal [ 136315, 1, 8 ], [ season.tmdb_id, season.season, season.episodes.count ]
+  end
+
+  test "a title already in the catalog can be added by its ID" do
+    movie = create(:movie, name: "Arrival", tmdb_id: nil)
+
+    post group_list_list_entries_path(@group, @list), params: { title_id: movie.id }
+
+    assert_equal "Added Arrival.", flash[:notice]
   end
 
   test "adding a title that's already active is refused" do
-    movie = create(:movie, name: "Arrival")
-    @list.add(movie)
+    @list.add(import_movie)
 
     assert_no_difference "ListEntry.count" do
-      post group_list_list_entries_path(@group, @list), params: { title_id: movie.id, q: "Arr" }
+      post group_list_list_entries_path(@group, @list), params: { tmdb_movie_id: 329865, q: "Arr" }
     end
 
     assert_redirected_to new_group_list_list_entry_path(@group, @list, q: "Arr")
     assert_equal "Arrival is already on this list.", flash[:alert]
+  end
+
+  test "when TMDB fails while adding, nothing is added and the search says so" do
+    FakeTmdb.unreachable = true
+
+    assert_no_difference [ "Title.count", "ListEntry.count" ] do
+      post group_list_list_entries_path(@group, @list), params: { tmdb_movie_id: 329865, q: "arrival" }
+    end
+
+    assert_redirected_to new_group_list_list_entry_path(@group, @list, q: "arrival")
+    assert_equal "Couldn't reach TMDB just now. Please try again.", flash[:alert]
   end
 
   test "each list row links to the entry's details" do
@@ -144,7 +240,12 @@ class Groups::Lists::ListEntriesControllerTest < ActionDispatch::IntegrationTest
   end
 
   private
+    # The TMDB results (the first list on the page).
     def result_names
-      css_select("li .title-name").map(&:text)
+      css_select("ul:first-of-type li .title-name").map(&:text)
+    end
+
+    def import_movie
+      Tmdb::Importer.new(client: Tmdb::Client.new(token: "test")).import_movie(329865)
     end
 end

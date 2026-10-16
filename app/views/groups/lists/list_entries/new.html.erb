@@ -5,17 +5,51 @@
 <h1 class="h3 mb-3">Add to <%= @list.name %></h1>
 
 <%= form_with url: new_group_list_list_entry_path(Current.group, @list), method: :get, class: "mb-3" do |form| %>
-  <%= form.label :q, "Search titles", class: "visually-hidden" %>
+  <%= form.label :q, "Search movies and shows", class: "visually-hidden" %>
   <div class="input-group">
-    <%= form.search_field :q, value: @query, autofocus: true, placeholder: "Search titles", class: "form-control" %>
+    <%= form.search_field :q, value: @query, autofocus: true, placeholder: "Search movies and shows",
+          class: "form-control" %>
     <%= form.submit "Search", name: nil, class: "btn btn-primary" %>
   </div>
 <% end %>
 
 <% if @query.present? %>
-  <% if @titles.any? %>
+  <% if @results.any? %>
     <ul class="list-group mb-3">
-      <% @titles.each do |title| %>
+      <% @results.each do |result| %>
+        <li class="list-group-item d-flex align-items-center gap-2">
+          <%= poster_thumb(result.poster_path) %>
+          <span class="flex-grow-1">
+            <span class="d-flex align-items-baseline gap-2">
+              <%= kind_icon(result) %>
+              <span class="title-name"><%= result.name %></span>
+            </span>
+            <% if result.year %>
+              <span class="small text-body-secondary ps-4"><%= result.year %></span>
+            <% end %>
+          </span>
+
+          <% if result.kind == "series" %>
+            <%= link_to "Seasons ›", seasons_group_list_list_entries_path(Current.group, @list, tmdb_show_id: result.tmdb_id, q: @query),
+                  class: "btn btn-sm btn-outline-primary text-nowrap", "aria-label": "Seasons of #{result.name}" %>
+          <% elsif @active_title_ids.include?(@movies_in_catalog[result.tmdb_id]&.id) %>
+            <span class="small text-body-secondary text-nowrap">On this list</span>
+          <% else %>
+            <%= button_to "Add", group_list_list_entries_path(Current.group, @list),
+                  params: { tmdb_movie_id: result.tmdb_id, q: @query },
+                  class: "btn btn-sm btn-outline-primary", "aria-label": "Add #{result.name}" %>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% elsif !@tmdb_unavailable %>
+    <p class="text-body-secondary">No movies or shows match “<%= @query %>”.</p>
+  <% end %>
+
+  <% if @hand_entered_titles&.any? %>
+    <h2 class="h6 text-body-secondary mt-4">Entered by hand</h2>
+    <ul class="list-group mb-3">
+      <% @hand_entered_titles.each do |title| %>
         <li class="list-group-item d-flex justify-content-between align-items-center gap-2">
           <span class="d-flex align-items-baseline gap-2">
             <%= kind_icon(title) %>
@@ -31,13 +65,5 @@
         </li>
       <% end %>
     </ul>
-  <% else %>
-    <p class="text-body-secondary">No titles match “<%= @query %>”.</p>
   <% end %>
 <% end %>
-
-<p class="small text-body-secondary">
-  Can't find it? Add a <%= link_to "movie", new_title_path %> or a
-  <%= link_to "season", new_title_path(kind: "series") %> to the catalog first.
-</p>
-

@@ -8,6 +8,17 @@ module TitlesHelper
                    "M10 8a2 2 0 1 1-4 0V3a2 2 0 1 1 4 0zM8 0a3 3 0 0 0-3 3v5a3 3 0 0 0 6 0V3a3 3 0 0 0-3-3" ]
   }.freeze
 
+  # A small poster for rows of titles. Decorative (the name is always printed beside it), and blank
+  # space of the same size when there's no poster, so rows stay aligned.
+  def poster_thumb(poster_path)
+    if poster_path.present?
+      image_tag Tmdb.image_url(poster_path, "w92"), alt: "", width: 40, height: 60, loading: "lazy",
+        class: "poster-thumb rounded flex-shrink-0"
+    else
+      tag.span(class: "poster-thumb rounded flex-shrink-0 bg-body-secondary d-inline-block")
+    end
+  end
+
   # A small icon telling movies, series, books, and podcasts apart at a glance. Screen readers and
   # hover tooltips get the kind's name, unless it's `decorative` because the name is printed beside it.
   def kind_icon(title, decorative: false)
