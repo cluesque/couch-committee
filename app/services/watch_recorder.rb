@@ -17,7 +17,7 @@ class WatchRecorder
     ListEntry.transaction do
       entries.each do |entry|
         entry.viewings.create!(group: @group, episode: @episode, date: @date)
-        entry.update!(state: entry.remaining_episodes.empty? ? :watched : :in_progress)
+        entry.update!(state: entry.state_from_viewings)
       end
     end
 

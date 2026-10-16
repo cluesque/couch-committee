@@ -20,10 +20,30 @@ class Groups::Lists::ListEntries::ViewingsController < ApplicationController
     render :new, status: :unprocessable_content
   end
 
+  # Unwatches: undoes the watch on every list it was recorded on (see WatchRemover). Offered from
+  # History, so the entry may be finished.
+  def destroy
+    viewing = @list_entry.viewings.find(params[:id])
+    others = WatchRemover.call(viewing).map { |removed| removed.list_entry.list }.uniq - [ @list ]
+
+    redirect_to group_list_history_path(Current.group, @list), status: :see_other, notice: [
+      "Unwatched #{watch_label(viewing.episode)}.",
+      ("Also removed from #{others.map(&:name).sort.to_sentence}." if others.any?)
+    ].compact.join(" ")
+  rescue WatchRemover::Refused => refusal
+    redirect_to group_list_history_path(Current.group, @list), status: :see_other, alert: refusal.message
+  end
+
   private
     def set_list_entry
       @list = Current.group.lists.find(params[:list_id])
-      @list_entry = @list.list_entries.active.includes(:viewings, title: :episodes).find(params[:list_entry_id])
+      entries = action_name == "destroy" ? @list.list_entries : @list.list_entries.active
+      @list_entry = entries.includes(:viewings, title: :episodes).find(params[:list_entry_id])
+    end
+
+    def watch_label(episode)
+      title = @list_entry.title
+      title.movie? ? title.full_name : "episode #{episode.number} of #{title.full_name}"
     end
 
     def viewing_params

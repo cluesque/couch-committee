@@ -132,6 +132,16 @@ single watch event can produce multiple `Viewing` rows (one per list the Title i
 active in) rather than a single canonical row — accepted for now in exchange for not needing any
 shared mutable "resolved by" pointer between entries.
 
+### Unwatching
+A recorded watch can be undone from a List's history (`WatchRemover`). Since recording put a
+`Viewing` on every active entry for the Title across the Group's Lists, unwatching deletes all of
+them: every `Viewing` in the Group for that same Episode and date. No record of the undo is kept.
+Each affected entry then takes the state its remaining viewings call for (`not_started`,
+`in_progress`, or `watched`), so a finished season or movie can return to the active list. A
+`cancelled` entry stays cancelled. If a finished entry would reopen while a rewatch of the same
+Title is already active on its List, the unwatch is refused, since a List can't hold two active
+entries for one Title.
+
 ### "Next episode" / season progress
 For a season `ListEntry`, the next episode to watch is the lowest-numbered `Episode` of that Title
 with no `Viewing` scoped to that specific `list_entry`. Because `Viewing`s are scoped per

@@ -19,7 +19,7 @@ class RewatchingTest < ApplicationSystemTestCase
     assert_text "Nothing on this list yet."
 
     click_on "History"
-    click_on "Arrival"
+    click_link "Arrival"
     click_on "Watch again"
 
     assert_text "Added Arrival again."
