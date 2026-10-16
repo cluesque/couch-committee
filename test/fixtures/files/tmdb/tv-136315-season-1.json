@@ -69,5 +69,39 @@
       "still_path": "/yU4KuhaRqwTRqEl2GrQULGPBJCN.jpg",
       "runtime": 48
     }
-  ]
+  ],
+  "credits": {
+    "cast": [
+      {
+        "name": "Jeremy Allen White",
+        "character": "Carmen 'Carmy' Berzatto",
+        "order": 0
+      },
+      {
+        "name": "Ebon Moss-Bachrach",
+        "character": "Richard 'Richie' Jerimovich",
+        "order": 1
+      },
+      {
+        "name": "Ayo Edebiri",
+        "character": "Sydney Adamu",
+        "order": 2
+      },
+      {
+        "name": "Lionel Boyce",
+        "character": "Marcus Brooks",
+        "order": 3
+      },
+      {
+        "name": "Abby Elliott",
+        "character": "Natalie 'Sugar' Berzatto",
+        "order": 4
+      },
+      {
+        "name": "Liza Colón-Zayas",
+        "character": "Bettina 'Tina' Marrero",
+        "order": 6
+      }
+    ]
+  }
 }

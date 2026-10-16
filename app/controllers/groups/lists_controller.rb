@@ -3,8 +3,15 @@ class Groups::ListsController < ApplicationController
 
   before_action :set_list, only: %i[ show edit update ]
 
+  KINDS = %w[ movie series ].freeze
+
+  # Optionally just the movies, or just the series (`kind`).
   def show
-    @entries = @list.list_entries.active.includes(:viewings, title: :episodes).order(:sequence)
+    entries = @list.list_entries.active.includes(:viewings, title: :episodes).order(:sequence).to_a
+    @kind = params[:kind].presence_in(KINDS)
+    @counts = entries.map { |entry| entry.title.kind }.tally
+    @total = entries.size
+    @entries = @kind ? entries.select { |entry| entry.title.kind == @kind } : entries
   end
 
   def new

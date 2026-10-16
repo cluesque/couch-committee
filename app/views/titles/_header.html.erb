@@ -12,6 +12,9 @@
     <% if title.genres.present? %>
       <p class="small text-body-secondary mb-1"><%= title.genres %></p>
     <% end %>
+    <% if title.cast_names.present? %>
+      <p class="small text-body-secondary mb-1 title-cast">Starring <%= title.cast_names %></p>
+    <% end %>
     <p class="small mb-0 d-flex flex-wrap align-items-center column-gap-3">
       <% if title.imdb_url %><%= link_to "IMDb", title.imdb_url, target: "_blank", rel: "noopener" %><% end %>
       <% if title.tmdb_url %>

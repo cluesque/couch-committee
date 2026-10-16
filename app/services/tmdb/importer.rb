@@ -33,6 +33,7 @@ module Tmdb
         runtime_minutes: movie["runtime"].presence&.nonzero?,
         rating: us_movie_certification(movie),
         imdb_id: movie["imdb_id"].presence,
+        cast_names: top_cast(movie),
         tmdb_synced_at: Time.current
       )
       episode_numbered(title, 1).assign_attributes(available_on: movie["release_date"].presence,
@@ -59,6 +60,7 @@ module Tmdb
         rating: show.dig("content_ratings", "results")&.find { |rating| rating["iso_3166_1"] == "US" }&.dig("rating").presence,
         network: show["networks"]&.first&.dig("name"),
         imdb_id: show.dig("external_ids", "imdb_id").presence,
+        cast_names: top_cast(season),
         tmdb_synced_at: Time.current
       )
       sync_episodes(title, season["episodes"])
@@ -91,6 +93,11 @@ module Tmdb
         title.episodes.each do |episode|
           episode.mark_for_destruction if episode.persisted? && !episode.number.in?(listed) && episode.viewings.none?
         end
+      end
+
+      # The first four billed, comma-separated. A season uses its own cast, not the show's over the years.
+      def top_cast(data)
+        data.dig("credits", "cast")&.sort_by { |member| member["order"].to_i }&.first(4)&.map { |member| member["name"] }&.join(", ").presence
       end
 
       def genre_names(data)

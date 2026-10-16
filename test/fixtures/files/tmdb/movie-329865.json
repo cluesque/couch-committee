@@ -77,5 +77,39 @@
         ]
       }
     ]
+  },
+  "credits": {
+    "cast": [
+      {
+        "name": "Amy Adams",
+        "character": "Louise Banks",
+        "order": 0
+      },
+      {
+        "name": "Jeremy Renner",
+        "character": "Ian Donnelly",
+        "order": 1
+      },
+      {
+        "name": "Forest Whitaker",
+        "character": "Colonel Weber",
+        "order": 2
+      },
+      {
+        "name": "Michael Stuhlbarg",
+        "character": "Agent Halpern",
+        "order": 3
+      },
+      {
+        "name": "Mark O'Brien",
+        "character": "Captain Marks",
+        "order": 4
+      },
+      {
+        "name": "Tzi Ma",
+        "character": "General Shang",
+        "order": 5
+      }
+    ]
   }
 }

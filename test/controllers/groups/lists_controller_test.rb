@@ -74,6 +74,52 @@ class Groups::ListsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "the list can show just its movies, or just its series" do
+    list = create(:list, group: @group, name: "Movie night")
+    list.add(create(:movie, name: "Arrival"))
+    list.add(create(:season, name: "The Bear"))
+    list.add(create(:movie, name: "Heat"))
+
+    get group_list_path(@group, list)
+    assert_equal [ "Arrival", "The Bear", "Heat" ], css_select("ol > li .fw-medium").map(&:text)
+    assert_select ".dropdown-toggle", text: /Showing: Movies and series/
+    assert_equal [ "Movies and series 3", "Movies 2", "Series 1" ], css_select("main .dropdown-item").map { |item| item.text.squish }
+    assert_select ".dropdown-item.active[href=?]", group_list_path(@group, list)
+
+    get group_list_path(@group, list, kind: "movie")
+    assert_equal [ "Arrival", "Heat" ], css_select("ol > li .fw-medium").map(&:text)
+    assert_select ".dropdown-toggle", text: /Showing: Movies/
+    assert_select ".dropdown-item.active[href=?]", group_list_path(@group, list, kind: "movie")
+
+    get group_list_path(@group, list, kind: "series")
+    assert_equal [ "The Bear" ], css_select("ol > li .fw-medium").map(&:text)
+  end
+
+  test "a filter with nothing in it says so" do
+    list = create(:list, group: @group)
+    list.add(create(:movie))
+
+    get group_list_path(@group, list, kind: "series")
+
+    assert_select "p", "No series on this list right now."
+  end
+
+  test "an unknown filter shows everything" do
+    list = create(:list, group: @group)
+    list.add(create(:movie))
+    list.add(create(:season))
+
+    get group_list_path(@group, list, kind: "opera")
+
+    assert_select "ol > li", count: 2
+  end
+
+  test "an empty list has no filter" do
+    get group_list_path(@group, create(:list, group: @group))
+
+    assert_select ".dropdown-toggle", count: 0
+  end
+
   test "editing a list" do
     list = create(:list, group: @group, name: "Movie night")
 

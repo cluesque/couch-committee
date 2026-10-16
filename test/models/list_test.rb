@@ -107,6 +107,19 @@ class ListTest < ActiveSupport::TestCase
     assert_equal [ later, earlier ], list.history
   end
 
+  test "reordering some entries moves them among their own places, leaving the rest put" do
+    list = create(:list)
+    first_movie = list.add(create(:movie, name: "M1"))
+    first_series = list.add(create(:season, name: "S1"))
+    second_movie = list.add(create(:movie, name: "M2"))
+    second_series = list.add(create(:season, name: "S2"))
+
+    list.reorder([ second_movie.id, first_movie.id ])
+
+    assert_equal [ second_movie, first_series, first_movie, second_series ], list.list_entries.active.order(:sequence).to_a
+    assert_equal [ 1, 2, 3, 4 ], list.list_entries.active.order(:sequence).pluck(:sequence)
+  end
+
   test "belongs to a group, which can have several lists" do
     group = create(:group)
     lists = create_list(:list, 2, group: group)

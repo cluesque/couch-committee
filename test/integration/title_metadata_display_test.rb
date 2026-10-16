@@ -18,6 +18,7 @@ class TitleMetadataDisplayTest < ActionDispatch::IntegrationTest
     assert_select "img.title-poster[src=?]", Tmdb.image_url(@arrival.poster_path, "w342")
     assert_select "p", text: /Movie · 2016 · 1h 56m · PG-13/
     assert_select "p", text: "Drama, Science Fiction, Mystery"
+    assert_select "p.title-cast", "Starring Amy Adams, Jeremy Renner, Forest Whitaker, Michael Stuhlbarg"
     assert_select "p.title-overview", text: @arrival.overview
     assert_select "a[href=?]", "https://www.imdb.com/title/tt2543164/", text: "IMDb"
     assert_select "a[href=?]", "https://www.themoviedb.org/movie/329865", text: "TMDB"
@@ -46,6 +47,7 @@ class TitleMetadataDisplayTest < ActionDispatch::IntegrationTest
     assert_select "img.title-poster", count: 0
     assert_select "a", text: "IMDb", count: 0
     assert_select "p.title-overview", count: 0
+    assert_select "p.title-cast", count: 0
   end
 
   test "a linked title offers a refresh, back to the page it's on" do

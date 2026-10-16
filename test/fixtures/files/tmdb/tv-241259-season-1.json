@@ -61,5 +61,24 @@
       "still_path": "/db23JLHDxQ4HSqlsuKFm3YWhlSA.jpg",
       "runtime": 32
     }
-  ]
+  ],
+  "credits": {
+    "cast": [
+      {
+        "name": "Richard Gadd",
+        "character": "Donny Dunn",
+        "order": 0
+      },
+      {
+        "name": "Jessica Gunning",
+        "character": "Martha Scott",
+        "order": 1
+      },
+      {
+        "name": "Nava Mau",
+        "character": "Teri",
+        "order": 2
+      }
+    ]
+  }
 }

@@ -23,6 +23,15 @@ class Tmdb::ImporterTest < ActiveSupport::TestCase
     end
   end
 
+  test "a movie keeps its first four billed cast members" do
+    assert_equal "Amy Adams, Jeremy Renner, Forest Whitaker, Michael Stuhlbarg", @importer.import_movie(329865).cast_names
+  end
+
+  test "a season keeps its own first four cast members, or as many as it has" do
+    assert_equal "Jeremy Allen White, Ebon Moss-Bachrach, Ayo Edebiri, Lionel Boyce", @importer.import_season(136315, 2).cast_names
+    assert_equal "Richard Gadd, Jessica Gunning, Nava Mau", @importer.import_season(241259, 1).cast_names
+  end
+
   test "a movie's rating is its first non-blank US certification" do
     assert_equal "PG-13", @importer.import_movie(329865).rating
   end
