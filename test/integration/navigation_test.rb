@@ -23,8 +23,7 @@ class NavigationTest < ActionDispatch::IntegrationTest
       new_group_list_list_entry_cancellation_path(group, list, entry) =>
         [ group_list_list_entry_path(group, list, entry), "Arrival" ],
       titles_path => [ root_path, "Home" ],
-      title_path(movie) => [ titles_path, "Titles" ],
-      new_title_path => [ titles_path, "Titles" ]
+      title_path(movie) => [ titles_path, "Titles" ]
     }.each do |page, (parent, label)|
       get page
 

@@ -1,8 +1,0 @@
-<%= form.fields_for :episodes do |episode_form| %>
-  <%= episode_form.hidden_field :number %>
-  <div class="mb-3">
-    <%= episode_form.label :available_on, "Release date", class: "form-label" %>
-    <%= episode_form.date_field :available_on, class: "form-control" %>
-    <div class="form-text">Optional.</div>
-  </div>
-<% end %>

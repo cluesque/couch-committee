@@ -17,3 +17,9 @@
 .kind-icon-series { color: #1e4b8f; }
 .kind-icon-book,
 .kind-icon-podcast { color: var(--bs-secondary-color); }
+
+.poster-thumb {
+  width: 40px;
+  height: 60px;
+  object-fit: cover;
+}

@@ -20,6 +20,7 @@ Rails.application.routes.draw do
         resource :history, only: :show, module: :lists
         resources :list_entries, only: %i[ show new create ], module: :lists do
           patch :reorder, on: :collection
+          get :seasons, on: :collection
           scope module: :list_entries do
             resources :viewings, only: %i[ new create ]
             resource :cancellation, only: %i[ new create ]
@@ -29,7 +30,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :titles, only: %i[ index show new create ]
+  resources :titles, only: %i[ index show ]
 
   root "groups#index"
 end

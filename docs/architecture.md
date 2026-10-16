@@ -91,8 +91,8 @@ a series season (Title + a list of Episodes, added via a small repeating nested 
 deliberately plain — no external metadata lookup/autocomplete; that's exactly the "importing"
 feature that's out of scope for now.
 
-**Planned replacement:** titles will be imported from TMDB through a search, and these hand-entry
-forms removed. See `docs/title-metadata.md` and Phases 11–16 of `docs/implementation-plan.md`.
+**Replaced in Phase 13:** titles are now imported from TMDB through the add-a-title search, and
+these hand-entry forms are gone. See `docs/title-metadata.md`.
 
 ## Routes/controllers (sketch)
 
@@ -101,9 +101,9 @@ SessionsController          # google_sign_in callback, destroy (logout)
 GroupsController             # index (my groups), show, new, create
 Groups::MembershipsController   # invite/remove users, nested under group
 Groups::ListsController     # show, new, create, edit, update — nested under group (the group page lists them)
-TitlesController                # the global catalog: browse, plus manual create of a movie/season
-                                # (+ nested episodes) — not group-nested, since Titles are global
-Groups::Lists::ListEntriesController  # new (search the catalog), create (add a title), reorder, cancel — nested under list
+TitlesController                # browse the global catalog — not group-nested, since Titles are global
+Groups::Lists::ListEntriesController  # new (search TMDB), seasons (pick a show's season), create (import
+                                # and add a title), reorder — nested under list
 Groups::Lists::ListEntries::ViewingsController  # new/create — the "Watch" form, from an entry;
                                 # WatchRecorder resolves it across the group's lists
 ```
