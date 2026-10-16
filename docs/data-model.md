@@ -51,7 +51,8 @@ A "season" is not a separate model. A season of a series is its own `Title` row 
 
 Titles are a global catalog, not owned by a Group. They're imported from TMDB when someone adds
 one to a List (see `docs/title-metadata.md`). Titles entered by hand before that (Phase 4's
-forms, since removed) remain, with no `tmdb_id`. Group-specific "bespoke" Titles may come later
+forms, since removed) remain, with no `tmdb_id`, until someone links one to TMDB from its page
+("Find on TMDB"). Linking keeps its Episodes, matched by number, so its Viewings stay intact. Group-specific "bespoke" Titles may come later
 as the exception. Because the catalog is shared and will grow, adding a
 Title to a List should be a search, not a pick-list of every Title.
 
