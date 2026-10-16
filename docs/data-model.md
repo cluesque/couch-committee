@@ -39,6 +39,7 @@ A User is a member of a given Group at most once.
 - `tmdb_id` — optional; a movie's TMDB movie ID, or a season's TMDB *show* ID
 - `imdb_id`, `overview`, `poster_path`, `backdrop_path`, `genres` (comma-separated names),
   `runtime_minutes` (movies), `rating` (US certification or TV rating), `network` (series),
+  `cast_names` (first four billed, comma-separated),
   `tmdb_synced_at` — all optional, filled in by importing from TMDB (`Tmdb::Importer`)
 
 A TMDB movie is in the catalog at most once, and so is each season of a TMDB show. Two partial

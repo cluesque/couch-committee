@@ -14,7 +14,7 @@ module Tmdb
     end
 
     def movie(id)
-      get("movie/#{id}", append_to_response: "release_dates")
+      get("movie/#{id}", append_to_response: "release_dates,credits")
     end
 
     def tv(id)
@@ -22,7 +22,7 @@ module Tmdb
     end
 
     def season(tv_id, season_number)
-      get("tv/#{tv_id}/season/#{season_number}")
+      get("tv/#{tv_id}/season/#{season_number}", append_to_response: "credits")
     end
 
     # Where to stream, rent, or buy, by country code. `kind` is a Title kind: "movie" or "series".

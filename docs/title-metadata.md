@@ -84,6 +84,7 @@ page never calls TMDB. The one exception is where-to-watch, which changes too of
 | `runtime_minutes` | movie runtime | (blank; episodes carry their own) |
 | `rating` | US certification (`release_dates`) | US TV rating (`content_ratings`) |
 | `network` | (blank) | the show's first network |
+| `cast_names` | first four billed (`credits`), comma-separated | that season's own first four (season `credits`) |
 | `tmdb_synced_at` | when it was last imported or refreshed | same |
 
 **On Episode** (beyond today's `name`, `number`, `available_on`): `overview`, `still_path` (an
@@ -96,7 +97,7 @@ page (`/movie/{id}`, or `/tv/{id}/season/{n}`).
 **Fetched live, cached for a few hours**: where to watch (streaming, rent, or buy, for one
 country), credited to JustWatch.
 
-**Not kept for now**: cast and crew, trailers, vote averages, taglines. The TMDB link covers
+**Not kept for now**: the rest of the cast, crew, trailers, vote averages, taglines. The TMDB link covers
 them for anyone curious.
 
 Everything stays in plain string, text, and integer columns (no JSON columns), in keeping with the
