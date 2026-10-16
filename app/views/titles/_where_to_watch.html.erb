@@ -1,0 +1,6 @@
+<%# Fills in from Titles::WatchProvidersController once it scrolls into view. %>
+<% if title.tmdb_id %>
+  <%= turbo_frame_tag "where_to_watch", src: title_watch_providers_path(title), loading: :lazy, class: "d-block mb-3" do %>
+    <p class="small text-body-secondary mb-0">Checking where to watch…</p>
+  <% end %>
+<% end %>

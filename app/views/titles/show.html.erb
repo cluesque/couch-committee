@@ -3,6 +3,7 @@
 <%= back_link "Titles", titles_path %>
 
 <%= render "titles/header", title: @title %>
+<%= render "titles/where_to_watch", title: @title %>
 
 <% if @title.movie? %>
   <% if (released_on = @title.episodes.first&.available_on) %>
