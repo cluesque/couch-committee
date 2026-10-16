@@ -50,10 +50,13 @@ data from Gracenote (Nielsen) or TiVo instead. That's priced for companies, not 
   free TMDB account's settings.
 - **Endpoints this app would use:**
   - `GET /3/search/movie?query=…` and `GET /3/search/tv?query=…` (or `/3/search/multi`)
-  - `GET /3/movie/{id}`: title, release date, poster
-  - `GET /3/tv/{id}`: show name, poster, and a list of seasons (number, name, episode count, air date)
+  - `GET /3/movie/{id}?append_to_response=release_dates`: title, overview, release date, runtime,
+    genres, poster and backdrop, `imdb_id`, and US certification
+  - `GET /3/tv/{id}?append_to_response=external_ids,content_ratings`: show name, overview,
+    genres, networks, poster and backdrop, IMDb ID, US TV rating, and a list of seasons (number,
+    name, episode count, air date, poster)
   - `GET /3/tv/{id}/season/{season_number}`: that season's episodes (`episode_number`, `name`,
-    `air_date`, `overview`, `still_path`)
+    `air_date`, `overview`, `still_path`, `runtime`)
   - `GET /3/movie/{id}/watch/providers`, `GET /3/tv/{id}/watch/providers`: streaming, rent, and
     buy options per country, credited to JustWatch
   - `GET /3/configuration`: the image base URL and sizes
@@ -62,63 +65,69 @@ data from Gracenote (Nielsen) or TiVo instead. That's priced for companies, not 
 - **Attribution** means showing the TMDB logo and "This product uses the TMDB API but is not
   endorsed or certified by TMDB." Watch-provider data must also credit JustWatch.
 
-## How it would fit the app
+## What we'll keep
 
-### Schema
+Everything below comes from the movie, TV show, and season endpoints, plus `append_to_response`
+to fold extra data into the same request. Imported data is stored in our own tables, so showing a
+page never calls TMDB. The one exception is where-to-watch, which changes too often to store.
 
-- `titles.tmdb_id` (integer, nullable). It holds a movie's TMDB movie ID, or a season's TMDB *show*
-  ID. A partial unique index on `(kind, tmdb_id, season)` where `tmdb_id` is present stops the
-  same movie or season from being imported twice. That also fixes the duplicate-titles gap
-  hand entry has.
-- `titles.poster_path` (string, nullable): the TMDB image path.
-- Optionally `episodes.tmdb_id`, if refreshes should match episodes by ID rather than by number.
+**On Title**
 
-Hand-entered titles keep `tmdb_id` empty, so nothing about the existing catalog has to change.
-They could be linked to TMDB later.
+| Field | Movie | Season of a series |
+|---|---|---|
+| `tmdb_id` | TMDB movie ID | TMDB *show* ID (the season number is `season`) |
+| `imdb_id` | movie's `imdb_id` | show's IMDb ID (`external_ids`); IMDb links seasons through the show |
+| `overview` | movie overview | season overview, falling back to the show's when it's blank |
+| `poster_path` | movie poster | season poster, falling back to the show's |
+| `backdrop_path` | movie backdrop | show backdrop |
+| `genres` | genre names, comma-separated | show's genre names |
+| `runtime_minutes` | movie runtime | (blank; episodes carry their own) |
+| `rating` | US certification (`release_dates`) | US TV rating (`content_ratings`) |
+| `network` | (blank) | the show's first network |
+| `tmdb_synced_at` | when it was last imported or refreshed | same |
 
-### Adding a title to a list
+**On Episode** (beyond today's `name`, `number`, `available_on`): `overview`, `still_path` (an
+episode screenshot), `runtime_minutes`. A movie's single Episode takes the movie's release date as
+`available_on`.
 
-The current "Add to <list>" search already searches the local catalog. It would also search TMDB
-and show matches not yet in the catalog:
+**Derived, not stored**: links to `https://www.imdb.com/title/{imdb_id}/` and to the title's TMDB
+page (`/movie/{id}`, or `/tv/{id}/season/{n}`).
 
-- **A movie:** picking it imports the Title plus its one Episode (`available_on` from
-  `release_date`) and adds it to the list.
-- **A series:** picking it shows the show's seasons. Picking a season imports that season as a
-  Title (`season` set), with its Episodes, and adds it to the list.
-- **Already imported:** a match that's already in the catalog (same `tmdb_id`) is just added, not
-  imported again.
+**Fetched live, cached for a few hours**: where to watch (streaming, rent, or buy, for one
+country), credited to JustWatch.
 
-The hand-entry movie and season forms stay as the fallback for anything TMDB doesn't have.
+**Not kept for now**: cast and crew, trailers, vote averages, taglines. The TMDB link covers
+them for anyone curious.
 
-### Keeping upcoming seasons current
+Everything stays in plain string, text, and integer columns (no JSON columns), in keeping with the
+database-agnostic rule in `docs/architecture.md`.
 
-Air dates and episode lists for upcoming seasons change after import. Options, simplest first:
+## Decisions
 
-1. **A "Refresh from TMDB" button** on a title. Manual, but no new infrastructure.
-2. **Refresh when viewed:** when a season with future episodes is shown and its data is more than
-   a few days old, re-fetch it. This works inline at first, but blocks the page on a slow request.
-3. **A scheduled job** that re-fetches every title with future-dated episodes, say nightly. This
-   needs a job runner, and none is installed (the architecture doc deliberately left out Solid
-   Queue). It would be the first reason to add one.
+- **No more typing titles.** "Add a title" searches TMDB, and picking a result imports it. The
+  hand-entry movie and season forms are removed. Titles entered by hand before this keep working,
+  and each can be linked to its TMDB match later.
+- **One Title per season**, as in the data model today. Picking a TV show leads to a choice of its
+  seasons. TMDB's "Season 0" (specials) is left out for now.
+- **Imports are idempotent.** A Title is identified by `(kind, tmdb_id, season)`, enforced by a
+  partial unique index, so importing again refreshes the existing Title instead of duplicating it.
+  A refresh never deletes an episode that has viewings.
+- **Keeping upcoming seasons current** starts with a "Refresh from TMDB" button. A scheduled job
+  would need a job runner, and none is installed yet; it's worth adding only if stale air dates
+  turn out to matter.
+- **A small Faraday client of our own** (`Tmdb::Client`), not a gem. Every TMDB gem on rubygems.org
+  is stale or brand new, and the app needs only about six endpoints. Tests stub it with Faraday's
+  test adapter and canned JSON, as `test/support/fake_google.rb` does for Google.
+- **Images link straight to `image.tmdb.org`.** The base URL is configurable, so tests can point it
+  somewhere that doesn't need the network.
 
-Recommendation: start with 1, and move to 3 if keeping dates fresh turns out to matter.
-
-### Practicalities
-
-- **Credentials:** a `tmdb.api_read_access_token` entry in `config/credentials.yml.enc`.
-- **HTTP client:** Faraday is already in the bundle (through `oauth2`). A small `Tmdb::Client`
-  wrapping the endpoints above would keep the rest of the app unaware of TMDB's response shapes.
-- **Tests:** stub TMDB the way `test/support/fake_google.rb` stubs Google, with Faraday's test
-  adapter and canned JSON responses. No network calls in tests.
-- **Network:** this dev sandbox's firewall would need `api.themoviedb.org` (and `image.tmdb.org`
-  for images) approved. Fly.io has open egress.
-- **Rate limits:** TMDB's limits are far above what a household app will ever send. Caching the
-  imported data in our own tables means pages never call TMDB at all.
+The build order is in `docs/implementation-plan.md` (Phases 11–16).
 
 ## Open questions
 
-- Which country to use for streaming availability. Presumably US to start; it could become a
-  per-group or per-user setting.
-- Whether to show posters in lists (more visual, but heavier on a phone) or only on a title's page.
-- Books and podcasts aren't covered by TMDB. Open Library and Podcast Index are the equivalent
+- **Posters in list rows:** small thumbnails make lists easier to scan but heavier on a phone.
+  Recommendation: thumbnails in list rows and search results, and full-size only on a title's
+  page.
+- **Streaming country:** presumably US to start. It could become a per-group setting.
+- **Books and podcasts** aren't covered by TMDB. Open Library and Podcast Index are the equivalent
   sources if those kinds ever get entry forms.
