@@ -35,6 +35,8 @@
         params: { title_id: title.id }, form_class: "mb-3", class: "btn btn-primary" %>
 <% end %>
 
+<%= render "titles/where_to_watch", title: title %>
+
 <% if title.movie? %>
   <% if (released_on = title.episodes.first&.available_on) %>
     <p>Released <%= l released_on, format: :long %></p>

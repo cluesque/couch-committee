@@ -34,6 +34,7 @@ Rails.application.routes.draw do
     scope module: :titles do
       resource :refresh, only: :create
       resource :tmdb_link, only: %i[ new create ]
+      resource :watch_providers, only: :show
     end
   end
 

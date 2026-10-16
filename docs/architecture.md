@@ -64,6 +64,9 @@ object framework (dry-rb, interactor, etc.) — just a plain class with a `.call
 - A Turbo Frame for the "Watch" form, which opens in place on an entry's detail page. The detail
   view itself is an ordinary Turbo Drive page: a frame inside the sortable list would fight the
   drag handles, and Drive already avoids a full reload.
+- A lazy Turbo Frame for "Where to watch" on title and entry pages. It's fetched live from TMDB
+  (and cached for a few hours), so loading it separately keeps a slow TMDB call from holding up
+  the page.
 - No Turbo Streams so far. Recording a watch redirects back to the list, which re-renders with
   the new state, and a reorder is already reflected in the DOM before it's saved. Streams would earn
   their place only if other members' open pages had to update live.
