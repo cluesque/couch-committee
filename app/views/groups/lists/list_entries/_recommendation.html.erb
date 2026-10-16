@@ -1,0 +1,14 @@
+<%# Why it's on the list. The edit form opens in place of this frame. %>
+<%= turbo_frame_tag "recommendation", class: "d-block mb-3" do %>
+  <% if entry.recommendation %>
+    <figure class="mb-0">
+      <blockquote class="mb-1 fst-italic recommendation">“<%= entry.recommendation %>”</blockquote>
+      <figcaption class="small">
+        <%= link_to "Edit recommendation", edit_group_list_list_entry_recommendation_path(Current.group, entry.list_id, entry) %>
+      </figcaption>
+    </figure>
+  <% else %>
+    <%= link_to "Add a recommendation", edit_group_list_list_entry_recommendation_path(Current.group, entry.list_id, entry),
+          class: "small" %>
+  <% end %>
+<% end %>

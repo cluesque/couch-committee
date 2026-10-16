@@ -20,10 +20,11 @@ Rails.application.routes.draw do
         resource :history, only: :show, module: :lists
         resources :list_entries, only: %i[ show new create ], module: :lists do
           patch :reorder, on: :collection
-          get :seasons, on: :collection
+          match :seasons, on: :collection, via: %i[ get post ]
           scope module: :list_entries do
             resources :viewings, only: %i[ new create ]
             resource :cancellation, only: %i[ new create ]
+            resource :recommendation, only: %i[ edit update ]
           end
         end
       end
