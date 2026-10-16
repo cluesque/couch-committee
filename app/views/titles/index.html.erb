@@ -2,13 +2,8 @@
 
 <%= back_link "Home", root_path %>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h1 class="h3 mb-0">Titles</h1>
-  <div class="d-flex gap-2">
-    <%= link_to "Add a movie", new_title_path, class: "btn btn-primary btn-sm" %>
-    <%= link_to "Add a season", new_title_path(kind: "series"), class: "btn btn-primary btn-sm" %>
-  </div>
-</div>
+<h1 class="h3 mb-1">Titles</h1>
+<p class="text-body-secondary small mb-3">Everything anyone has added to a list, from TMDB.</p>
 
 <% if @titles.any? %>
   <div class="list-group mb-3">
@@ -20,6 +15,6 @@
     <% end %>
   </div>
 <% else %>
-  <p class="text-body-secondary">No titles yet. Add a movie or a season to start the catalog.</p>
+  <p class="text-body-secondary">No titles yet. They arrive here when someone adds one to a list.</p>
 <% end %>
 

@@ -30,7 +30,7 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :titles, only: %i[ index show new create ]
+  resources :titles, only: %i[ index show ]
 
   root "groups#index"
 end

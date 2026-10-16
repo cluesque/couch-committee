@@ -49,10 +49,10 @@ NULL and unique indexes treat NULLs as distinct. Hand-entered Titles have no `tm
 A "season" is not a separate model. A season of a series is its own `Title` row (`kind: :series`,
 `season` set to that season's number). A movie is a `Title` with exactly one `Episode`.
 
-Titles are a global catalog, not owned by a Group. The intent is to eventually import them from
-authoritative sources: TMDB, per `docs/title-metadata.md`. Manual Title entry (Phase 4) is scaffolding until
-then, so hand-entered Titles are visible to every Group in the meantime. Group-specific "bespoke"
-Titles may come later as the exception. Because the catalog is shared and will grow, adding a
+Titles are a global catalog, not owned by a Group. They're imported from TMDB when someone adds
+one to a List (see `docs/title-metadata.md`). Titles entered by hand before that (Phase 4's
+forms, since removed) remain, with no `tmdb_id`. Group-specific "bespoke" Titles may come later
+as the exception. Because the catalog is shared and will grow, adding a
 Title to a List should be a search, not a pick-list of every Title.
 
 ### Episode

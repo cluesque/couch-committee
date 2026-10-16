@@ -1,5 +1,5 @@
 class Title < ApplicationRecord
-  has_many :episodes, -> { order(:number) }, dependent: :destroy, inverse_of: :title
+  has_many :episodes, -> { order(:number) }, dependent: :destroy, inverse_of: :title, autosave: true
   has_many :list_entries
 
   enum :kind, { movie: 0, series: 1, book: 2, podcast: 3 }, validate: true
@@ -12,7 +12,6 @@ class Title < ApplicationRecord
   validate :episode_numbers_are_unique
   validates :tmdb_id, uniqueness: { scope: %i[ kind season ], message: "is already in the catalog" }, allow_nil: true
 
-  accepts_nested_attributes_for :episodes
 
   # Case-insensitive on both SQLite (LIKE) and Postgres (ILIKE).
   scope :search, ->(query) { where(arel_table[:name].matches("%#{sanitize_sql_like(query)}%")).order(:name, :season) }
@@ -37,7 +36,7 @@ class Title < ApplicationRecord
       errors.add(:base, "A movie has exactly one episode") unless episodes.reject(&:marked_for_destruction?).one?
     end
 
-    # Episode's own uniqueness validation can't see unsaved siblings, e.g. in one season form.
+    # Episode's own uniqueness validation can't see unsaved siblings, e.g. a season mid-import.
     def episode_numbers_are_unique
       numbers = episodes.reject(&:marked_for_destruction?).filter_map(&:number)
       errors.add(:base, "Episode numbers must be unique") if numbers.uniq.size < numbers.size
