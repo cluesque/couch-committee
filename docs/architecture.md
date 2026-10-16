@@ -91,6 +91,9 @@ a series season (Title + a list of Episodes, added via a small repeating nested 
 deliberately plain — no external metadata lookup/autocomplete; that's exactly the "importing"
 feature that's out of scope for now.
 
+**Planned replacement:** titles will be imported from TMDB through a search, and these hand-entry
+forms removed. See `docs/title-metadata.md` and Phases 11–16 of `docs/implementation-plan.md`.
+
 ## Routes/controllers (sketch)
 
 ```

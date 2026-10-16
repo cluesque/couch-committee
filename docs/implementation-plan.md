@@ -117,9 +117,78 @@ and behavior rules this implements.
 - **Done when**: CI is green end-to-end and the app is usable top-to-bottom on a phone-width
   viewport.
 
+## Phase 11 — TMDB client and credit
+Titles come from TMDB from here on. The research, the fields kept, and the decisions behind these
+phases are in `docs/title-metadata.md`.
+- Get a TMDB account and its "API Read Access Token", and store it as `tmdb.api_read_access_token`
+  in credentials. The dev sandbox needs `api.themoviedb.org` and `image.tmdb.org` approved.
+- `Tmdb::Client` on Faraday (already in the bundle), with the bearer token, JSON parsing, short
+  timeouts, and a `Tmdb::Error` for failures. Methods: `search` (movies and TV, without people),
+  `movie`, `tv`, `season`, `watch_providers`.
+- `Tmdb.image_url(path, size)`, with a configurable base URL.
+- `FakeTmdb` test support: Faraday's test adapter serving canned JSON from
+  `test/fixtures/files/tmdb/`. Record real responses once the host is approved, trimmed to what's
+  used. Point image URLs at a local placeholder in tests so browsers don't hit the network.
+- TMDB's required credit: its logo and "This product uses the TMDB API but is not endorsed or
+  certified by TMDB" in a small footer.
+- **Done when**: the client is tested end to end against `FakeTmdb`, and the credit shows on every
+  page.
+
+## Phase 12 — Metadata columns and the importer
+- Migration: `titles` gains `tmdb_id`, `imdb_id`, `overview`, `poster_path`, `backdrop_path`,
+  `genres`, `runtime_minutes`, `rating`, `network`, `tmdb_synced_at`, plus a partial unique index on
+  `(kind, tmdb_id, season)` where `tmdb_id` is present. `episodes` gains `overview`, `still_path`,
+  `runtime_minutes`.
+- `Tmdb::Importer` service: `import_movie(tmdb_id)` and `import_season(tmdb_show_id, season_number)`.
+  Each finds or creates the Title by `(kind, tmdb_id, season)`, fills in its fields (a season falls
+  back to the show's overview and poster), and updates its Episodes by number, all in one
+  transaction. Importing again refreshes; it never deletes an episode that has viewings.
+- `Title#imdb_url` and `#tmdb_url`.
+- **Done when**: importer tests over the fixtures cover a movie, a season, the season-to-show
+  fallbacks, and a re-import that updates rather than duplicates.
+
+## Phase 13 — "Add a title" searches TMDB
+- The add-to-list search queries TMDB. Each result shows a small poster, name, year, and kind
+  icon. Results already active on the list say "On this list".
+- **A movie:** "Add" imports it (or reuses it, if it's in the catalog) and adds it to the list.
+- **A TV show:** opens a season picker (poster, season name, year, episode count; no season 0).
+  Picking a season imports it and adds it to the list.
+- Titles entered by hand earlier still show up in results when their names match, until they're
+  linked to TMDB (Phase 15).
+- If TMDB can't be reached, the search says so and offers to try again.
+- Remove hand entry: `TitlesController#new`/`create`, the movie, season, and episode-row form
+  partials, `episode_fields_controller.js`, and their tests. `/titles` keeps its browse pages.
+- **Done when**: a system test adds a movie and a season to a list through TMDB search (against
+  `FakeTmdb`), and nothing asks for a title's name anymore except the search box.
+
+## Phase 14 — Show the metadata
+- An entry's page and a title's page get a header: poster, name, a facts line (year · runtime ·
+  rating · genres · network), the overview, and links to IMDb and TMDB.
+- A season's episode list shows each episode's still and overview, kept compact on a phone, with
+  the "Next" badge and watched ticks as today.
+- Small poster thumbnails in list rows, search results, and history. The kind icon stays for
+  titles without a poster.
+- Hand-entered titles without metadata still render cleanly.
+- **Done when**: phone-width screenshots of every changed page look right, with and without
+  metadata, and request tests cover both.
+
+## Phase 15 — Refresh, and link older titles
+- "Refresh from TMDB" on a linked title's page re-imports it, picking up new air dates and
+  episodes.
+- "Find on TMDB" on a hand-entered title's page: a search prefilled with its name. Picking the
+  match links it (sets `tmdb_id`) and fills in its metadata, keeping existing episodes and
+  viewings by matching episode numbers.
+- **Done when**: a refresh updates a season's air dates, and linking a hand-entered title keeps its
+  watch history intact.
+
+## Phase 16 — Where to watch
+- A title's page shows where to stream, rent, or buy it in one country (US to start), using
+  TMDB's watch providers. Fetched live and cached for a few hours in `Rails.cache`, with
+  JustWatch's required credit.
+- **Done when**: providers show for a fixture title, and a title with none (or a TMDB outage)
+  shows a quiet "not available to stream" instead of an error.
+
 ## Explicitly deferred (per requirements doc + this conversation)
-- Automated import of seasons/episodes from an external source.
-- Streaming-service availability awareness.
 - User avatars.
 - The `Recommendation` model (suggester + reason) — `ListEntry` covers its MVP duties for now.
 - Deployment target selection.
