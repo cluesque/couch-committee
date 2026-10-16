@@ -13,7 +13,7 @@ class TitlesControllerTest < ActionDispatch::IntegrationTest
     get titles_path
 
     assert_response :success
-    assert_equal [ "Arrival", "The Bear: Season 1", "The Bear: Season 2" ],
+    assert_equal [ "Arrival", "The Bear", "The Bear: Season 2" ],
       css_select(".list-group-item .title-name").map(&:text)
   end
 

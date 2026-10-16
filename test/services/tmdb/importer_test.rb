@@ -31,7 +31,7 @@ class Tmdb::ImporterTest < ActiveSupport::TestCase
     season = @importer.import_season(136315, 1)
 
     assert season.series?
-    assert_equal [ 136315, 1, "The Bear", "The Bear: Season 1" ], [ season.tmdb_id, season.season, season.name, season.full_name ]
+    assert_equal [ 136315, 1, "The Bear", "The Bear" ], [ season.tmdb_id, season.season, season.name, season.full_name ]
     assert_equal [ "Hulu", "TV-MA", "tt14452776" ], season.values_at(:network, :rating, :imdb_id)
     assert_nil season.runtime_minutes
     assert_equal (1..8).to_a, season.episodes.map(&:number)

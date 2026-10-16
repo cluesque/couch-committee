@@ -17,7 +17,7 @@ class RecommendationsTest < ApplicationSystemTestCase
     assert_field "Why this one? (optional)", with: "Sam says it's the best show on TV"
     click_on "Add The Bear: Season 1"
 
-    assert_text "Added The Bear: Season 1."
+    assert_text "Added The Bear."
     within("ol") { assert_text "“Sam says it's the best show on TV”" }
   end
 

@@ -19,9 +19,9 @@ class TmdbLinkingTest < ApplicationSystemTestCase
     click_on "Search"
     click_on "Link to The Bear"
 
-    assert_text "Linked The Bear: Season 1 to TMDB."
+    assert_text "Linked The Bear to TMDB."
     assert_current_path group_list_list_entry_path(group, list, entry)
-    assert_selector "h1", text: "The Bear: Season 1"
+    assert_selector "h1", text: "The Bear"
     assert_text "Series · 2022 · TV-MA · Hulu"
     within("ol li:first-child") do
       assert_text "Watched:"
@@ -30,7 +30,7 @@ class TmdbLinkingTest < ApplicationSystemTestCase
     assert_selector "ol li", count: 8
 
     click_on "Refresh"
-    assert_text "Refreshed The Bear: Season 1 from TMDB."
+    assert_text "Refreshed The Bear from TMDB."
     assert_current_path group_list_list_entry_path(group, list, entry)
   end
 end

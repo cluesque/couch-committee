@@ -143,7 +143,7 @@ class Groups::Lists::ListEntriesControllerTest < ActionDispatch::IntegrationTest
   test "adding a season imports it with its episodes" do
     post group_list_list_entries_path(@group, @list), params: { tmdb_show_id: 136315, season: 1, q: "the bear" }
 
-    assert_equal "Added The Bear: Season 1.", flash[:notice]
+    assert_equal "Added The Bear.", flash[:notice]
     season = @list.list_entries.sole.title
     assert_equal [ 136315, 1, 8 ], [ season.tmdb_id, season.season, season.episodes.count ]
   end

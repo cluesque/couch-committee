@@ -16,8 +16,9 @@ class Title < ApplicationRecord
   # Case-insensitive on both SQLite (LIKE) and Postgres (ILIKE).
   scope :search, ->(query) { where(arel_table[:name].matches("%#{sanitize_sql_like(query)}%")).order(:name, :season) }
 
+  # A first season goes by the show's name alone; later ones say which season they are.
   def full_name
-    season ? "#{name}: Season #{season}" : name
+    season.to_i > 1 ? "#{name}: Season #{season}" : name
   end
 
   # A movie's release year, or the year a season started.
