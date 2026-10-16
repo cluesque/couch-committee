@@ -3,16 +3,17 @@
 
 <%= back_link @list.name, [ Current.group, @list ] %>
 
-<div class="d-flex justify-content-between align-items-start gap-2 mb-1">
-  <h1 class="h3 mb-0"><%= title.full_name %></h1>
+<%= render "titles/header", title: title %>
+
+<p class="text-body-secondary d-flex flex-wrap align-items-center gap-2">
+  <span>
+    <%= @entry.state.humanize %>
+    <% if @entry.last_viewed_on %>
+      · Last watched <%= l @entry.last_viewed_on, format: :short %>
+    <% end %>
+  </span>
   <% if @entry.upcoming? %>
     <span class="badge text-bg-warning text-nowrap">Coming <%= l @entry.next_episode.available_on, format: :short %></span>
-  <% end %>
-</div>
-<p class="text-body-secondary">
-  <%= kind_icon(title, decorative: true) %> <%= title.kind.humanize %> · <%= @entry.state.humanize %>
-  <% if @entry.last_viewed_on %>
-    · Last watched <%= l @entry.last_viewed_on, format: :short %>
   <% end %>
 </p>
 
@@ -41,24 +42,8 @@
 <% else %>
   <h2 class="h5">Episodes</h2>
   <ol class="list-group mb-3">
-    <% next_episode = @entry.next_episode %>
-    <% title.episodes.each do |episode| %>
-      <li class="list-group-item d-flex justify-content-between align-items-start gap-2">
-        <span class="me-auto">
-          <% if @entry.viewed?(episode) %>
-            <span class="text-success" title="Watched">✓</span>
-            <span class="visually-hidden">Watched:</span>
-          <% end %>
-          <%= episode.label %>
-          <% if episode == next_episode %>
-            <span class="badge text-bg-primary">Next</span>
-          <% end %>
-        </span>
-        <% if episode.available_on %>
-          <small class="text-body-secondary text-nowrap"><%= l episode.available_on, format: :short %></small>
-        <% end %>
-      </li>
-    <% end %>
+    <%= render partial: "titles/episode", collection: title.episodes,
+          locals: { entry: @entry, next_episode: @entry.next_episode } %>
   </ol>
 <% end %>
 

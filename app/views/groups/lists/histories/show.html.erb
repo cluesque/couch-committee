@@ -10,7 +10,9 @@
       <% entry = viewing ? viewing.list_entry : event %>
       <li class="list-group-item">
         <%= link_to group_list_list_entry_path(Current.group, @list, entry),
-              class: "d-block text-reset text-decoration-none" do %>
+              class: "text-reset text-decoration-none d-flex gap-2 align-items-start" do %>
+          <%= poster_thumb(entry.title.poster_path) %>
+          <div class="flex-grow-1 min-w-0">
           <div class="d-flex justify-content-between align-items-start gap-2">
             <span class="d-flex align-items-baseline gap-2">
               <%= kind_icon(entry.title) %>
@@ -30,6 +32,7 @@
               <% if entry.cancel_note %><em><%= entry.cancel_note %></em><% end %>
             </div>
           <% end %>
+          </div>
         <% end %>
       </li>
     <% end %>

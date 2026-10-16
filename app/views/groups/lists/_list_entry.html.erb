@@ -5,7 +5,9 @@
         data-sortable-handle title="Drag to reorder" aria-hidden="true">⠿</span>
 
   <%= link_to group_list_list_entry_path(Current.group, list_entry.list_id, list_entry),
-        class: "flex-grow-1 text-reset text-decoration-none" do %>
+        class: "flex-grow-1 min-w-0 text-reset text-decoration-none d-flex gap-2 align-items-start" do %>
+    <%= poster_thumb(list_entry.title.poster_path) %>
+    <div class="flex-grow-1 min-w-0">
     <div class="d-flex justify-content-between align-items-start gap-2">
       <span class="d-flex align-items-baseline gap-2">
         <%= kind_icon(list_entry.title) %>
@@ -29,5 +31,6 @@
         <% end %>
       </div>
     <% end %>
+    </div>
   <% end %>
 </li>

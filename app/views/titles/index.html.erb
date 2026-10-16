@@ -8,9 +8,12 @@
 <% if @titles.any? %>
   <div class="list-group mb-3">
     <% @titles.each do |title| %>
-      <%= link_to title, class: "list-group-item list-group-item-action d-flex align-items-baseline gap-2" do %>
-        <%= kind_icon(title) %>
-        <span class="title-name"><%= title.full_name %></span>
+      <%= link_to title, class: "list-group-item list-group-item-action d-flex align-items-center gap-2" do %>
+        <%= poster_thumb(title.poster_path) %>
+        <span class="d-flex align-items-baseline gap-2">
+          <%= kind_icon(title) %>
+          <span class="title-name"><%= title.full_name %></span>
+        </span>
       <% end %>
     <% end %>
   </div>
