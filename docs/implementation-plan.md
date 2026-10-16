@@ -142,7 +142,8 @@ phases are in `docs/title-metadata.md`.
 - `Tmdb::Importer` service: `import_movie(tmdb_id)` and `import_season(tmdb_show_id, season_number)`.
   Each finds or creates the Title by `(kind, tmdb_id, season)`, fills in its fields (a season falls
   back to the show's overview and poster), and updates its Episodes by number, all in one
-  transaction. Importing again refreshes; it never deletes an episode that has viewings.
+  transaction. For the US rating, take the first *non-empty* certification: TMDB often lists a
+  premiere release with a blank one first (Arrival does). Importing again refreshes; it never deletes an episode that has viewings.
 - `Title#imdb_url` and `#tmdb_url`.
 - **Done when**: importer tests over the fixtures cover a movie, a season, the season-to-show
   fallbacks, and a re-import that updates rather than duplicates.

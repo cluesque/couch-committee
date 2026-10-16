@@ -1,0 +1,28 @@
+{
+  "id": 136315,
+  "results": {
+    "US": {
+      "link": "https://www.themoviedb.org/tv/136315-the-bear/watch?locale=US",
+      "flatrate": [
+        {
+          "logo_path": "/5eZ872CghnHFLB1j8grszbrx0dx.png",
+          "provider_id": 337,
+          "provider_name": "Disney Plus",
+          "display_priority": 5
+        },
+        {
+          "logo_path": "/44uAnmSqvA4yBOdbPWN8YgQHjWm.png",
+          "provider_id": 15,
+          "provider_name": "Hulu",
+          "display_priority": 6
+        },
+        {
+          "logo_path": "/48bVXEIyCLSL9pZUQ7gB9ToyWto.png",
+          "provider_id": 2528,
+          "provider_name": "YouTube TV",
+          "display_priority": 38
+        }
+      ]
+    }
+  }
+}

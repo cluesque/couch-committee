@@ -1,0 +1,73 @@
+{
+  "season_number": 1,
+  "name": "Season 1",
+  "overview": "",
+  "poster_path": "/i6sJI3O1874FBdDtM0jn6fpPE0x.jpg",
+  "air_date": "2022-06-23",
+  "episodes": [
+    {
+      "episode_number": 1,
+      "name": "System",
+      "air_date": "2022-06-23",
+      "overview": "Carmy attempts to retrain the employees of The Original Beef of Chicagoland, but is faced with resistance; in need of back-up, he brings on a talented young chef to help.",
+      "still_path": "/dLZ1TQH5fQsWZFw1E6ku7C7nyJR.jpg",
+      "runtime": 28
+    },
+    {
+      "episode_number": 2,
+      "name": "Hands",
+      "air_date": "2022-06-23",
+      "overview": "A surprise health inspection reveals the cracks in the restaurant's foundation. Carmy goes head-to-head with Richie.",
+      "still_path": "/3Z0ML8dU4BMuwZIv6aSUsckBGJr.jpg",
+      "runtime": 32
+    },
+    {
+      "episode_number": 3,
+      "name": "Brigade",
+      "air_date": "2022-06-23",
+      "overview": "Carmy attends Al-Anon. Sydney struggles to gain the respect of the staff.",
+      "still_path": "/fSopyZWB9cfVkN5ZElm4HyNboU9.jpg",
+      "runtime": 30
+    },
+    {
+      "episode_number": 4,
+      "name": "Dogs",
+      "air_date": "2022-06-23",
+      "overview": "Carmy and Richie cater a kid's birthday party. Tina and Sydney work together while Marcus makes donuts.",
+      "still_path": "/i9UekfTojvrbEgtfNNRG7I9SJZZ.jpg",
+      "runtime": 31
+    },
+    {
+      "episode_number": 5,
+      "name": "Sheridan",
+      "air_date": "2022-06-23",
+      "overview": "Things go wrong in the kitchen. Sydney finds solutions.",
+      "still_path": "/5WL2XOyj0qApQtKPbMCGJHfk0Xq.jpg",
+      "runtime": 26
+    },
+    {
+      "episode_number": 6,
+      "name": "Ceres",
+      "air_date": "2022-06-23",
+      "overview": "Richie notices the neighborhood is changing. Sugar and Carmy clean up the office.",
+      "still_path": "/zwjxMrViyKE1BztLFwWm5YDgbCK.jpg",
+      "runtime": 31
+    },
+    {
+      "episode_number": 7,
+      "name": "Review",
+      "air_date": "2022-06-23",
+      "overview": "A bad day in the kitchen causes tensions to rise.",
+      "still_path": "/74UV7WHDPoHW20GfF2fgoVZvbJn.jpg",
+      "runtime": 21
+    },
+    {
+      "episode_number": 8,
+      "name": "Braciole",
+      "air_date": "2022-06-23",
+      "overview": "Things get out of control. Carmy is faced with a decision.",
+      "still_path": "/yU4KuhaRqwTRqEl2GrQULGPBJCN.jpg",
+      "runtime": 48
+    }
+  ]
+}

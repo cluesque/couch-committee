@@ -1,0 +1,57 @@
+{
+  "page": 1,
+  "results": [
+    {
+      "media_type": "tv",
+      "id": 136315,
+      "name": "The Bear",
+      "first_air_date": "2022-06-23",
+      "poster_path": "/eKfVzzEazSIjJMrw9ADa2x8ksLz.jpg",
+      "overview": "Carmy, a young fine-dining chef, comes home to Chicago to run his family sandwich shop. As he fights to transform the shop and himself, he works alongside a rough-around-the-edges crew that ultimately reveal themselves as his chosen family."
+    },
+    {
+      "media_type": "tv",
+      "id": 46080,
+      "name": "Masha and the Bear",
+      "first_air_date": "2009-01-07",
+      "poster_path": "/wPkeRunw71Mm10xQYKAwGG0NLgt.jpg",
+      "overview": "Masha is an energetic three-year-old who can’t seem to keep herself out of trouble. Bear is a warm, fatherly figure that does his best to guide his friend and keep her from harm, often ending up the unintended victim of her misadventures."
+    },
+    {
+      "media_type": "tv",
+      "id": 30773,
+      "name": "The Yogi Bear Show",
+      "first_air_date": "1961-01-30",
+      "poster_path": "/alDnwQ75JZu3V3aoa4F5w7LoyL7.jpg",
+      "overview": "From his home in Jellystone Park, Yogi Bear dreams of nothing more in life than to outwit as many unsuspecting tourists as he can and grab their prized picnic baskets all while staying one step ahead of the ever-exasperated Ranger Smith. Yogi's little buddy, Boo-Boo, tries to keep Yogi out of trouble but rarely succeeds. That's okay because not even Ranger Smith can stay mad for long at the lovable, irresistible Yogi Bear."
+    },
+    {
+      "media_type": "person",
+      "id": 2658100,
+      "name": "Bart the Bear"
+    },
+    {
+      "media_type": "person",
+      "id": 4240049,
+      "name": "The Bear"
+    },
+    {
+      "media_type": "person",
+      "id": 5315406,
+      "name": "The bear"
+    },
+    {
+      "media_type": "person",
+      "id": 6147985,
+      "name": "Bozo the Bear"
+    },
+    {
+      "media_type": "tv",
+      "id": 961,
+      "name": "B. J. and the Bear",
+      "first_air_date": "1979-02-10",
+      "poster_path": "/pFYowtsK6oYOZySPnNXf4TlIoBT.jpg",
+      "overview": "B.J. and the Bear is an American comedy series which aired on NBC from 1979 to 1981. Created by Christopher Crowe and Glen A. Larson, the series stars Greg Evigan and Claude Akins."
+    }
+  ]
+}

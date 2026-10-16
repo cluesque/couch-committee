@@ -10,6 +10,15 @@ class LayoutTest < ApplicationSystemTestCase
     assert_equal "object", evaluate_script("typeof window.Turbo")
   end
 
+  test "TMDB images come from a local placeholder, not the network" do
+    url = Tmdb.image_url("/poster.jpg", "w92")
+    assert url.start_with?("/fake_tmdb_images/")
+
+    visit url
+
+    assert_equal 200, page.status_code
+  end
+
   test "a flash message isn't replayed when going back to the page" do
     sign_in_as create(:user)
 
