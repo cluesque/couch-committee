@@ -28,6 +28,7 @@ class LayoutTest < ApplicationSystemTestCase
     assert_text "Created The Smiths."
 
     click_on "New list"
+    assert_selector "h1", text: "New list"
     go_back
 
     assert_selector "h1", text: "The Smiths"
