@@ -129,6 +129,39 @@ fly volumes list                                           # the database volume
 Run the console as the `rails` user, as above. As root, it could create database files the app
 can't write to.
 
+### Backups
+
+To take a copy of the production data offline and restore it into your development database:
+
+1. Take a snapshot on the server and download it. The app runs SQLite in WAL mode, so copying
+   `production.sqlite3` directly can miss recent writes or catch it mid-change. SQLite's `.backup`
+   makes a consistent copy even while the app is running.
+
+   ```bash
+   fly ssh console -C "sqlite3 /rails/storage/production.sqlite3 '.backup /tmp/backup.sqlite3'"
+   mkdir -p backups
+   fly ssh sftp get /tmp/backup.sqlite3 backups/couch-committee-$(date +%F).sqlite3
+   fly ssh console -C "rm /tmp/backup.sqlite3"
+   ```
+
+   The machine stops when idle. If `fly ssh` can't connect, open the app (or run
+   `fly machine start`) first.
+
+2. Restore it locally, with the development server stopped:
+
+   ```bash
+   cp backups/couch-committee-YYYY-MM-DD.sqlite3 storage/development.sqlite3
+   bin/rails db:environment:set RAILS_ENV=development   # the copy is marked "production"
+   bin/rails db:migrate                                 # in case your branch has newer migrations
+   ```
+
+`backups/` is gitignored: the copies contain real names and email addresses, so keep them
+somewhere private.
+
+Fly also snapshots the volume daily and keeps snapshots for 5 days (`fly volumes snapshots list
+<volume-id>`). Those stay on Fly and restore only as a new volume, so they're for undoing a bad
+day on the server, not for offline copies.
+
 ## Running tests
 
 ```bash
