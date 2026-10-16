@@ -16,9 +16,10 @@ class Title < ApplicationRecord
   # Case-insensitive on both SQLite (LIKE) and Postgres (ILIKE).
   scope :search, ->(query) { where(arel_table[:name].matches("%#{sanitize_sql_like(query)}%")).order(:name, :season) }
 
-  # A first season goes by the show's name alone; later ones say which season they are.
+  # A season says which one it is, except a first season with no others from its show in the catalog,
+  # which goes by the show's name alone.
   def full_name
-    season.to_i > 1 ? "#{name}: Season #{season}" : name
+    season && (season > 1 || other_seasons_in_catalog?) ? "#{name}: Season #{season}" : name
   end
 
   # A movie's release year, or the year a season started.
@@ -38,6 +39,11 @@ class Title < ApplicationRecord
   end
 
   private
+    # Seasons belong to the same show when they share its name.
+    def other_seasons_in_catalog?
+      Title.series.where(name: name).where.not(id: id).exists?
+    end
+
     def movie_has_exactly_one_episode
       errors.add(:base, "A movie has exactly one episode") unless episodes.reject(&:marked_for_destruction?).one?
     end
