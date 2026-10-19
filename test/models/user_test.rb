@@ -45,6 +45,31 @@ class UserTest < ActiveSupport::TestCase
     assert_equal [ "g-1", "pat@example.com", "Pat" ], [ user.google_id, user.email, user.display_name ]
   end
 
+  test "first sign-in starts a Just Me list with only the new user on it" do
+    user = User.from_google(google_identity(sub: "g-1", email: "pat@example.com", name: "Pat"))
+
+    assert_equal [ "Just Me" ], user.lists.map(&:name)
+    assert_equal [ user ], user.lists.sole.users
+  end
+
+  test "someone invited to a list gets a Just Me list too, on first sign-in" do
+    invited = create(:user, :invited, email: "pat@example.com")
+    create(:list, name: "Movie night", members: [ invited ])
+
+    user = User.from_google(google_identity(sub: "g-1", email: "pat@example.com", name: "Pat"))
+
+    assert_equal [ "Just Me", "Movie night" ], user.lists.map(&:name).sort
+  end
+
+  test "a returning user doesn't get another Just Me list" do
+    user = User.from_google(google_identity(sub: "g-1", email: "pat@example.com"))
+
+    assert_no_difference "List.count" do
+      User.from_google(google_identity(sub: "g-1", email: "pat@example.com"))
+    end
+    assert_equal 1, user.lists.count
+  end
+
   test "from_google finds a returning user by google_id even if their email has changed" do
     user = create(:user, google_id: "g-1", email: "old@example.com")
 

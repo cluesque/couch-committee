@@ -22,6 +22,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_url
     follow_redirect!
     assert_select "nav", text: /Pat/
+    assert_select ".list-group a", text: "Just Me"
   end
 
   test "signing in returns to the page originally requested" do

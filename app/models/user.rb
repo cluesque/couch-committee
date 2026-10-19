@@ -23,10 +23,18 @@ class User < ApplicationRecord
 
     user.google_id = identity.user_id
     user.display_name = identity.name if user.display_name.blank?
-    user.save!
+    transaction do
+      user.save!
+      user.create_just_me_list
+    end
     user
   end
   private_class_method :claim_or_create_from_google
+
+  # Everyone starts with a list of their own, on first sign-in.
+  def create_just_me_list
+    List.create!(name: "Just Me").tap { |list| list.list_memberships.create!(user: self) }
+  end
 
   def name
     display_name.presence || email
