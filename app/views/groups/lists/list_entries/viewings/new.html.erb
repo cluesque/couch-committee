@@ -1,8 +1,8 @@
 <% title = @list_entry.title %>
-<% content_for :title, "Watch #{title.full_name} · Couch Committee" %>
+<% content_for :title, "Mark #{title.full_name} as watched · Couch Committee" %>
 
 <%= back_link title.full_name, [ Current.group, @list, @list_entry ] %>
-<h1 class="h3 mb-3">Watch <%= title.full_name %></h1>
+<h1 class="h3 mb-3">Mark <%= title.full_name %> as watched</h1>
 
 <%= turbo_frame_tag "watch" do %>
   <%= form_with model: @viewing, url: group_list_list_entry_viewings_path(Current.group, @list, @list_entry),
@@ -34,7 +34,7 @@
     </div>
 
     <div>
-      <%= form.submit "Record watch", class: "btn btn-primary" %>
+      <%= form.submit "Mark watched", class: "btn btn-primary" %>
       <%= link_to "Not now", [ Current.group, @list, @list_entry ], class: "btn btn-link" %>
     </div>
   <% end %>

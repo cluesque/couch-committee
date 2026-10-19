@@ -20,8 +20,8 @@ class HistoryTest < ApplicationSystemTestCase
     assert_no_link "Saw It"
 
     click_on "Arrival"
-    click_on "Watch"
-    within("turbo-frame#watch") { click_on "Record watch" }
+    click_on "Mark as watched…"
+    within("turbo-frame#watch") { click_on "Mark watched" }
     assert_text "Watched Arrival."
 
     click_on "History"
@@ -35,6 +35,6 @@ class HistoryTest < ApplicationSystemTestCase
     assert_text "Removed"
     assert_no_text "Cancelled"
     assert_text "Too scary for a weeknight."
-    assert_no_link "Watch"
+    assert_no_link "Mark as watched…"
   end
 end

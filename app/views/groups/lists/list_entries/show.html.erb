@@ -29,13 +29,13 @@
 
 <% if @entry.active? %>
   <%= turbo_frame_tag "watch", class: "d-block mb-3" do %>
-    <%= link_to "Watch", new_group_list_list_entry_viewing_path(Current.group, @list, @entry),
+    <%= link_to "Mark as watched…", new_group_list_list_entry_viewing_path(Current.group, @list, @entry),
           class: "btn btn-primary" %>
   <% end %>
 <% elsif @active_entry %>
   <p>It's back on <%= @list.name %>: <%= link_to "see where it's up to", [ Current.group, @list, @active_entry ] %>.</p>
 <% else %>
-  <%= button_to "Watch again", group_list_list_entries_path(Current.group, @list),
+  <%= button_to "Add to list again", group_list_list_entries_path(Current.group, @list),
         params: { title_id: title.id }, form_class: "mb-3", class: "btn btn-primary" %>
 <% end %>
 

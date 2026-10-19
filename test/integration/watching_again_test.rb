@@ -15,7 +15,7 @@ class WatchingAgainTest < ActionDispatch::IntegrationTest
     get group_list_list_entry_path(@group, @list, @earlier)
 
     assert_select "form[action=?] input[name=title_id][value=?]", group_list_list_entries_path(@group, @list), @season.id.to_s
-    assert_select "button", "Watch again"
+    assert_select "button", "Add to list again"
     assert_select "turbo-frame#watch", count: 0
   end
 
@@ -53,7 +53,7 @@ class WatchingAgainTest < ActionDispatch::IntegrationTest
 
     get group_list_list_entry_path(@group, @list, @earlier)
 
-    assert_select "button", text: "Watch again", count: 0
+    assert_select "button", text: "Add to list again", count: 0
     assert_select "a[href=?]", group_list_list_entry_path(@group, @list, rewatch)
   end
 
