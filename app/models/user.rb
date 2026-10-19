@@ -1,8 +1,7 @@
 class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
-  has_many :group_memberships, dependent: :destroy
-  has_many :groups, through: :group_memberships
-  has_many :lists, through: :groups
+  has_many :list_memberships, dependent: :destroy
+  has_many :lists, through: :list_memberships
 
   normalizes :email, with: ->(email) { email.strip.downcase }
 

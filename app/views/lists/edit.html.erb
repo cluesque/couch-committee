@@ -1,0 +1,49 @@
+<% content_for :title, "Edit #{@list.name} · Couch Committee" %>
+
+<%= back_link @list.name, @list %>
+
+<h1 class="h3 mb-3">Edit list</h1>
+
+<%= render "form", list: @list %>
+
+<h2 class="h5 mt-5">Who's on it</h2>
+<ul class="list-group mb-3">
+  <% @memberships.each do |membership| %>
+    <% member = membership.user %>
+    <li class="list-group-item d-flex justify-content-between align-items-center gap-2" id="<%= dom_id(membership) %>">
+      <div class="text-break">
+        <%= member.name %>
+        <% if member.google_id.nil? %>
+          <span class="badge text-bg-secondary">Hasn't signed in yet</span>
+        <% end %>
+        <% if member.display_name.present? %>
+          <div class="small text-body-secondary"><%= member.email %></div>
+        <% end %>
+      </div>
+
+      <% if @memberships.many? %>
+        <% if member == Current.user %>
+          <%= button_to "Leave", list_membership_path(@list, membership), method: :delete,
+                class: "btn btn-sm btn-outline-danger text-nowrap",
+                form: { data: { turbo_confirm: "Leave #{@list.name}?" } } %>
+        <% else %>
+          <%= button_to "Remove", list_membership_path(@list, membership), method: :delete,
+                class: "btn btn-sm btn-outline-danger text-nowrap",
+                form: { data: { turbo_confirm: "Remove #{member.name} from #{@list.name}?" } } %>
+        <% end %>
+      <% end %>
+    </li>
+  <% end %>
+</ul>
+
+<%= form_with url: list_memberships_path(@list), class: "mb-4" do |form| %>
+  <%= form.label :email, "Add someone by email", class: "form-label" %>
+  <div class="input-group">
+    <%= form.email_field :email, required: true, autocomplete: "off", placeholder: "name@example.com",
+          class: "form-control" %>
+    <%= form.submit "Add", class: "btn btn-primary" %>
+  </div>
+  <div class="form-text">
+    No email is sent. They'll see this list when they sign in with Google using that address.
+  </div>
+<% end %>

@@ -1,0 +1,61 @@
+class ListsController < ApplicationController
+  before_action :set_list, only: %i[ show edit update ]
+
+  KINDS = %w[ movie series ].freeze
+
+  # Home: every list you're on.
+  def index
+    @lists = Current.user.lists.includes(:users).order(:name)
+  end
+
+  # Optionally just the movies, or just the series (`kind`).
+  def show
+    entries = @list.list_entries.active.includes(:viewings, title: :episodes).order(:sequence).to_a
+    @kind = params[:kind].presence_in(KINDS)
+    @counts = entries.map { |entry| entry.title.kind }.tally
+    @total = entries.size
+    @entries = @kind ? entries.select { |entry| entry.title.kind == @kind } : entries
+  end
+
+  def new
+    @list = List.new
+  end
+
+  # Whoever creates a list starts as its only member.
+  def create
+    @list = List.new(list_params)
+    @list.list_memberships.build(user: Current.user)
+
+    if @list.save
+      redirect_to @list, notice: "Created #{@list.name}."
+    else
+      render :new, status: :unprocessable_content
+    end
+  end
+
+  def edit
+    @memberships = memberships
+  end
+
+  def update
+    if @list.update(list_params)
+      redirect_to @list, notice: "Saved #{@list.name}."
+    else
+      @memberships = memberships
+      render :edit, status: :unprocessable_content
+    end
+  end
+
+  private
+    def set_list
+      @list = Current.user.lists.find(params[:id])
+    end
+
+    def memberships
+      @list.list_memberships.includes(:user).sort_by { |membership| membership.user.name.downcase }
+    end
+
+    def list_params
+      params.expect(list: [ :name, :description ])
+    end
+end

@@ -13,20 +13,18 @@ Rails.application.routes.draw do
   # google_sign_in's proceed_to target: it redirects here (a GET) once Google has answered.
   get "session/google", to: "sessions#create", as: :google_session
 
-  resources :groups, only: %i[ index show new create ] do
-    scope module: :groups do
+  resources :lists, only: %i[ index show new create edit update ] do
+    scope module: :lists do
       resources :memberships, only: %i[ create destroy ]
-      resources :lists, only: %i[ show new create edit update ] do
-        resource :history, only: :show, module: :lists
-        resources :list_entries, only: %i[ show new create ], module: :lists do
-          patch :reorder, on: :collection
-          match :seasons, on: :collection, via: %i[ get post ]
-          match :preview, on: :collection, via: %i[ get post ]
-          scope module: :list_entries do
-            resources :viewings, only: %i[ new create destroy ]
-            resource :cancellation, only: %i[ new create ]
-            resource :recommendation, only: %i[ edit update ]
-          end
+      resource :history, only: :show
+      resources :list_entries, only: %i[ show new create ] do
+        patch :reorder, on: :collection
+        match :seasons, on: :collection, via: %i[ get post ]
+        match :preview, on: :collection, via: %i[ get post ]
+        scope module: :list_entries do
+          resources :viewings, only: %i[ new create destroy ]
+          resource :cancellation, only: %i[ new create ]
+          resource :recommendation, only: %i[ edit update ]
         end
       end
     end
@@ -40,5 +38,5 @@ Rails.application.routes.draw do
     end
   end
 
-  root "groups#index"
+  root "lists#index"
 end

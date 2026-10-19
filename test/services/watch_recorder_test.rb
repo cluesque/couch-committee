@@ -2,8 +2,7 @@ require "test_helper"
 
 class WatchRecorderTest < ActiveSupport::TestCase
   setup do
-    @group = create(:group)
-    @list = create(:list, group: @group)
+    @list = create(:list)
   end
 
   test "watching a movie checks it off" do
@@ -53,7 +52,7 @@ class WatchRecorderTest < ActiveSupport::TestCase
 
   test "the same title on another list is untouched" do
     movie = create(:movie)
-    elsewhere = create(:list, group: @group).add(movie)
+    elsewhere = create(:list).add(movie)
     entry = @list.add(movie)
 
     record movie.episodes.first, entry: entry

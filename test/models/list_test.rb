@@ -120,11 +120,49 @@ class ListTest < ActiveSupport::TestCase
     assert_equal [ 1, 2, 3, 4 ], list.list_entries.active.order(:sequence).pluck(:sequence)
   end
 
-  test "belongs to a group, which can have several lists" do
-    group = create(:group)
-    lists = create_list(:list, 2, group: group)
+  test "has members, who can be on several lists" do
+    pat, sam = create_list(:user, 2)
+    ours = create(:list, members: [ pat, sam ])
+    mine = create(:list, members: [ pat ])
 
-    assert_equal lists.sort, group.lists.sort
+    assert_equal [ pat, sam ].sort, ours.users.sort
+    assert_equal [ ours, mine ].sort, pat.lists.sort
+  end
+
+  test "invite adds an existing user" do
+    list, sam = create(:list), create(:user, email: "sam@example.com")
+
+    assert_no_difference "User.count" do
+      list.invite("Sam@Example.com")
+    end
+    assert_equal [ sam ], list.users
+  end
+
+  test "invite creates a not-yet-signed-in user for a new email" do
+    list = create(:list)
+
+    list.invite("kim@example.com")
+
+    kim = User.find_by!(email: "kim@example.com")
+    assert_equal [ kim ], list.users
+    assert_nil kim.google_id
+  end
+
+  test "invite refuses an invalid email without creating anyone" do
+    list = create(:list)
+
+    assert_no_difference [ "User.count", "ListMembership.count" ] do
+      error = assert_raises(ActiveRecord::RecordInvalid) { list.invite("not an email") }
+      assert_equal [ "Email is invalid" ], error.record.errors.full_messages
+    end
+  end
+
+  test "invite refuses someone who's already on the list" do
+    sam = create(:user)
+    list = create(:list, members: [ sam ])
+
+    error = assert_raises(ActiveRecord::RecordInvalid) { list.invite(sam.email) }
+    assert_equal [ "User is already on this list" ], error.record.errors.full_messages
   end
 
   private

@@ -14,7 +14,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     assert_select "form[action=?] button", google_sign_in.authorization_path, text: "Sign in with Google"
   end
 
-  test "signing in with Google creates the user and lands on their groups" do
+  test "signing in with Google creates the user and lands on Home" do
     assert_difference [ "User.count", "Session.count" ], 1 do
       sign_in_with_google(sub: "g-1", email: "pat@example.com", name: "Pat")
     end

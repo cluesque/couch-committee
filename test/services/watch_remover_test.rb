@@ -2,8 +2,7 @@ require "test_helper"
 
 class WatchRemoverTest < ActiveSupport::TestCase
   setup do
-    @group = create(:group)
-    @list = create(:list, group: @group)
+    @list = create(:list)
   end
 
   test "unwatching a mid-season episode takes it out of the watch-through" do
@@ -53,7 +52,7 @@ class WatchRemoverTest < ActiveSupport::TestCase
   test "the same watch on another list isn't undone" do
     movie = create(:movie)
     @list.add(movie)
-    elsewhere = create(:list, group: @group).add(movie)
+    elsewhere = create(:list).add(movie)
     WatchRecorder.call(elsewhere, episode: movie.episodes.first, date: Date.new(2026, 10, 1))
 
     WatchRemover.call(record(movie.episodes.first))

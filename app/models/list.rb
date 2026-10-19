@@ -1,9 +1,18 @@
 class List < ApplicationRecord
-  belongs_to :group
+  has_many :list_memberships, dependent: :destroy
+  has_many :users, through: :list_memberships
   has_many :list_entries
   has_many :viewings, through: :list_entries
 
   validates :name, presence: true
+
+  # There's no pending-invite state: someone not yet signed up gets a User with just their email,
+  # which they claim on first Google sign-in.
+  def invite(email)
+    transaction do
+      list_memberships.create!(user: User.find_or_create_by!(email: email))
+    end
+  end
 
   # Returns the new entry, unsaved with errors if the title is already active here.
   def add(title, recommendation: nil)

@@ -3,8 +3,7 @@ require "application_system_test_case"
 class WatchingTest < ApplicationSystemTestCase
   setup do
     @pat = create(:user)
-    @group = create(:group, members: [ @pat ])
-    @movie_night = create(:list, group: @group, name: "Movie night")
+    @movie_night = create(:list, members: [ @pat ], name: "Movie night")
   end
 
   test "watching a season episode by episode until it's finished" do
@@ -12,10 +11,10 @@ class WatchingTest < ApplicationSystemTestCase
     create(:episode, title: season, number: 1, name: "Tomorrow")
     create(:episode, title: season, number: 2, name: "Next")
     entry = @movie_night.add(season)
-    detail_path = group_list_list_entry_path(@group, @movie_night, entry)
+    detail_path = list_list_entry_path(@movie_night, entry)
     sign_in_as @pat
 
-    visit group_list_path(@group, @movie_night)
+    visit list_path(@movie_night)
     click_on "The Bear: Season 3"
     assert_current_path detail_path
     click_on "Mark as watched…"
@@ -25,7 +24,7 @@ class WatchingTest < ApplicationSystemTestCase
       click_on "Mark watched"
     end
     assert_text "Watched The Bear: Season 3 · 1. Tomorrow."
-    assert_current_path group_list_path(@group, @movie_night)
+    assert_current_path list_path(@movie_night)
     assert_text "Next: 2. Next"
 
     click_on "The Bear: Season 3"
@@ -40,19 +39,19 @@ class WatchingTest < ApplicationSystemTestCase
 
   test "watching a movie checks it off on this list only" do
     movie = create(:movie, name: "Arrival")
-    anime = create(:list, group: @group, name: "Anime")
+    anime = create(:list, members: [ @pat ], name: "Anime")
     @movie_night.add(movie)
     anime.add(movie)
     sign_in_as @pat
 
-    visit group_list_path(@group, @movie_night)
+    visit list_path(@movie_night)
     click_on "Arrival"
     click_on "Mark as watched…"
     within("turbo-frame#watch") { click_on "Mark watched" }
 
     assert_text "Watched Arrival."
     assert_no_link "Arrival"
-    visit group_list_path(@group, anime)
+    visit list_path(anime)
     assert_link "Arrival"
   end
 end

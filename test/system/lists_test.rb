@@ -4,10 +4,8 @@ require "application_system_test_case"
 class ListsTest < ApplicationSystemTestCase
   test "building a list from TMDB search and seeing what's next" do
     pat = create(:user)
-    create(:group, name: "The Smiths", members: [ pat ])
     sign_in_as pat
 
-    click_on "The Smiths"
     click_on "New list"
     fill_in "Name", with: "Movie night"
     click_on "Create list"
@@ -37,13 +35,12 @@ class ListsTest < ApplicationSystemTestCase
   test "a title entered by hand before TMDB can still be added from search" do
     travel_to Date.new(2026, 10, 14)
     pat = create(:user)
-    group = create(:group, members: [ pat ])
-    list = create(:list, group: group, name: "Movie night")
+    list = create(:list, members: [ pat ], name: "Movie night")
     movie = create(:movie, name: "Sequel", tmdb_id: nil)
     movie.episodes.first.update!(available_on: Date.new(2026, 12, 25))
     sign_in_as pat
 
-    visit new_group_list_list_entry_path(group, list)
+    visit new_list_list_entry_path(list)
     fill_in "Search movies and shows", with: "sequel"
     click_on "Search"
     assert_text "Entered by hand"

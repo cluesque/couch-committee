@@ -3,12 +3,11 @@ require "application_system_test_case"
 class ReorderingTest < ApplicationSystemTestCase
   test "dragging an entry to a new place, and it stays there" do
     pat = create(:user)
-    group = create(:group, members: [ pat ])
-    @list = create(:list, group: group, name: "Movie night")
+    @list = create(:list, members: [ pat ], name: "Movie night")
     %w[ First Second Third ].each { |name| @list.add(create(:movie, name: name)) }
     sign_in_as pat
 
-    visit group_list_path(group, @list)
+    visit list_path(@list)
     drag "Third", before: "First"
 
     assert_equal %w[ Third First Second ], entry_names
