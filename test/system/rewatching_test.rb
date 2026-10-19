@@ -11,16 +11,16 @@ class RewatchingTest < ApplicationSystemTestCase
 
     visit group_list_path(group, list)
     click_on "Arrival"
-    click_on "Watch"
+    click_on "Mark as watched…"
     within("turbo-frame#watch") do
       fill_in "Watched on", with: Date.new(2026, 10, 1)
-      click_on "Record watch"
+      click_on "Mark watched"
     end
     assert_text "Nothing on this list yet."
 
     click_on "History"
     click_link "Arrival"
-    click_on "Watch again"
+    click_on "Add to list again"
 
     assert_text "Added Arrival again."
     within("ol") { assert_link "Arrival" }

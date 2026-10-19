@@ -10,11 +10,11 @@ class Groups::Lists::ListEntries::ViewingsControllerTest < ActionDispatch::Integ
     sign_in_as @user
   end
 
-  test "an active entry's details offer a Watch button" do
+  test "an active entry's details offer a Mark as watched button" do
     get group_list_list_entry_path(@group, @list, @entry)
 
     assert_select "turbo-frame#watch a[href=?]", new_group_list_list_entry_viewing_path(@group, @list, @entry),
-      text: "Watch"
+      text: "Mark as watched…"
   end
 
   test "the watch form defaults to the next unwatched episode and today" do

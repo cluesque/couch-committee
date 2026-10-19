@@ -101,7 +101,7 @@ and behavior rules this implements.
 ## Phase 9 — Rewatch
 - Allow creating a new `ListEntry` for a (list, title) pair once the existing one is
   `watched`/`cancelled` — reuses the Phase 5 creation path, since the guard is already "no active
-  entry exists." A finished entry's page (reached from History) has a "Watch again" button for
+  entry exists." A finished entry's page (reached from History) has an "Add to list again" button (once "Watch again") for
   this; re-adding through search works too.
 - System test: watch a movie to completion, re-add it, confirm the old entry's history is
   untouched and the new one starts `not_started`.

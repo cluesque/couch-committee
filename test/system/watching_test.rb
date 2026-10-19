@@ -18,20 +18,20 @@ class WatchingTest < ApplicationSystemTestCase
     visit group_list_path(@group, @movie_night)
     click_on "The Bear: Season 3"
     assert_current_path detail_path
-    click_on "Watch"
+    click_on "Mark as watched…"
 
     within "turbo-frame#watch" do
       assert_select "Episode", selected: "1. Tomorrow"
-      click_on "Record watch"
+      click_on "Mark watched"
     end
     assert_text "Watched The Bear: Season 3 · 1. Tomorrow."
     assert_current_path group_list_path(@group, @movie_night)
     assert_text "Next: 2. Next"
 
     click_on "The Bear: Season 3"
-    click_on "Watch"
+    click_on "Mark as watched…"
     assert_current_path detail_path, ignore_query: true
-    within("turbo-frame#watch") { click_on "Record watch" }
+    within("turbo-frame#watch") { click_on "Mark watched" }
 
     assert_text "Finished The Bear: Season 3."
     assert_no_text "Next: 2. Next"
@@ -47,8 +47,8 @@ class WatchingTest < ApplicationSystemTestCase
 
     visit group_list_path(@group, @movie_night)
     click_on "Arrival"
-    click_on "Watch"
-    within("turbo-frame#watch") { click_on "Record watch" }
+    click_on "Mark as watched…"
+    within("turbo-frame#watch") { click_on "Mark watched" }
 
     assert_text "Watched Arrival. Also recorded on Anime."
     visit group_list_path(@group, anime)
