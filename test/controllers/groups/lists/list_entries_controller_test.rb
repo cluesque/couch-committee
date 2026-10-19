@@ -273,6 +273,17 @@ class Groups::Lists::ListEntriesControllerTest < ActionDispatch::IntegrationTest
     assert_select "li .badge", text: "Next", count: 1
   end
 
+  test "an unwatched movie's details don't say it's not started, but a season's do" do
+    movie = @list.add(create(:movie, name: "Arrival"))
+    season = @list.add(create(:season, name: "The Bear", season: 3))
+
+    get group_list_list_entry_path(@group, @list, movie)
+    assert_select "p", text: /Not started/, count: 0
+
+    get group_list_list_entry_path(@group, @list, season)
+    assert_select "p", text: /Not started/
+  end
+
   test "an entry from another list is not found under this one" do
     other = create(:list, group: @group).add(create(:movie))
 
