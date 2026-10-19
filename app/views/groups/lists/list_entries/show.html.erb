@@ -6,7 +6,7 @@
 <%= render "titles/header", title: title %>
 
 <% status = [] %>
-<% status << @entry.state.humanize unless title.movie? && @entry.not_started? %>
+<% status << @entry.state.humanize unless @entry.cancelled? || (title.movie? && @entry.not_started?) %>
 <% status << "Last watched #{l @entry.last_viewed_on, format: :short}" if @entry.last_viewed_on %>
 <% if status.any? || @entry.upcoming? %>
   <p class="text-body-secondary d-flex flex-wrap align-items-center gap-2">
@@ -23,7 +23,7 @@
 
 <% if @entry.cancelled? %>
   <div class="alert alert-secondary">
-    Cancelled <%= l @entry.cancelled_at.to_date, format: :long %><% if @entry.cancel_note %>: “<%= @entry.cancel_note %>”<% end %>
+    Removed <%= l @entry.cancelled_at.to_date, format: :long %><% if @entry.cancel_note %>: “<%= @entry.cancel_note %>”<% end %>
   </div>
 <% end %>
 

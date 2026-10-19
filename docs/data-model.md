@@ -157,4 +157,5 @@ A movie's Title has exactly one `Episode`, so the first `Viewing` recorded again
 A member can cancel an active `ListEntry`, setting `cancelled_at` and an optional `cancel_note`.
 This is distinct from `watched` — cancelling means "we decided not to watch this," not "this was
 resolved by being watched elsewhere." Cancelled entries remain visible, with their note, in the
-historical view.
+historical view. The app calls this "Remove from list" (and shows "Removed"); the code keeps
+the name cancel.

@@ -32,7 +32,8 @@ class HistoryTest < ApplicationSystemTestCase
     end
 
     click_on "Saw It"
-    assert_text "Cancelled"
+    assert_text "Removed"
+    assert_no_text "Cancelled"
     assert_text "Too scary for a weeknight."
     assert_no_link "Watch"
   end
