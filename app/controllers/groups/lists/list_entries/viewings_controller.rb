@@ -3,7 +3,7 @@ class Groups::Lists::ListEntries::ViewingsController < ApplicationController
 
   before_action :set_list_entry
 
-  # @viewing only carries the form's values; WatchRecorder creates the real Viewings. It's built
+  # @viewing only carries the form's values; WatchRecorder creates the real Viewing. It's built
   # outside @list_entry.viewings so it can't count as already watched.
   def new
     @viewing = Viewing.new(episode: @list_entry.next_episode || @list_entry.title.episodes.first, date: Date.current)
@@ -13,23 +13,20 @@ class Groups::Lists::ListEntries::ViewingsController < ApplicationController
     @viewing = Viewing.new(viewing_params)
     episode = @list_entry.title.episodes.find(@viewing.episode_id)
 
-    entries = WatchRecorder.call(group: Current.group, episode: episode, date: @viewing.date)
-    redirect_to [ Current.group, @list ], notice: watched_notice(episode, entries)
+    WatchRecorder.call(@list_entry, episode: episode, date: @viewing.date)
+    redirect_to [ Current.group, @list ], notice: watched_notice(episode)
   rescue ActiveRecord::RecordInvalid => error
     @viewing.errors.merge!(error.record.errors)
     render :new, status: :unprocessable_content
   end
 
-  # Unwatches: undoes the watch on every list it was recorded on (see WatchRemover). Offered from
-  # History, so the entry may be finished.
+  # Unwatches. Offered from History, so the entry may be finished.
   def destroy
     viewing = @list_entry.viewings.find(params[:id])
-    others = WatchRemover.call(viewing).map { |removed| removed.list_entry.list }.uniq - [ @list ]
+    WatchRemover.call(viewing)
 
-    redirect_to group_list_history_path(Current.group, @list), status: :see_other, notice: [
-      "Unwatched #{viewing.episode.full_name}.",
-      ("Also removed from #{others.map(&:name).sort.to_sentence}." if others.any?)
-    ].compact.join(" ")
+    redirect_to group_list_history_path(Current.group, @list), status: :see_other,
+      notice: "Unwatched #{viewing.episode.full_name}."
   rescue WatchRemover::Refused => refusal
     redirect_to group_list_history_path(Current.group, @list), status: :see_other, alert: refusal.message
   end
@@ -45,15 +42,8 @@ class Groups::Lists::ListEntries::ViewingsController < ApplicationController
       params.expect(viewing: [ :episode_id, :date ])
     end
 
-    def watched_notice(episode, entries)
+    def watched_notice(episode)
       title = @list_entry.title
-      this_entry = entries.find { |entry| entry == @list_entry }
-      others = (entries - [ this_entry ]).map { |entry| entry.list.name }
-
-      [
-        "Watched #{episode.full_name}.",
-        ("Finished #{title.full_name}." if this_entry&.watched? && !title.movie?),
-        ("Also recorded on #{others.sort.to_sentence}." if others.any?)
-      ].compact.join(" ")
+      [ "Watched #{episode.full_name}.", ("Finished #{title.full_name}." if @list_entry.watched? && !title.movie?) ].compact.join(" ")
     end
 end

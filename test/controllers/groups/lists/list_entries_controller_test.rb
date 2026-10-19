@@ -260,7 +260,7 @@ class Groups::Lists::ListEntriesControllerTest < ActionDispatch::IntegrationTest
   test "an entry's details show its progress through the season" do
     season = create(:season, name: "The Bear", season: 3, episode_count: 3)
     entry = @list.add(season)
-    WatchRecorder.call(group: @group, episode: season.episodes.first, date: Date.new(2026, 10, 12))
+    WatchRecorder.call(entry, episode: season.episodes.first, date: Date.new(2026, 10, 12))
 
     get group_list_list_entry_path(@group, @list, entry)
 

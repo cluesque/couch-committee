@@ -60,7 +60,7 @@ class Groups::Lists::ListEntries::ViewingsControllerTest < ActionDispatch::Integ
     assert_select "li", text: /The Bear/, count: 0
   end
 
-  test "watching a movie checks it off on the group's other lists too" do
+  test "watching a movie leaves its other lists alone" do
     movie = create(:movie, name: "Arrival")
     entry = @list.add(movie)
     other = create(:list, group: @group, name: "Anime").add(movie)
@@ -68,8 +68,9 @@ class Groups::Lists::ListEntries::ViewingsControllerTest < ActionDispatch::Integ
     post group_list_list_entry_viewings_path(@group, @list, entry),
       params: { viewing: { episode_id: movie.episodes.first.id, date: "2026-10-14" } }
 
-    assert_equal "Watched Arrival. Also recorded on Anime.", flash[:notice]
-    assert other.reload.watched?
+    assert_equal "Watched Arrival.", flash[:notice]
+    assert entry.reload.watched?
+    assert other.reload.not_started?
   end
 
   test "a missing date shows the form again" do

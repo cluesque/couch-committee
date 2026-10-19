@@ -13,8 +13,8 @@ class WatchRecorderTest < ActiveSupport::TestCase
     record movie.episodes.first
 
     assert entry.reload.watched?
-    assert_equal [ [ movie.episodes.first, Date.new(2026, 10, 14), @group ] ],
-      entry.viewings.map { |viewing| [ viewing.episode, viewing.date, viewing.group ] }
+    assert_equal [ [ movie.episodes.first, Date.new(2026, 10, 14) ] ],
+      entry.viewings.map { |viewing| [ viewing.episode, viewing.date ] }
   end
 
   test "watching a mid-season episode puts the season in progress and advances what's next" do
@@ -51,45 +51,27 @@ class WatchRecorderTest < ActiveSupport::TestCase
     assert_not_includes @list.list_entries.active, entry
   end
 
-  test "a watch checks the title off on every list in the group" do
+  test "the same title on another list is untouched" do
     movie = create(:movie)
-    other_list = create(:list, group: @group)
-    entries = [ @list.add(movie), other_list.add(movie) ]
+    elsewhere = create(:list, group: @group).add(movie)
+    entry = @list.add(movie)
 
-    recorded = record movie.episodes.first
+    record movie.episodes.first, entry: entry
 
-    assert_equal entries.sort, recorded.sort
-    assert entries.map(&:reload).all?(&:watched?)
-    assert_equal 2, Viewing.count
-  end
-
-  test "another group's lists are untouched" do
-    movie = create(:movie)
-    elsewhere = create(:list).add(movie)
-    @list.add(movie)
-
-    record movie.episodes.first
-
+    assert entry.reload.watched?
     assert elsewhere.reload.not_started?
     assert_empty elsewhere.viewings
   end
 
-  test "finished and cancelled entries are untouched; only the active watch-through counts" do
+  test "a rewatch starts its own watch-through; the finished one is untouched" do
     season = create(:season, episode_count: 2)
     finished = create(:list_entry, list: @list, title: season, state: :watched)
-    cancelled = create(:list_entry, :cancelled, list: create(:list, group: @group), title: season)
     rewatch = @list.add(season)
 
-    record season.episodes.first
+    record season.episodes.first, entry: rewatch
 
     assert_empty finished.viewings
-    assert_empty cancelled.viewings
     assert rewatch.reload.in_progress?
-  end
-
-  test "a title that isn't active on any of the group's lists records nothing" do
-    assert_empty record(create(:movie).episodes.first)
-    assert_equal 0, Viewing.count
   end
 
   test "nothing is recorded if any viewing is invalid" do
@@ -103,7 +85,8 @@ class WatchRecorderTest < ActiveSupport::TestCase
   end
 
   private
-    def record(episode, on: Date.new(2026, 10, 14))
-      WatchRecorder.call(group: @group, episode: episode, date: on)
+    # The title's only entry on @list, unless given.
+    def record(episode, on: Date.new(2026, 10, 14), entry: @list.list_entries.active.find_by!(title: episode.title))
+      WatchRecorder.call(entry, episode: episode, date: on)
     end
 end

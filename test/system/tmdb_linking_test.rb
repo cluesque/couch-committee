@@ -9,7 +9,7 @@ class TmdbLinkingTest < ApplicationSystemTestCase
     first = create(:episode, title: season, number: 1, name: "Pilot")
     create(:episode, title: season, number: 2, name: "Second")
     entry = list.add(season)
-    WatchRecorder.call(group: group, episode: first, date: Date.new(2026, 10, 1))
+    WatchRecorder.call(entry, episode: first, date: Date.new(2026, 10, 1))
     sign_in_as pat
 
     visit group_list_list_entry_path(group, list, entry)

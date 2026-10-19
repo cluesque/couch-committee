@@ -8,8 +8,7 @@ class UnwatchingTest < ApplicationSystemTestCase
     season = create(:season, name: "The Bear", season: 1, episode_count: 0)
     first = create(:episode, title: season, number: 1, name: "System")
     create(:episode, title: season, number: 2, name: "Hands")
-    list.add(season)
-    WatchRecorder.call(group: group, episode: first, date: Date.new(2026, 10, 1))
+    WatchRecorder.call(list.add(season), episode: first, date: Date.new(2026, 10, 1))
     sign_in_as pat
 
     visit group_list_history_path(group, list)

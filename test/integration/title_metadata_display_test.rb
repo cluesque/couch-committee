@@ -92,14 +92,13 @@ class TitleMetadataDisplayTest < ActionDispatch::IntegrationTest
     assert_equal "Next: 1. System · 28m", rows[1].at_css(".next-episode").text.squish
     assert_nil rows[2].at_css(".runtime")
 
-    WatchRecorder.call(group: @group, episode: @the_bear.episodes.first, date: Date.new(2026, 10, 1))
+    WatchRecorder.call(bear, episode: @the_bear.episodes.first, date: Date.new(2026, 10, 1))
     get group_list_path(@group, @list)
     assert_equal "Next: 2. Hands · 32m", css_select("li##{ActionView::RecordIdentifier.dom_id(bear)} .next-episode").first.text.squish
   end
 
   test "history rows show a small poster" do
-    @list.add(@arrival)
-    WatchRecorder.call(group: @group, episode: @arrival.episodes.first, date: Date.new(2026, 10, 1))
+    WatchRecorder.call(@list.add(@arrival), episode: @arrival.episodes.first, date: Date.new(2026, 10, 1))
 
     get group_list_history_path(@group, @list)
 

@@ -5,29 +5,30 @@ class Groups::Lists::ListEntries::UnwatchingTest < ActionDispatch::IntegrationTe
     @user = create(:user)
     @group = create(:group, members: [ @user ])
     @list = create(:list, group: @group, name: "Movie night")
-    @anime = create(:list, group: @group, name: "Anime")
     @movie = create(:movie, name: "Arrival")
     @entry = @list.add(@movie)
-    @anime.add(@movie)
-    WatchRecorder.call(group: @group, episode: @movie.episodes.first, date: Date.new(2026, 10, 1))
-    @viewing = @entry.viewings.sole
+    @viewing = WatchRecorder.call(@entry, episode: @movie.episodes.first, date: Date.new(2026, 10, 1))
     sign_in_as @user
   end
 
-  test "history offers to unwatch each viewing, warning which other lists it's on" do
+  test "history offers to unwatch each viewing" do
     get group_list_history_path(@group, @list)
 
     assert_select "form[action=?][data-turbo-confirm=?] button", group_list_list_entry_viewing_path(@group, @list, @entry, @viewing),
-      "Unwatch Arrival (Oct 01)? It's also recorded on Anime, and will be removed there too.", text: "Unwatch"
+      "Unwatch Arrival (Oct 01)?", text: "Unwatch"
   end
 
-  test "unwatching removes the watch everywhere and returns to history" do
+  test "unwatching removes the watch from this list only and returns to history" do
+    elsewhere = create(:list, group: @group).add(@movie)
+    WatchRecorder.call(elsewhere, episode: @movie.episodes.first, date: Date.new(2026, 10, 1))
+
     delete group_list_list_entry_viewing_path(@group, @list, @entry, @viewing)
 
     assert_redirected_to group_list_history_path(@group, @list)
-    assert_equal "Unwatched Arrival. Also removed from Anime.", flash[:notice]
-    assert_equal 0, Viewing.count
+    assert_equal "Unwatched Arrival.", flash[:notice]
+    assert_not Viewing.exists?(@viewing.id)
     assert @entry.reload.not_started?
+    assert elsewhere.reload.watched?
   end
 
   test "a refused unwatch explains why" do
@@ -43,8 +44,7 @@ class Groups::Lists::ListEntries::UnwatchingTest < ActionDispatch::IntegrationTe
   test "another group's viewings can't be unwatched" do
     others = create(:list)
     entry = others.add(create(:movie))
-    WatchRecorder.call(group: others.group, episode: entry.title.episodes.first, date: Date.new(2026, 10, 1))
-    viewing = entry.viewings.sole
+    viewing = WatchRecorder.call(entry, episode: entry.title.episodes.first, date: Date.new(2026, 10, 1))
 
     delete group_list_list_entry_viewing_path(others.group, others, entry, viewing)
 

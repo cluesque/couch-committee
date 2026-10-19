@@ -83,9 +83,8 @@ class Tmdb::ImporterTest < ActiveSupport::TestCase
     season = @importer.import_season(136315, 1)
     gone = create(:episode, title: season, number: 9)
     watched = create(:episode, title: season, number: 10)
-    list = create(:list)
-    list.add(season)
-    WatchRecorder.call(group: list.group, episode: watched, date: Date.new(2026, 10, 1))
+    entry = create(:list).add(season)
+    WatchRecorder.call(entry, episode: watched, date: Date.new(2026, 10, 1))
     assert_equal 1, watched.viewings.count
 
     @importer.import_season(136315, 1)
@@ -98,9 +97,8 @@ class Tmdb::ImporterTest < ActiveSupport::TestCase
   test "importing into a hand-entered movie links it, keeping its episode and viewings" do
     movie = create(:movie, name: "arrival", tmdb_id: nil)
     episode = movie.episodes.sole
-    list = create(:list)
-    list.add(movie)
-    WatchRecorder.call(group: list.group, episode: episode, date: Date.new(2026, 9, 1))
+    entry = create(:list).add(movie)
+    WatchRecorder.call(entry, episode: episode, date: Date.new(2026, 9, 1))
 
     assert_no_difference [ "Title.count", "Episode.count", "Viewing.count" ] do
       assert_equal movie, @importer.import_movie(329865, into: movie)
@@ -116,9 +114,8 @@ class Tmdb::ImporterTest < ActiveSupport::TestCase
     season = create(:season, name: "Bear", season: 1, episode_count: 0, tmdb_id: nil)
     watched = create(:episode, title: season, number: 2, name: "Ep two")
     unwatched_extra = create(:episode, title: season, number: 12)
-    list = create(:list)
-    list.add(season)
-    WatchRecorder.call(group: list.group, episode: watched, date: Date.new(2026, 9, 1))
+    entry = create(:list).add(season)
+    WatchRecorder.call(entry, episode: watched, date: Date.new(2026, 9, 1))
 
     @importer.import_season(136315, 1, into: season)
 

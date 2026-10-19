@@ -38,7 +38,7 @@ class WatchingTest < ApplicationSystemTestCase
     assert_text "Nothing on this list yet."
   end
 
-  test "watching a movie checks it off on every list it's on" do
+  test "watching a movie checks it off on this list only" do
     movie = create(:movie, name: "Arrival")
     anime = create(:list, group: @group, name: "Anime")
     @movie_night.add(movie)
@@ -50,8 +50,9 @@ class WatchingTest < ApplicationSystemTestCase
     click_on "Mark as watched…"
     within("turbo-frame#watch") { click_on "Mark watched" }
 
-    assert_text "Watched Arrival. Also recorded on Anime."
+    assert_text "Watched Arrival."
+    assert_no_link "Arrival"
     visit group_list_path(@group, anime)
-    assert_no_text "Arrival"
+    assert_link "Arrival"
   end
 end

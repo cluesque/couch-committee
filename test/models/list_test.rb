@@ -129,7 +129,6 @@ class ListTest < ActiveSupport::TestCase
 
   private
     def watch(list, episode, on:)
-      WatchRecorder.call(group: list.group, episode: episode, date: on)
-      Viewing.where(episode: episode).sole
+      WatchRecorder.call(list.list_entries.active.find_by!(title: episode.title), episode: episode, date: on)
     end
 end

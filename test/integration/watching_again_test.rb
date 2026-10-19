@@ -7,7 +7,7 @@ class WatchingAgainTest < ActionDispatch::IntegrationTest
     @list = create(:list, group: @group)
     @season = create(:season, name: "The Bear", season: 3, episode_count: 2)
     @earlier = @list.add(@season)
-    @season.episodes.each { |episode| WatchRecorder.call(group: @group, episode: episode, date: Date.new(2026, 10, 1)) }
+    @season.episodes.each { |episode| WatchRecorder.call(@earlier, episode: episode, date: Date.new(2026, 10, 1)) }
     sign_in_as @user
   end
 
@@ -41,7 +41,7 @@ class WatchingAgainTest < ActionDispatch::IntegrationTest
     post group_list_list_entries_path(@group, @list), params: { title_id: @season.id }
     rewatch = @list.list_entries.active.sole
 
-    WatchRecorder.call(group: @group, episode: @season.episodes.first, date: Date.new(2026, 10, 15))
+    WatchRecorder.call(rewatch, episode: @season.episodes.first, date: Date.new(2026, 10, 15))
 
     assert rewatch.reload.in_progress?
     assert_equal 2, @earlier.viewings.count

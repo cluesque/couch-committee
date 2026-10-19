@@ -36,12 +36,9 @@
         <% if viewing %>
           <% watch = viewing.episode.full_name %>
           <% watch += " (#{l viewing.date, format: :short})" %>
-          <% others = @other_lists.fetch([ viewing.episode_id, viewing.date ], []) %>
-          <% confirm = [ "Unwatch #{watch}?",
-               ("It's also recorded on #{others.map(&:name).sort.to_sentence}, and will be removed there too." if others.any?) ].compact.join(" ") %>
           <%= button_to "Unwatch", group_list_list_entry_viewing_path(Current.group, @list, entry, viewing), method: :delete,
                 class: "btn btn-link btn-sm p-0 border-0 text-danger", form_class: "d-block",
-                form: { data: { turbo_confirm: confirm } }, "aria-label": "Unwatch #{watch}" %>
+                form: { data: { turbo_confirm: "Unwatch #{watch}?" } }, "aria-label": "Unwatch #{watch}" %>
         <% end %>
         </div>
       </li>

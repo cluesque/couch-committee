@@ -57,6 +57,6 @@ class Groups::Lists::HistoriesControllerTest < ActionDispatch::IntegrationTest
 
   private
     def watch(episode, on:)
-      WatchRecorder.call(group: @group, episode: episode, date: on)
+      WatchRecorder.call(@list.list_entries.active.find_by!(title: episode.title), episode: episode, date: on)
     end
 end
