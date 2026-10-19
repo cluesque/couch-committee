@@ -8,7 +8,7 @@ them together — no more scrolling every streaming app arguing about it.
 
 ## Status
 
-Every phase of [`docs/implementation-plan.md`](docs/implementation-plan.md) is done: groups,
+Every phase of [`docs/implementation-plan.md`](docs/implementation-plan.md) is done: shared
 lists, adding titles, drag-to-reorder, recording watches, history, removing titles, rewatching, and
 a phone-width polish pass. The plan's "Explicitly deferred" list is what's next. See
 [`docs/architecture.md`](docs/architecture.md) / [`docs/data-model.md`](docs/data-model.md) for
@@ -48,7 +48,7 @@ to run the app.
      client_secret: your-client-secret
    ```
 
-Anyone with a Google account can sign in; what they can see is limited by group membership.
+Anyone with a Google account can sign in; they see only the lists they're on.
 
 ### TMDB credentials
 

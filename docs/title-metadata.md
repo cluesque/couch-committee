@@ -130,7 +130,7 @@ The build order is in `docs/implementation-plan.md` (Phases 11–16).
 ## Settled with the user (2026-10-16)
 
 - **Posters:** small thumbnails in list rows and search results; full size only on a title's page.
-- **Streaming country:** US to start. It could become a per-group setting later.
+- **Streaming country:** US to start. It could become a per-user setting later.
 - **Specials:** TMDB's "Season 0" is left out for now.
 
 ## Open questions
