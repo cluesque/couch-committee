@@ -37,4 +37,20 @@ class ListMembersTest < ApplicationSystemTestCase
     assert_text "Removed Sam from Movie night."
     assert_no_button "Remove"
   end
+
+  test "deleting a list, then undoing it" do
+    pat = create(:user, display_name: "Pat")
+    list = create(:list, name: "Movie night", members: [ pat, create(:user, display_name: "Sam") ])
+    sign_in_as pat
+
+    visit edit_list_path(list)
+    accept_confirm("Delete Movie night for you, Sam?") { click_on "Delete list" }
+
+    assert_text "Deleted Movie night."
+    assert_no_link "Movie night"
+    click_on "Undo"
+
+    assert_text "Restored Movie night."
+    assert_selector "h1", text: "Movie night"
+  end
 end

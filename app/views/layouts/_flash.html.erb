@@ -1,6 +1,12 @@
 <% { notice: "success", alert: "danger" }.each do |type, style| %>
   <% if flash[type].present? %>
     <%# data-turbo-temporary: dropped before Turbo caches the page, so Back doesn't replay it. %>
-    <div class="alert alert-<%= style %>" role="alert" data-turbo-temporary><%= flash[type] %></div>
+    <div class="alert alert-<%= style %> d-flex justify-content-between align-items-center gap-2" role="alert" data-turbo-temporary>
+      <span><%= flash[type] %></span>
+      <% if type == :notice && flash[:restorable_list_id] %>
+        <%= button_to "Undo", list_restoration_path(flash[:restorable_list_id]),
+              class: "btn btn-sm btn-outline-success text-nowrap" %>
+      <% end %>
+    </div>
   <% end %>
 <% end %>
