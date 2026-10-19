@@ -5,17 +5,19 @@
 
 <%= render "titles/header", title: title %>
 
-<p class="text-body-secondary d-flex flex-wrap align-items-center gap-2">
-  <span>
-    <%= @entry.state.humanize %>
-    <% if @entry.last_viewed_on %>
-      · Last watched <%= l @entry.last_viewed_on, format: :short %>
+<% status = [] %>
+<% status << @entry.state.humanize unless title.movie? && @entry.not_started? %>
+<% status << "Last watched #{l @entry.last_viewed_on, format: :short}" if @entry.last_viewed_on %>
+<% if status.any? || @entry.upcoming? %>
+  <p class="text-body-secondary d-flex flex-wrap align-items-center gap-2">
+    <% if status.any? %>
+      <span><%= status.join(" · ") %></span>
     <% end %>
-  </span>
-  <% if @entry.upcoming? %>
-    <span class="badge text-bg-warning text-nowrap">Coming <%= l @entry.next_episode.available_on, format: :short %></span>
-  <% end %>
-</p>
+    <% if @entry.upcoming? %>
+      <span class="badge text-bg-warning text-nowrap">Coming <%= l @entry.next_episode.available_on, format: :short %></span>
+    <% end %>
+  </p>
+<% end %>
 
 <%= render "recommendation", entry: @entry %>
 
