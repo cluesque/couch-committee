@@ -23,7 +23,7 @@ class WatchingTest < ApplicationSystemTestCase
       assert_select "Episode", selected: "1. Tomorrow"
       click_on "Record watch"
     end
-    assert_text "Watched episode 1 of The Bear: Season 3."
+    assert_text "Watched The Bear: Season 3 · 1. Tomorrow."
     assert_current_path group_list_path(@group, @movie_night)
     assert_text "Next: 2. Next"
 

@@ -22,6 +22,14 @@ class EpisodeTest < ActiveSupport::TestCase
     assert_equal "Episode 3", build(:episode, number: 3, name: "").label
   end
 
+  test "full name is the episode with its title, or just the movie" do
+    season = create(:season, name: "The Bear", season: 1, episode_count: 0)
+    episode = create(:episode, title: season, number: 2, name: "Hands")
+
+    assert_equal "The Bear · 2. Hands", episode.full_name
+    assert_equal "Arrival", create(:movie, name: "Arrival").episodes.first.full_name
+  end
+
   test "a movie's episode is labelled with the movie's title" do
     assert_equal "Arrival", create(:movie, name: "Arrival").episodes.first.label
   end
