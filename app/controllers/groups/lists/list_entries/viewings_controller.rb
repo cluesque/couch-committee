@@ -27,7 +27,7 @@ class Groups::Lists::ListEntries::ViewingsController < ApplicationController
     others = WatchRemover.call(viewing).map { |removed| removed.list_entry.list }.uniq - [ @list ]
 
     redirect_to group_list_history_path(Current.group, @list), status: :see_other, notice: [
-      "Unwatched #{watch_label(viewing.episode)}.",
+      "Unwatched #{viewing.episode.full_name}.",
       ("Also removed from #{others.map(&:name).sort.to_sentence}." if others.any?)
     ].compact.join(" ")
   rescue WatchRemover::Refused => refusal
@@ -41,11 +41,6 @@ class Groups::Lists::ListEntries::ViewingsController < ApplicationController
       @list_entry = entries.includes(:viewings, title: :episodes).find(params[:list_entry_id])
     end
 
-    def watch_label(episode)
-      title = @list_entry.title
-      title.movie? ? title.full_name : "episode #{episode.number} of #{title.full_name}"
-    end
-
     def viewing_params
       params.expect(viewing: [ :episode_id, :date ])
     end
@@ -56,7 +51,7 @@ class Groups::Lists::ListEntries::ViewingsController < ApplicationController
       others = (entries - [ this_entry ]).map { |entry| entry.list.name }
 
       [
-        title.movie? ? "Watched #{title.full_name}." : "Watched episode #{episode.number} of #{title.full_name}.",
+        "Watched #{episode.full_name}.",
         ("Finished #{title.full_name}." if this_entry&.watched? && !title.movie?),
         ("Also recorded on #{others.sort.to_sentence}." if others.any?)
       ].compact.join(" ")

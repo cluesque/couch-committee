@@ -5,14 +5,4 @@
 <%= render "titles/header", title: @title %>
 <%= render "titles/where_to_watch", title: @title %>
 
-<% if @title.movie? %>
-  <% if (released_on = @title.episodes.first&.available_on) %>
-    <p>Released <%= l released_on, format: :long %></p>
-  <% end %>
-<% else %>
-  <h2 class="h5">Episodes</h2>
-  <ol class="list-group mb-3">
-    <%= render partial: "titles/episode", collection: @title.episodes %>
-  </ol>
-<% end %>
-
+<%= render "titles/episodes", title: @title %>

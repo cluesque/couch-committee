@@ -1,0 +1,14 @@
+<%# A movie's release date, or a season's episodes. Given a list `entry`, episodes also show whether
+    they've been watched on it and which is next. %>
+<% entry = local_assigns[:entry] %>
+<% if title.movie? %>
+  <% if (released_on = title.episodes.first&.available_on) %>
+    <p>Released <%= l released_on, format: :long %></p>
+  <% end %>
+<% elsif title.episodes.any? %>
+  <h2 class="h5">Episodes</h2>
+  <ol class="list-group mb-3">
+    <%= render partial: "titles/episode", collection: title.episodes,
+          locals: { entry: entry, next_episode: entry&.next_episode } %>
+  </ol>
+<% end %>

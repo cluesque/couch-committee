@@ -34,7 +34,7 @@
             <%= l viewing ? viewing.date : entry.cancelled_at.to_date, format: :short %>
           </small>
         <% if viewing %>
-          <% watch = [ entry.title.full_name, (viewing.episode.label unless entry.title.movie?) ].compact.join(" · ") %>
+          <% watch = viewing.episode.full_name %>
           <% watch += " (#{l viewing.date, format: :short})" %>
           <% others = @other_lists.fetch([ viewing.episode_id, viewing.date ], []) %>
           <% confirm = [ "Unwatch #{watch}?",

@@ -45,7 +45,7 @@ class Groups::Lists::ListEntries::ViewingsControllerTest < ActionDispatch::Integ
     record @season.episodes.first, on: "2026-10-12"
 
     assert_redirected_to group_list_path(@group, @list)
-    assert_equal "Watched episode 1 of The Bear: Season 3.", flash[:notice]
+    assert_equal "Watched #{@season.episodes.first.full_name}.", flash[:notice]
     assert @entry.reload.in_progress?
     assert_equal [ Date.new(2026, 10, 12) ], @entry.viewings.map(&:date)
   end
@@ -55,7 +55,7 @@ class Groups::Lists::ListEntries::ViewingsControllerTest < ActionDispatch::Integ
     record @season.episodes.second
     record @season.episodes.third
 
-    assert_equal "Watched episode 3 of The Bear: Season 3. Finished The Bear: Season 3.", flash[:notice]
+    assert_equal "Watched #{@season.episodes.third.full_name}. Finished The Bear: Season 3.", flash[:notice]
     follow_redirect!
     assert_select "li", text: /The Bear/, count: 0
   end

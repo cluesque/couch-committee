@@ -4,6 +4,11 @@ class Episode < ApplicationRecord
 
   validates :number, numericality: { only_integer: true, greater_than: 0 }, uniqueness: { scope: :title_id }
 
+  # The episode with its title: "The Bear · 2. Hands", or for a movie just "Arrival".
+  def full_name
+    title.movie? ? label : "#{title.full_name} · #{label}"
+  end
+
   # "3. Brigade", or just "Episode 3" when there's no real name (some shows name every episode
   # "Episode N", which would read "3. Episode 3"). A movie's one episode is just the movie.
   def label
