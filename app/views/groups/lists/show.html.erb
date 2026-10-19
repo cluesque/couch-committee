@@ -15,9 +15,10 @@
   </div>
 </div>
 
+<div class="d-flex justify-content-between align-items-center gap-2 mb-2">
 <% if @total.positive? %>
   <% choices = { nil => "Movies and series", "movie" => "Movies", "series" => "Series" } %>
-  <div class="dropdown mb-2">
+  <div class="dropdown">
     <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown"
             aria-expanded="false">
       Showing: <%= choices[@kind] %>
@@ -36,6 +37,8 @@
     </ul>
   </div>
 <% end %>
+  <%= link_to "Add a title", new_group_list_list_entry_path(Current.group, @list), class: "btn btn-primary btn-sm ms-auto" %>
+</div>
 
 <% if @entries.any? %>
   <ol class="list-group mb-3" data-controller="sortable"
@@ -48,5 +51,4 @@
   <p class="text-body-secondary">Nothing on this list yet. Add a title to get started.</p>
 <% end %>
 
-<p><%= link_to "Add a title", new_group_list_list_entry_path(Current.group, @list), class: "btn btn-primary" %></p>
 

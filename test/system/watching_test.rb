@@ -11,12 +11,13 @@ class WatchingTest < ApplicationSystemTestCase
     season = create(:season, name: "The Bear", season: 3, episode_count: 0)
     create(:episode, title: season, number: 1, name: "Tomorrow")
     create(:episode, title: season, number: 2, name: "Next")
-    @movie_night.add(season)
+    entry = @movie_night.add(season)
+    detail_path = group_list_list_entry_path(@group, @movie_night, entry)
     sign_in_as @pat
 
     visit group_list_path(@group, @movie_night)
     click_on "The Bear: Season 3"
-    detail_path = current_path
+    assert_current_path detail_path
     click_on "Watch"
 
     within "turbo-frame#watch" do
