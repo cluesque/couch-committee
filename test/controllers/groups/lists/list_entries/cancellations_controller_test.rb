@@ -49,7 +49,7 @@ class Groups::Lists::ListEntries::CancellationsControllerTest < ActionDispatch::
 
     get group_list_list_entry_path(@group, @list, @entry)
 
-    assert_select ".alert", text: /Cancelled .*Saw it on a plane/
+    assert_select ".alert", text: /Removed .*Saw it on a plane/
     assert_select "turbo-frame#watch", count: 0
     assert_select "turbo-frame#cancellation", count: 0
   end

@@ -16,7 +16,7 @@ class UnwatchingTest < ApplicationSystemTestCase
     accept_confirm("Unwatch The Bear · 1. System (Oct 01)?") { click_on "Unwatch" }
 
     assert_text "Unwatched The Bear · 1. System."
-    assert_text "Nothing watched or cancelled yet."
+    assert_text "Nothing watched or removed yet."
     visit group_list_path(group, list)
     assert_text "Next: 1. System"
   end

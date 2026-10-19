@@ -23,7 +23,7 @@
             <% end %>
           <% else %>
             <div class="small text-body-secondary ps-4">
-              <span class="badge text-bg-secondary">Cancelled</span>
+              <span class="badge text-bg-secondary">Removed</span>
               <% if entry.cancel_note %><em><%= entry.cancel_note %></em><% end %>
             </div>
           <% end %>
@@ -48,5 +48,5 @@
     <% end %>
   </ol>
 <% else %>
-  <p class="text-body-secondary">Nothing watched or cancelled yet.</p>
+  <p class="text-body-secondary">Nothing watched or removed yet.</p>
 <% end %>

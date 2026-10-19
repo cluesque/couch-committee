@@ -35,7 +35,7 @@ class Groups::Lists::HistoriesControllerTest < ActionDispatch::IntegrationTest
     end
     assert_equal [
       [ "The Bear: Season 3", "Oct 09", "2. Next" ],
-      [ "Saw It", "Oct 05", "Cancelled Too scary." ],
+      [ "Saw It", "Oct 05", "Removed Too scary." ],
       [ "The Bear: Season 3", "Oct 01", "1. Tomorrow" ],
       [ "Arrival", "Sep 20", nil ]
     ], rows
@@ -44,7 +44,7 @@ class Groups::Lists::HistoriesControllerTest < ActionDispatch::IntegrationTest
   test "an empty history says so" do
     get group_list_history_path(@group, @list)
 
-    assert_select "p", "Nothing watched or cancelled yet."
+    assert_select "p", "Nothing watched or removed yet."
   end
 
   test "another group's history is not found" do

@@ -9,7 +9,7 @@ them together — no more scrolling every streaming app arguing about it.
 ## Status
 
 Every phase of [`docs/implementation-plan.md`](docs/implementation-plan.md) is done: groups,
-lists, adding titles, drag-to-reorder, recording watches, history, cancelling, rewatching, and
+lists, adding titles, drag-to-reorder, recording watches, history, removing titles, rewatching, and
 a phone-width polish pass. The plan's "Explicitly deferred" list is what's next. See
 [`docs/architecture.md`](docs/architecture.md) / [`docs/data-model.md`](docs/data-model.md) for
 the design.
