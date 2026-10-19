@@ -4,8 +4,7 @@ require "test_helper"
 class TitleMetadataDisplayTest < ActionDispatch::IntegrationTest
   setup do
     user = create(:user)
-    @group = create(:group, members: [ user ])
-    @list = create(:list, group: @group)
+    @list = create(:list, members: [ user ])
     importer = Tmdb::Importer.new(client: Tmdb::Client.new(token: "test"))
     @arrival = importer.import_movie(329865)
     @the_bear = importer.import_season(136315, 1)
@@ -13,7 +12,7 @@ class TitleMetadataDisplayTest < ActionDispatch::IntegrationTest
   end
 
   test "an entry's page shows a movie's poster, facts, genres, overview, and links" do
-    get group_list_list_entry_path(@group, @list, @list.add(@arrival))
+    get list_list_entry_path(@list, @list.add(@arrival))
 
     assert_select "img.title-poster[src=?]", Tmdb.image_url(@arrival.poster_path, "w342")
     assert_select "p", text: /Movie · 2016 · 1h 56m · PG-13/
@@ -25,7 +24,7 @@ class TitleMetadataDisplayTest < ActionDispatch::IntegrationTest
   end
 
   test "an entry's page shows a season's facts, and each episode's still and overview" do
-    get group_list_list_entry_path(@group, @list, @list.add(@the_bear))
+    get list_list_entry_path(@list, @list.add(@the_bear))
 
     assert_select "p", text: /Series · 2022 · TV-MA · Hulu/
     assert_select "a[href=?]", "https://www.themoviedb.org/tv/136315/season/1", text: "TMDB"
@@ -39,7 +38,7 @@ class TitleMetadataDisplayTest < ActionDispatch::IntegrationTest
     movie = create(:movie, name: "Home movie", tmdb_id: nil)
     movie.episodes.first.update!(available_on: Date.new(2019, 5, 1))
 
-    get group_list_list_entry_path(@group, @list, @list.add(movie))
+    get list_list_entry_path(@list, @list.add(movie))
 
     assert_response :success
     assert_select "h1", "Home movie"
@@ -52,7 +51,7 @@ class TitleMetadataDisplayTest < ActionDispatch::IntegrationTest
 
   test "a linked title offers a refresh, back to the page it's on" do
     entry = @list.add(@arrival)
-    path = group_list_list_entry_path(@group, @list, entry)
+    path = list_list_entry_path(@list, entry)
 
     get path
 
@@ -62,7 +61,7 @@ class TitleMetadataDisplayTest < ActionDispatch::IntegrationTest
 
   test "a hand-entered title offers to find it on TMDB instead" do
     movie = create(:movie, name: "Home movie", tmdb_id: nil)
-    path = group_list_list_entry_path(@group, @list, @list.add(movie))
+    path = list_list_entry_path(@list, @list.add(movie))
 
     get path
 
@@ -74,7 +73,7 @@ class TitleMetadataDisplayTest < ActionDispatch::IntegrationTest
     @list.add(@arrival)
     @list.add(create(:movie, name: "Home movie", tmdb_id: nil))
 
-    get group_list_path(@group, @list)
+    get list_path(@list)
 
     rows = css_select("ol > li")
     assert_equal Tmdb.image_url(@arrival.poster_path, "w92"), rows.first.at_css("img.poster-thumb")["src"]
@@ -86,22 +85,21 @@ class TitleMetadataDisplayTest < ActionDispatch::IntegrationTest
     bear = @list.add(@the_bear)
     @list.add(create(:movie, name: "Home movie", tmdb_id: nil))
 
-    get group_list_path(@group, @list)
+    get list_path(@list)
     rows = css_select("ol > li")
     assert_equal "1h 56m", rows[0].at_css(".runtime").text
     assert_equal "Next: 1. System · 28m", rows[1].at_css(".next-episode").text.squish
     assert_nil rows[2].at_css(".runtime")
 
-    WatchRecorder.call(group: @group, episode: @the_bear.episodes.first, date: Date.new(2026, 10, 1))
-    get group_list_path(@group, @list)
+    WatchRecorder.call(bear, episode: @the_bear.episodes.first, date: Date.new(2026, 10, 1))
+    get list_path(@list)
     assert_equal "Next: 2. Hands · 32m", css_select("li##{ActionView::RecordIdentifier.dom_id(bear)} .next-episode").first.text.squish
   end
 
   test "history rows show a small poster" do
-    @list.add(@arrival)
-    WatchRecorder.call(group: @group, episode: @arrival.episodes.first, date: Date.new(2026, 10, 1))
+    WatchRecorder.call(@list.add(@arrival), episode: @arrival.episodes.first, date: Date.new(2026, 10, 1))
 
-    get group_list_history_path(@group, @list)
+    get list_history_path(@list)
 
     assert_select "ol > li img.poster-thumb[src=?]", Tmdb.image_url(@arrival.poster_path, "w92")
   end

@@ -3,11 +3,10 @@ require "application_system_test_case"
 class PreviewsTest < ApplicationSystemTestCase
   test "looking a movie over before adding it" do
     pat = create(:user)
-    group = create(:group, members: [ pat ])
-    list = create(:list, group: group, name: "Movie night")
+    list = create(:list, members: [ pat ], name: "Movie night")
     sign_in_as pat
 
-    visit new_group_list_list_entry_path(group, list)
+    visit new_list_list_entry_path(list)
     fill_in "Search movies and shows", with: "arrival"
     click_on "Search"
     fill_in "Why this one? (optional)", with: "Pat loved it"

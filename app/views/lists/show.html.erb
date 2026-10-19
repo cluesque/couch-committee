@@ -1,0 +1,54 @@
+<% content_for :title, "#{@list.name} · Couch Committee" %>
+
+<%= back_link "Home", root_path %>
+
+<div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+  <div>
+    <h1 class="h3 mb-1"><%= @list.name %></h1>
+    <% if @list.description.present? %>
+      <p class="text-body-secondary mb-0"><%= @list.description %></p>
+    <% end %>
+  </div>
+  <div class="d-flex gap-2">
+    <%= link_to "History", list_history_path(@list), class: "btn btn-outline-secondary btn-sm" %>
+    <%= link_to "Edit", edit_list_path(@list), class: "btn btn-outline-secondary btn-sm" %>
+  </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+<% if @total.positive? %>
+  <% choices = { nil => "Movies and series", "movie" => "Movies", "series" => "Series" } %>
+  <div class="dropdown">
+    <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown"
+            aria-expanded="false">
+      Showing: <%= choices[@kind] %>
+    </button>
+    <ul class="dropdown-menu">
+      <% choices.each do |kind, label| %>
+        <li>
+          <%= link_to list_path(@list, kind: kind),
+                class: [ "dropdown-item d-flex justify-content-between gap-3", { active: kind == @kind } ],
+                "aria-current": (kind == @kind || nil) do %>
+            <span><%= label %></span>
+            <span class="small opacity-75"><%= kind ? @counts.fetch(kind, 0) : @total %></span>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+  <%= link_to "Add a title", new_list_list_entry_path(@list), class: "btn btn-primary btn-sm ms-auto" %>
+</div>
+
+<% if @entries.any? %>
+  <ol class="list-group mb-3" data-controller="sortable"
+      data-sortable-url-value="<%= reorder_list_list_entries_path(@list) %>">
+    <%= render partial: "list_entry", collection: @entries %>
+  </ol>
+<% elsif @kind %>
+  <p class="text-body-secondary">No <%= @kind == "movie" ? "movies" : "series" %> on this list right now.</p>
+<% else %>
+  <p class="text-body-secondary">Nothing on this list yet. Add a title to get started.</p>
+<% end %>
+
+

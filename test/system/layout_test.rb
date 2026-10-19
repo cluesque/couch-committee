@@ -22,16 +22,16 @@ class LayoutTest < ApplicationSystemTestCase
   test "a flash message isn't replayed when going back to the page" do
     sign_in_as create(:user)
 
-    click_on "New group"
-    fill_in "Name", with: "The Smiths"
-    click_on "Create group"
-    assert_text "Created The Smiths."
-
     click_on "New list"
-    assert_selector "h1", text: "New list"
+    fill_in "Name", with: "Movie night"
+    click_on "Create list"
+    assert_text "Created Movie night."
+
+    click_on "Add a title"
+    assert_selector "h1", text: "Add to Movie night"
     go_back
 
-    assert_selector "h1", text: "The Smiths"
-    assert_no_text "Created The Smiths."
+    assert_selector "h1", text: "Movie night"
+    assert_no_text "Created Movie night."
   end
 end

@@ -2,7 +2,7 @@
 
 This supersedes the rough model sketched in `docs/initial-rough-requirements.md`. It resolves the
 ambiguities there (how a "season" is represented, how a movie fits the Title/Episode split, how
-re-watching and multi-list checkoff work) and is the model the implementation plan will build
+and re-watching work) and is the model the implementation plan will build
 from.
 
 ## Models
@@ -12,24 +12,22 @@ from.
 - `display_name` — optional; filled from the Google profile on first sign-in
 - `google_id` — optional, unique; Google's stable account ID (the ID token's `sub`)
 
-A User can exist before they've ever signed in (Phase 3 invites create one by email), so
+A User can exist before they've ever signed in (adding someone to a List by email creates one), so
 `google_id` and `display_name` are blank until first sign-in. Sign-in matches on `google_id`
 first, since a Google account's email can change. Failing that, it claims an existing User with
-the same (verified) email and no `google_id` yet; failing that, it creates a new User.
+the same (verified) email and no `google_id` yet; failing that, it creates a new User. Either way,
+that first sign-in also creates a "Just Me" List with only them on it.
 
-### Group
-- `name`
-- `has_many :users`, through `GroupMembership`
-- `has_many :lists`
-
-Group membership (who can see/use the Group's Lists) is managed at the Group level — there is
-no separate per-List membership.
-
-### GroupMembership
+### ListMembership
 - `belongs_to :user`
-- `belongs_to :group`
+- `belongs_to :list`
 
-A User is a member of a given Group at most once.
+Who's on a List: they can see it and do anything with it, including adding and removing people. A
+User is on a given List at most once, and a List keeps at least one member.
+
+Until Phase 17 (2026-10-19) people belonged to Groups, and each Group owned Lists. Users found that
+the wrong idea, so they now belong to Lists directly; the migration put each Group's members on
+each of its Lists.
 
 ### Title
 - `kind` — enum: `movie`, `series`, `book`, `podcast` (not `type`, which Rails reserves for
@@ -50,10 +48,10 @@ NULL and unique indexes treat NULLs as distinct. Hand-entered Titles have no `tm
 A "season" is not a separate model. A season of a series is its own `Title` row (`kind: :series`,
 `season` set to that season's number). A movie is a `Title` with exactly one `Episode`.
 
-Titles are a global catalog, not owned by a Group. They're imported from TMDB when someone adds
+Titles are a global catalog, not owned by any List. They're imported from TMDB when someone adds
 one to a List (see `docs/title-metadata.md`). Titles entered by hand before that (Phase 4's
 forms, since removed) remain, with no `tmdb_id`, until someone links one to TMDB from its page
-("Find on TMDB"). Linking keeps its Episodes, matched by number, so its Viewings stay intact. Group-specific "bespoke" Titles may come later
+("Find on TMDB"). Linking keeps its Episodes, matched by number, so its Viewings stay intact. List-specific "bespoke" Titles may come later
 as the exception. Because the catalog is shared and will grow, adding a
 Title to a List should be a search, not a pick-list of every Title.
 
@@ -72,7 +70,7 @@ movies and seasons — everything watchable is an `Episode`, everything listable
 ### List
 - `name`
 - `description`
-- `belongs_to :group`
+- `has_many :users`, through `ListMembership`
 
 Called `PlayList` until 2026-10-15. Users found "play list" awkward, so the model, table, routes,
 and UI all became "list".
@@ -98,13 +96,11 @@ scope.
 
 ### Viewing
 - `date`
-- `belongs_to :group`
 - `belongs_to :episode`
 - `belongs_to :list_entry`
 
 A `Viewing` is a single episode-watch event, scoped to the specific `ListEntry` (watch-through) it
-advances. Its `episode` must belong to the entry's Title, and its `group` must own the entry's
-List. The `list_entry` association is what lets a half-finished season and a full rewatch of
+advances. Its `episode` must belong to the entry's Title. The `list_entry` association is what lets a half-finished season and a full rewatch of
 that same season coexist without the old cycle's `Viewing`s being mistaken for progress on the new
 one.
 
@@ -119,34 +115,28 @@ not mutating the old one. The old entry, with its own `Viewing`s intact, remains
 historical view exactly as it was.
 
 ### Recording a watch
-Given a (Title, Episode, Group, date) — e.g. from the "Watch" form:
-1. Find every currently-active (`not_started` or `in_progress`) `ListEntry` for that Title across
-   **all** Lists belonging to the Group.
-2. For each one, create a `Viewing` (same date/episode/group, `list_entry` set to that entry).
-3. For each one, recompute `state`:
-   - first `Viewing` recorded against it → `in_progress` (unless step 4 applies)
+Given an active `ListEntry`, one of its Episodes, and a date (from the "Mark as watched" form,
+`WatchRecorder`):
+1. Create a `Viewing` for that entry, episode, and date.
+2. Recompute the entry's `state`:
+   - first `Viewing` recorded against it → `in_progress` (unless the next rule applies)
    - once every `Episode` of the Title has a `Viewing` scoped to that `list_entry` → `watched`
 
-This is what makes "watching a movie/episode checks it off on all lists for that group" work:
-one real watch event is recorded once per active `ListEntry` it applies to. The tradeoff is that a
-single watch event can produce multiple `Viewing` rows (one per list the Title is concurrently
-active in) rather than a single canonical row — accepted for now in exchange for not needing any
-shared mutable "resolved by" pointer between entries.
+Only that List changes. The same Title on another List isn't checked off, even if the same people
+are on both. (Until Phase 17 a watch counted on every List in the Group that had the Title.)
 
 ### Unwatching
-A recorded watch can be undone from a List's history (`WatchRemover`). Since recording put a
-`Viewing` on every active entry for the Title across the Group's Lists, unwatching deletes all of
-them: every `Viewing` in the Group for that same Episode and date. No record of the undo is kept.
-Each affected entry then takes the state its remaining viewings call for (`not_started`,
-`in_progress`, or `watched`), so a finished season or movie can return to the active list. A
-`cancelled` entry stays cancelled. If a finished entry would reopen while a rewatch of the same
-Title is already active on its List, the unwatch is refused, since a List can't hold two active
-entries for one Title.
+A recorded watch can be undone from a List's history (`WatchRemover`). It deletes that `Viewing`;
+no record of the undo is kept. The entry then takes the state its remaining viewings call for
+(`not_started`, `in_progress`, or `watched`), so a finished season or movie can return to the
+active list. A `cancelled` entry stays cancelled. If a finished entry would reopen while a rewatch
+of the same Title is already active on its List, the unwatch is refused, since a List can't hold
+two active entries for one Title.
 
 ### "Next episode" / season progress
 For a season `ListEntry`, the next episode to watch is the lowest-numbered `Episode` of that Title
 with no `Viewing` scoped to that specific `list_entry`. Because `Viewing`s are scoped per
-`ListEntry` rather than globally per (group, episode), this is accurate even when the same season
+`ListEntry` rather than globally per episode, this is accurate even when the same season
 has been watched before (a prior, now-`watched` `ListEntry`) and is being watched again.
 
 ### Movies

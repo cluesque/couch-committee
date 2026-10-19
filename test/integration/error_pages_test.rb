@@ -12,8 +12,8 @@ class ErrorPagesTest < ActionDispatch::IntegrationTest
     Rails.application.env_config["action_dispatch.show_detailed_exceptions"] = @detailed
   end
 
-  test "a group you're not in gets the friendly not-found page, with a way home" do
-    get group_path(create(:group))
+  test "a list you're not on gets the friendly not-found page, with a way home" do
+    get list_path(create(:list))
 
     assert_response :not_found
     assert_select "h1", "There's nothing here"

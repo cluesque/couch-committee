@@ -1,0 +1,40 @@
+<% content_for :title, "#{@show["name"]} · Add to #{@list.name} · Couch Committee" %>
+
+<%= back_link "Search results", new_list_list_entry_path(@list, q: @query) %>
+
+<h1 class="h3 mb-1"><%= @show["name"] %></h1>
+<p class="text-body-secondary mb-3">Which season should go on <%= @list.name %>?</p>
+
+<% if @seasons.any? %>
+  <%= render "add_title_form", hidden: { q: @query, tmdb_show_id: @show["id"], from: "seasons" } %>
+
+  <ul class="list-group mb-3">
+    <% @seasons.each do |season| %>
+      <% number = season["season_number"] %>
+      <% in_catalog = @seasons_in_catalog[number] %>
+      <li class="list-group-item d-flex align-items-center gap-2">
+        <%= button_tag form: "add_title", name: "season", value: number,
+              formaction: preview_list_list_entries_path(@list),
+              "aria-label": "Season #{number} details",
+              class: "result-details btn p-0 border-0 text-start text-reset d-flex align-items-center gap-2 flex-grow-1 min-w-0" do %>
+          <%= poster_thumb(season["poster_path"] || @show["poster_path"]) %>
+          <span class="flex-grow-1 min-w-0">
+            <span class="title-name d-block"><%= season["name"].presence || "Season #{number}" %></span>
+            <span class="small text-body-secondary">
+              <%= [ season["air_date"].to_s[0, 4].presence, pluralize(season["episode_count"].to_i, "episode") ].compact.join(" · ") %>
+            </span>
+          </span>
+        <% end %>
+
+        <% if in_catalog && @active_title_ids.include?(in_catalog.id) %>
+          <span class="small text-body-secondary text-nowrap">On this list</span>
+        <% else %>
+          <%= button_tag "Add", form: "add_title", name: "season", value: number,
+                class: "btn btn-sm btn-outline-primary", "aria-label": "Add #{@show["name"]}: Season #{number}" %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p class="text-body-secondary">TMDB doesn't list any seasons for this show yet.</p>
+<% end %>

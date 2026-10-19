@@ -35,28 +35,29 @@ over extra gems/frameworks wherever plain Rails is enough.
 - **Linting/security**: `rubocop` with the Rails 8 default **omakase** style, `brakeman`.
 - **CI**: GitHub Actions — rubocop, brakeman, full test suite (unit/request + system), on every push
   and PR.
-- **Authorization**: plain Rails, no Pundit/CanCanCan. The permission model is simple (any Group
-  member can do anything within that Group; no roles yet), so a controller concern plus
-  `current_user.groups` scoping covers it. Revisit if/when roles are introduced.
+- **Authorization**: plain Rails, no Pundit/CanCanCan. The permission model is simple (anyone on
+  a List can do anything with it; no roles yet), so finding the List through
+  `Current.user.lists` covers it. Revisit if/when roles are introduced.
 - **Deployment target**: not decided yet — out of scope for this plan. The requirements don't
   specify one; flagging it as a follow-up decision (Kamal, Fly, Render, Heroku, etc.) before going
   to production.
 
 ## Key structural decisions
 
-### 1. "Current Group" is a URL concept, not session state
-A `User` can belong to multiple `Group`s, so routes are nested under the group:
-`/groups/:group_id/lists`, `/groups/:group_id/lists/:id`, etc. A controller concern
-(`SetCurrentGroup`) resolves `params[:group_id]` against `current_user.groups`, 404s or redirects
-if the user isn't a member, and exposes it as `Current.group`
-(`ActiveSupport::CurrentAttributes`). This keeps multi-group use safe across multiple tabs/bookmarks
-— no "which group am I in" state hiding in the session.
+### 1. The list is in the URL, not session state
+A `User` can be on many Lists, so everything about a List is nested under it: `/lists/:id`,
+`/lists/:list_id/list_entries/...`, and so on. Each controller finds the List through
+`Current.user.lists`, so a List you're not on is a 404, and you can't tell whether it exists. This
+keeps several Lists safe across tabs and bookmarks, with no "which list am I on" state hiding in
+the session.
+
+Until Phase 17 there was a Group between people and their Lists, and URLs were nested under
+`/groups/:group_id`. Those URLs are gone.
 
 ### 2. Domain logic lives in plain Ruby service objects, not fat models/controllers
-The one piece of genuinely non-trivial business logic — recording a watch, which fans out across
-every active `ListEntry` for a Title within a Group and transitions `state` — lives in a plain
-Ruby class (e.g. `app/services/watch_recorder.rb`), called from a controller action, wrapped in a
-transaction. Models stay focused on associations/validations; controllers stay thin. No service
+The non-trivial business logic — recording a watch and transitioning the entry's `state`, and
+undoing one — lives in plain Ruby classes (`app/services/watch_recorder.rb`, `watch_remover.rb`),
+called from a controller action, wrapped in a transaction. Models stay focused on associations/validations; controllers stay thin. No service
 object framework (dry-rb, interactor, etc.) — just a plain class with a `.call`.
 
 ### 3. Turbo-first UI
@@ -101,22 +102,21 @@ these hand-entry forms are gone. See `docs/title-metadata.md`.
 
 ```
 SessionsController          # google_sign_in callback, destroy (logout)
-GroupsController             # index (my groups), show, new, create
-Groups::MembershipsController   # invite/remove users, nested under group
-Groups::ListsController     # show, new, create, edit, update — nested under group (the group page lists them)
-TitlesController                # browse the global catalog — not group-nested, since Titles are global
-Groups::Lists::ListEntriesController  # new (search TMDB), seasons (pick a show's season), create (import
+ListsController             # index (Home: my lists), show, new, create, edit (incl. who's on it), update
+Lists::MembershipsController   # add someone by email, remove someone, leave — from the list's edit page
+TitlesController                # browse the global catalog — not list-nested, since Titles are global
+Lists::ListEntriesController  # new (search TMDB), seasons (pick a show's season), create (import
                                 # and add a title), reorder — nested under list
-Groups::Lists::ListEntries::ViewingsController  # new/create — the "Watch" form, from an entry;
-                                # WatchRecorder resolves it across the group's lists
+Lists::ListEntries::ViewingsController  # new/create — the "Mark as watched" form, from an entry;
+                                # destroy — unwatch, from History
 ```
 
 ## Testing strategy
 
 - **Model tests**: validations/associations, and — most importantly — `WatchRecorder` transition
-  behavior (movie watch, mid-season watch, last-episode-of-season watch, rewatch, multi-list
-  fan-out).
-- **Request tests**: every controller action, including the Group-membership guard.
+  behavior (movie watch, mid-season watch, last-episode-of-season watch, rewatch, other lists
+  untouched).
+- **Request tests**: every controller action, including the guard against lists you're not on.
 - **System tests** (Capybara, headless): login/logout (OAuth stubbed), add a title to a list,
   record a watch (movie / mid-season / season-completing episode), drag-reorder, cancel an entry,
   rewatch after completion.

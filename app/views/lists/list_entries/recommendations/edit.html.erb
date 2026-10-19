@@ -1,0 +1,19 @@
+<% content_for :title, "Recommendation for #{@list_entry.title.full_name} · Couch Committee" %>
+
+<%= back_link @list_entry.title.full_name, [ @list, @list_entry ] %>
+<h1 class="h3 mb-3">Why <%= @list_entry.title.full_name %>?</h1>
+
+<%= turbo_frame_tag "recommendation", class: "d-block mb-3" do %>
+  <%= form_with model: @list_entry, url: list_list_entry_recommendation_path(@list, @list_entry),
+        method: :patch, data: { turbo_frame: "_top" }, class: "card card-body" do |form| %>
+    <% if @list_entry.errors.any? %>
+      <div class="alert alert-danger"><%= @list_entry.errors.full_messages.to_sentence %></div>
+    <% end %>
+    <%= form.label :recommendation, "Why it's on the list (optional)", class: "form-label" %>
+    <%= form.text_field :recommendation, maxlength: 500, autofocus: true, autocomplete: "off", class: "form-control mb-2" %>
+    <div>
+      <%= form.submit "Save", class: "btn btn-primary" %>
+      <%= link_to "Never mind", [ @list, @list_entry ], class: "btn btn-link" %>
+    </div>
+  <% end %>
+<% end %>

@@ -190,6 +190,31 @@ phases are in `docs/title-metadata.md`.
 - **Done when**: providers show for a fixture title, and a title with none (or a TMDB outage)
   shows a quiet "not available to stream" instead of an error.
 
+## Phase 17 — Lists, not groups
+Users found the "group" in between them and their lists to be the wrong idea. People now belong to
+lists directly. One PR, built in these steps, with the suite green after each:
+
+1. **Watches stay on their list.** Marking a watch records it on that list's entry only, rather
+   than on every list in the group that has the title. Unwatching likewise touches only that list.
+   `viewings.group_id` goes. Watches already copied across lists stay as they are.
+2. **List members replace groups.** A `list_memberships` join table (user ↔ list). A migration
+   copies each group's members onto each of its lists, then drops `lists.group_id`, `groups`, and
+   `group_memberships`. Lists move to `/lists/:id/…`; the group pages and old URLs go.
+   - Home lists every list you're on, with the other people on it ("with Sam, Alex"). "New list"
+     moves to Home, and whoever creates a list starts as its only member.
+   - A list's edit page shows its members. Anyone on the list can add someone by email (same
+     invite-by-email as groups had: someone who hasn't signed in yet claims it on first sign-in),
+     remove someone, or leave. A list keeps at least one member.
+3. **Just Me.** Everyone gets a "Just Me" list with only themselves on it: on first sign-in
+   (including people invited before they'd signed in), and through a migration for everyone
+   already here.
+4. **Docs.** `docs/data-model.md`, `docs/architecture.md`, and the README describe lists and
+   their members, not groups.
+
+- **Done when**: a new user signs in to a Just Me list, a member can share a list from its edit
+  page, every existing list keeps its people and history after the migration, and nothing in the
+  app mentions groups.
+
 ## Explicitly deferred (per requirements doc + this conversation)
 - User avatars.
 - Recording who recommended a title. The reason is covered by `ListEntry#recommendation` (added

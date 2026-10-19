@@ -3,13 +3,12 @@ require "application_system_test_case"
 class RecommendationsTest < ApplicationSystemTestCase
   setup do
     @pat = create(:user)
-    @group = create(:group, members: [ @pat ])
-    @list = create(:list, group: @group, name: "Movie night")
+    @list = create(:list, members: [ @pat ], name: "Movie night")
     sign_in_as @pat
   end
 
   test "a recommendation typed with the search comes along through the season picker" do
-    visit new_group_list_list_entry_path(@group, @list)
+    visit new_list_list_entry_path(@list)
     fill_in "Search movies and shows", with: "the bear"
     click_on "Search"
     fill_in "Why this one? (optional)", with: "Sam says it's the best show on TV"
@@ -22,7 +21,7 @@ class RecommendationsTest < ApplicationSystemTestCase
   end
 
   test "a one-season show is added straight from the results, recommendation and all" do
-    visit new_group_list_list_entry_path(@group, @list)
+    visit new_list_list_entry_path(@list)
     fill_in "Search movies and shows", with: "baby reindeer"
     click_on "Search"
     fill_in "Why this one? (optional)", with: "Unsettling, in a good way"
@@ -33,18 +32,18 @@ class RecommendationsTest < ApplicationSystemTestCase
   end
 
   test "pressing Enter in the recommendation field doesn't add anything" do
-    visit new_group_list_list_entry_path(@group, @list, q: "arrival")
+    visit new_list_list_entry_path(@list, q: "arrival")
     fill_in "Why this one? (optional)", with: "Oops"
     find_field("Why this one? (optional)").send_keys(:enter)
     sleep 1 # nothing to wait *for* when the right outcome is that nothing happens
 
-    assert_current_path new_group_list_list_entry_path(@group, @list, q: "arrival")
+    assert_current_path new_list_list_entry_path(@list, q: "arrival")
     assert_equal 0, @list.list_entries.count
   end
 
   test "editing a recommendation in place" do
     entry = @list.add(create(:movie, name: "Arrival"))
-    visit group_list_list_entry_path(@group, @list, entry)
+    visit list_list_entry_path(@list, entry)
 
     click_on "Add a recommendation"
     within "turbo-frame#recommendation" do

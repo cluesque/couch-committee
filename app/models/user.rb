@@ -1,8 +1,7 @@
 class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
-  has_many :group_memberships, dependent: :destroy
-  has_many :groups, through: :group_memberships
-  has_many :lists, through: :groups
+  has_many :list_memberships, dependent: :destroy
+  has_many :lists, through: :list_memberships
 
   normalizes :email, with: ->(email) { email.strip.downcase }
 
@@ -24,10 +23,18 @@ class User < ApplicationRecord
 
     user.google_id = identity.user_id
     user.display_name = identity.name if user.display_name.blank?
-    user.save!
+    transaction do
+      user.save!
+      user.create_just_me_list
+    end
     user
   end
   private_class_method :claim_or_create_from_google
+
+  # Everyone starts with a list of their own, on first sign-in.
+  def create_just_me_list
+    List.create!(name: "Just Me").tap { |list| list.list_memberships.create!(user: self) }
+  end
 
   def name
     display_name.presence || email

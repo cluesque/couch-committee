@@ -4,12 +4,11 @@ class RewatchingTest < ApplicationSystemTestCase
   test "watching a movie, then putting it back on for a rewatch" do
     travel_to Date.new(2026, 10, 15)
     pat = create(:user)
-    group = create(:group, members: [ pat ])
-    list = create(:list, group: group, name: "Movie night")
+    list = create(:list, members: [ pat ], name: "Movie night")
     list.add(create(:movie, name: "Arrival"))
     sign_in_as pat
 
-    visit group_list_path(group, list)
+    visit list_path(list)
     click_on "Arrival"
     click_on "Mark as watched…"
     within("turbo-frame#watch") do

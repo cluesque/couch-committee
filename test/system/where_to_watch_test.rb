@@ -3,13 +3,12 @@ require "application_system_test_case"
 class WhereToWatchTest < ApplicationSystemTestCase
   test "an entry's page fills in where to watch" do
     pat = create(:user)
-    group = create(:group, members: [ pat ])
-    list = create(:list, group: group)
+    list = create(:list, members: [ pat ])
     arrival = Tmdb::Importer.new(client: Tmdb::Client.new(token: "test")).import_movie(329865)
     entry = list.add(arrival)
     sign_in_as pat
 
-    visit group_list_list_entry_path(group, list, entry)
+    visit list_list_entry_path(list, entry)
 
     within "turbo-frame#where_to_watch" do
       assert_text "Where to watch"

@@ -1,26 +1,21 @@
-# Records that a group watched an episode on a date. The watch counts toward every active entry for
-# that episode's title across all of the group's lists: each gets its own Viewing, then moves to
-# in_progress, or to watched once every episode of the title has a Viewing on that entry.
+# Records that an entry's episode was watched on a date. The entry moves to in_progress, or to
+# watched once every episode of its title has a Viewing on it. Other lists with the same title are
+# untouched: each list keeps its own record.
 class WatchRecorder
   def self.call(...)
     new(...).call
   end
 
-  def initialize(group:, episode:, date:)
-    @group, @episode, @date = group, episode, date
+  def initialize(entry, episode:, date:)
+    @entry, @episode, @date = entry, episode, date
   end
 
-  # Returns the entries the watch was recorded against.
+  # Returns the new Viewing.
   def call
-    entries = ListEntry.active.where(title_id: @episode.title_id, list: @group.lists).to_a
-
     ListEntry.transaction do
-      entries.each do |entry|
-        entry.viewings.create!(group: @group, episode: @episode, date: @date)
-        entry.update!(state: entry.state_from_viewings)
+      @entry.viewings.create!(episode: @episode, date: @date).tap do
+        @entry.update!(state: @entry.state_from_viewings)
       end
     end
-
-    entries
   end
 end

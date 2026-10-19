@@ -1,0 +1,12 @@
+<%# The optional recommendation, shared by every Add (and "Seasons ›") button on the page: each
+    button names this form and carries what to add as its own name and value. %>
+<%= form_with url: list_list_entries_path(@list), id: "add_title", class: "mb-3" do |form| %>
+  <%# Pressing Enter in the field would otherwise "click" the first result's button. %>
+  <button type="submit" disabled hidden aria-hidden="true"></button>
+  <% hidden.each do |name, value| %>
+    <%= hidden_field_tag name, value, id: nil %>
+  <% end %>
+  <%= form.label :recommendation, "Why this one? (optional)", class: "form-label small mb-1" %>
+  <%= form.text_field :recommendation, value: params[:recommendation], maxlength: 500, autocomplete: "off",
+        placeholder: "e.g. Sam says the finale is wild", class: "form-control" %>
+<% end %>

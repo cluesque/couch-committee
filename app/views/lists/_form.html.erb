@@ -1,0 +1,19 @@
+<%= form_with model: list do |form| %>
+  <div class="mb-3">
+    <%= form.label :name, class: "form-label" %>
+    <%= form.text_field :name, required: true, autofocus: list.new_record?, placeholder: "e.g. Friday movie night",
+          class: [ "form-control", { "is-invalid": list.errors.include?(:name) } ] %>
+    <% list.errors.full_messages_for(:name).each do |message| %>
+      <div class="invalid-feedback"><%= message %></div>
+    <% end %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :description, class: "form-label" %>
+    <%= form.text_area :description, rows: 3, class: "form-control" %>
+    <div class="form-text">Optional.</div>
+  </div>
+
+  <%= form.submit list.persisted? ? "Save list" : "Create list", class: "btn btn-primary" %>
+  <%= link_to "Cancel", list.persisted? ? list : root_path, class: "btn btn-link" %>
+<% end %>

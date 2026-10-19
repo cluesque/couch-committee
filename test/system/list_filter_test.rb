@@ -3,13 +3,12 @@ require "application_system_test_case"
 class ListFilterTest < ApplicationSystemTestCase
   test "showing just the movies on a list" do
     pat = create(:user)
-    group = create(:group, members: [ pat ])
-    list = create(:list, group: group, name: "Movie night")
+    list = create(:list, members: [ pat ], name: "Movie night")
     list.add(create(:movie, name: "Arrival"))
     list.add(create(:season, name: "The Bear"))
     sign_in_as pat
 
-    visit group_list_path(group, list)
+    visit list_path(list)
     click_on "Showing: Movies and series"
     within("main .dropdown-menu") { click_link "Movies 1" }
 

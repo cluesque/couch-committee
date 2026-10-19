@@ -3,13 +3,12 @@ require "application_system_test_case"
 class HistoryTest < ApplicationSystemTestCase
   test "cancelling with a note, finishing a movie, and finding both in the history" do
     pat = create(:user)
-    group = create(:group, members: [ pat ])
-    list = create(:list, group: group, name: "Movie night")
+    list = create(:list, members: [ pat ], name: "Movie night")
     list.add(create(:movie, name: "Saw It"))
     list.add(create(:movie, name: "Arrival"))
     sign_in_as pat
 
-    visit group_list_path(group, list)
+    visit list_path(list)
     click_on "Saw It"
     click_on "Remove from list…"
     within "turbo-frame#cancellation" do
