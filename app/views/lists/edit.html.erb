@@ -47,3 +47,11 @@
     No email is sent. They'll see this list when they sign in with Google using that address.
   </div>
 <% end %>
+
+<% others = (@list.users - [ Current.user ]).map(&:name).sort_by(&:downcase) %>
+<h2 class="h5 mt-5">Delete this list</h2>
+<p class="text-body-secondary">
+  It disappears for <%= others.any? ? "everyone on it" : "you" %>, history and all.
+</p>
+<%= button_to "Delete list", list_path(@list), method: :delete, class: "btn btn-outline-danger",
+      form: { data: { turbo_confirm: "Delete #{@list.name}#{" for you, #{others.to_sentence(last_word_connector: " and ")}" if others.any?}?" } } %>

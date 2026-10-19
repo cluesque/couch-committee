@@ -172,6 +172,73 @@ class ListsControllerTest < ActionDispatch::IntegrationTest
     assert_select "form[action=?] input[name=email]", list_memberships_path(list)
   end
 
+  test "the edit page offers to delete the list, naming who else loses it" do
+    list = create(:list, name: "Movie night",
+      members: [ @user, create(:user, display_name: "Sam"), create(:user, display_name: "alex") ])
+
+    get edit_list_path(list)
+
+    assert_select "form[action=?][data-turbo-confirm=?] button", list_path(list),
+      "Delete Movie night for you, alex and Sam?", text: "Delete list"
+  end
+
+  test "deleting a list I'm alone on just asks about the list" do
+    list = create(:list, name: "Just Me", members: [ @user ])
+
+    get edit_list_path(list)
+
+    assert_select "form[data-turbo-confirm=?]", "Delete Just Me?"
+  end
+
+  test "deleting a list hides it and offers to undo" do
+    list = create(:list, name: "Movie night", members: [ @user ])
+
+    delete list_path(list)
+
+    assert_redirected_to root_path
+    assert list.reload.deleted_at?
+    follow_redirect!
+    assert_select ".alert", text: /Deleted Movie night\./
+    assert_select ".alert form[action=?] button", list_restoration_path(list), text: "Undo"
+    assert_select ".list-group a", text: "Movie night", count: 0
+
+    get list_path(list)
+    assert_response :not_found
+  end
+
+  test "undo brings a deleted list back" do
+    list = create(:list, name: "Movie night", members: [ @user ])
+    list.soft_delete
+
+    post list_restoration_path(list)
+
+    assert_redirected_to list_path(list)
+    assert_equal "Restored Movie night.", flash[:notice]
+    assert_nil list.reload.deleted_at
+  end
+
+  test "only a deleted list I was on can be restored" do
+    others = create(:list)
+    others.soft_delete
+    mine = create(:list, members: [ @user ])
+
+    post list_restoration_path(others)
+    assert_response :not_found
+    assert others.reload.deleted_at?
+
+    post list_restoration_path(mine)
+    assert_response :not_found
+  end
+
+  test "someone else's list can't be deleted" do
+    others = create(:list)
+
+    delete list_path(others)
+
+    assert_response :not_found
+    assert_nil others.reload.deleted_at
+  end
+
   test "someone else's lists are not found" do
     others = create(:list)
 

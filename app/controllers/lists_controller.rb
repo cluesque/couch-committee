@@ -1,5 +1,5 @@
 class ListsController < ApplicationController
-  before_action :set_list, only: %i[ show edit update ]
+  before_action :set_list, only: %i[ show edit update destroy ]
 
   KINDS = %w[ movie series ].freeze
 
@@ -44,6 +44,12 @@ class ListsController < ApplicationController
       @memberships = memberships
       render :edit, status: :unprocessable_content
     end
+  end
+
+  # Soft: the list is hidden from everyone on it, with a chance to undo.
+  def destroy
+    @list.soft_delete
+    redirect_to root_path, notice: "Deleted #{@list.name}.", flash: { restorable_list_id: @list.id }, status: :see_other
   end
 
   private

@@ -71,6 +71,10 @@ movies and seasons — everything watchable is an `Episode`, everything listable
 - `name`
 - `description`
 - `has_many :users`, through `ListMembership`
+- `deleted_at` — set when someone on the list deletes it
+
+Deleting a List only hides it, from everyone on it: its entries, history, and members stay. Right
+after deleting, an Undo restores it; after that, only a console can (`list.restore`).
 
 Called `PlayList` until 2026-10-15. Users found "play list" awkward, so the model, table, routes,
 and UI all became "list".

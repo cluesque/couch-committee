@@ -1,7 +1,9 @@
 class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
   has_many :list_memberships, dependent: :destroy
-  has_many :lists, through: :list_memberships
+  # Deleted lists are hidden everywhere, except to bring one back.
+  has_many :lists, -> { kept }, through: :list_memberships
+  has_many :deleted_lists, -> { deleted }, through: :list_memberships, source: :list
 
   normalizes :email, with: ->(email) { email.strip.downcase }
 

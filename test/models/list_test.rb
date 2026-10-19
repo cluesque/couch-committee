@@ -129,6 +129,22 @@ class ListTest < ActiveSupport::TestCase
     assert_equal [ ours, mine ].sort, pat.lists.sort
   end
 
+  test "a deleted list is hidden from its members, keeping its entries, until it's restored" do
+    pat = create(:user)
+    list = create(:list, members: [ pat ])
+    entry = list.add(create(:movie))
+
+    list.soft_delete
+    assert_empty pat.lists
+    assert_equal [ list ], pat.deleted_lists
+    assert_equal [ entry ], list.reload.list_entries
+    assert_equal [ pat ], list.users
+
+    list.restore
+    assert_equal [ list ], pat.reload.lists
+    assert_empty pat.deleted_lists
+  end
+
   test "invite adds an existing user" do
     list, sam = create(:list), create(:user, email: "sam@example.com")
 

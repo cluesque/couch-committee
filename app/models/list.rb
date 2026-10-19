@@ -4,7 +4,20 @@ class List < ApplicationRecord
   has_many :list_entries
   has_many :viewings, through: :list_entries
 
+  scope :kept, -> { where(deleted_at: nil) }
+  scope :deleted, -> { where.not(deleted_at: nil) }
+
   validates :name, presence: true
+
+  # Hides the list from everyone on it. Its entries, history, and members stay, so it can be
+  # restored.
+  def soft_delete
+    update!(deleted_at: Time.current)
+  end
+
+  def restore
+    update!(deleted_at: nil)
+  end
 
   # There's no pending-invite state: someone not yet signed up gets a User with just their email,
   # which they claim on first Google sign-in.
