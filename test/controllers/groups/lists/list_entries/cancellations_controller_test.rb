@@ -13,7 +13,7 @@ class Groups::Lists::ListEntries::CancellationsControllerTest < ActionDispatch::
     get group_list_list_entry_path(@group, @list, @entry)
 
     assert_select "turbo-frame#cancellation a[href=?]",
-      new_group_list_list_entry_cancellation_path(@group, @list, @entry), text: "Cancel…"
+      new_group_list_list_entry_cancellation_path(@group, @list, @entry), text: "Remove from list…"
   end
 
   test "the cancel form asks why, optionally" do
@@ -21,7 +21,7 @@ class Groups::Lists::ListEntries::CancellationsControllerTest < ActionDispatch::
 
     assert_response :success
     assert_select "turbo-frame#cancellation form[data-turbo-frame=_top] textarea[name=?]", "cancellation[note]"
-    assert_select "input[type=submit][value=?]", "Cancel it"
+    assert_select "input[type=submit][value=?]", "Remove it"
   end
 
   test "cancelling with a note takes the entry off the list" do
@@ -29,7 +29,7 @@ class Groups::Lists::ListEntries::CancellationsControllerTest < ActionDispatch::
       params: { cancellation: { note: "Saw it on a plane." } }
 
     assert_redirected_to group_list_path(@group, @list)
-    assert_equal "Cancelled Arrival.", flash[:notice]
+    assert_equal "Removed Arrival from #{@list.name}.", flash[:notice]
     assert @entry.reload.cancelled?
     assert_equal "Saw it on a plane.", @entry.cancel_note
 

@@ -45,7 +45,7 @@
 
 <% if @entry.active? %>
   <%= turbo_frame_tag "cancellation", class: "d-block mt-4" do %>
-    <%= link_to "Cancel…", new_group_list_list_entry_cancellation_path(Current.group, @list, @entry),
+    <%= link_to "Remove from list…", new_group_list_list_entry_cancellation_path(Current.group, @list, @entry),
           class: "btn btn-outline-danger btn-sm" %>
   <% end %>
 <% end %>
