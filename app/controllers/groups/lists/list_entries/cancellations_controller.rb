@@ -8,7 +8,7 @@ class Groups::Lists::ListEntries::CancellationsController < ApplicationControlle
 
   def create
     @list_entry.cancel(note: params.dig(:cancellation, :note))
-    redirect_to [ Current.group, @list ], notice: "Cancelled #{@list_entry.title.full_name}."
+    redirect_to [ Current.group, @list ], notice: "Removed #{@list_entry.title.full_name} from #{@list.name}."
   end
 
   private

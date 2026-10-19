@@ -1,8 +1,8 @@
 <% title = @list_entry.title %>
-<% content_for :title, "Cancel #{title.full_name} · Couch Committee" %>
+<% content_for :title, "Remove #{title.full_name} · Couch Committee" %>
 
 <%= back_link title.full_name, [ Current.group, @list, @list_entry ] %>
-<h1 class="h3 mb-3">Cancel <%= title.full_name %>?</h1>
+<h1 class="h3 mb-3">Remove <%= title.full_name %> from <%= @list.name %>?</h1>
 
 <%= turbo_frame_tag "cancellation" do %>
   <%= form_with scope: :cancellation,
@@ -16,7 +16,7 @@
       <%= form.text_area :note, rows: 2, class: "form-control" %>
     </div>
     <div>
-      <%= form.submit "Cancel it", class: "btn btn-danger" %>
+      <%= form.submit "Remove it", class: "btn btn-danger" %>
       <%= link_to "Keep it", [ Current.group, @list, @list_entry ], class: "btn btn-link" %>
     </div>
   <% end %>

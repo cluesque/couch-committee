@@ -11,12 +11,12 @@ class HistoryTest < ApplicationSystemTestCase
 
     visit group_list_path(group, list)
     click_on "Saw It"
-    click_on "Cancel…"
+    click_on "Remove from list…"
     within "turbo-frame#cancellation" do
       fill_in "Why? (optional)", with: "Too scary for a weeknight."
-      click_on "Cancel it"
+      click_on "Remove it"
     end
-    assert_text "Cancelled Saw It."
+    assert_text "Removed Saw It from Movie night."
     assert_no_link "Saw It"
 
     click_on "Arrival"
