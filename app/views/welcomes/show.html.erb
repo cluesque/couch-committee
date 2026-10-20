@@ -1,0 +1,49 @@
+<% content_for :title, "Welcome · Couch Committee" %>
+<% welcomed = Current.user.welcomed_at %>
+
+<% if welcomed %>
+  <%= back_link "Home", root_path %>
+<% end %>
+
+<%= image_tag "/logo_with_name.png", alt: "Couch Committee — what should we watch tonight?",
+      class: "img-fluid mx-auto d-block mb-4" %>
+
+<h1 class="h3 mb-2"><%= welcomed ? "How it works" : [ "Welcome", Current.user.first_name ].compact.join(", ") + "!" %></h1>
+<p class="lead mb-4">
+  Couch Committee keeps a list of what you want to watch, shared with whoever you watch with, so
+  picking what's next takes a minute, not an evening.
+</p>
+
+<% steps = [
+     [ "Lists",
+       "Your #{List::JUST_ME} list is ready for anything you'd watch on your own. To watch with someone, " \
+       "start a new list and add them by email from its Edit page." ],
+     [ "Add titles",
+       "Search for any movie or show, and add it (or one season of it). Say why it's there if you like: " \
+       "“Sam says the finale is wild.”" ],
+     [ "Put them in order",
+       "Drag the handles to line up what's next." ],
+     [ "Mark as watched",
+       "Check off each episode as you go. The list shows what's next, and flags a season whose next " \
+       "episode isn't out yet." ],
+     [ "Look back, and find it",
+       "History shows everything you've watched, and you can add a title again to rewatch it. Each title " \
+       "shows where it's streaming." ]
+   ] %>
+<ol class="list-unstyled mb-4 welcome-steps">
+  <% steps.each.with_index(1) do |(heading, text), number| %>
+    <li class="d-flex gap-3 mb-3">
+      <span class="welcome-step-number rounded-circle flex-shrink-0" aria-hidden="true"><%= number %></span>
+      <div>
+        <h2 class="h6 mb-1"><%= heading %></h2>
+        <p class="text-body-secondary mb-0"><%= text %></p>
+      </div>
+    </li>
+  <% end %>
+</ol>
+
+<% if welcomed %>
+  <%= link_to "Back to your lists", root_path, class: "btn btn-primary" %>
+<% else %>
+  <%= button_to "Get started", welcome_path, method: :patch, class: "btn btn-primary btn-lg" %>
+<% end %>

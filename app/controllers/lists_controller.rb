@@ -5,7 +5,10 @@ class ListsController < ApplicationController
 
   # Home: every list you're on.
   def index
+    return redirect_to welcome_path unless Current.user.welcomed_at
+
     @lists = Current.user.lists.includes(:users).order(:name)
+    @lists_with_entries = ListEntry.where(list: @lists).distinct.pluck(:list_id)
   end
 
   # Optionally just the movies, or just the series (`kind`).

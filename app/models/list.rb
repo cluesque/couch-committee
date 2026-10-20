@@ -1,4 +1,7 @@
 class List < ApplicationRecord
+  # The list everyone starts with (see User#create_just_me_list).
+  JUST_ME = "Just Me"
+
   has_many :list_memberships, dependent: :destroy
   has_many :users, through: :list_memberships
   has_many :list_entries

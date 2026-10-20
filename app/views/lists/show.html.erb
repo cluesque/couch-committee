@@ -48,7 +48,19 @@
 <% elsif @kind %>
   <p class="text-body-secondary">No <%= @kind == "movie" ? "movies" : "series" %> on this list right now.</p>
 <% else %>
-  <p class="text-body-secondary">Nothing on this list yet. Add a title to get started.</p>
+  <p class="hint text-end mb-4">
+    <span class="hint-arrow hint-arrow-add" aria-hidden="true">↑</span>
+    <% if @list.list_entries.exists? %>
+      All caught up. Find the next movie or show to put on the list.
+    <% else %>
+      Start here: find a movie or show to put on the list.
+    <% end %>
+  </p>
+  <% if @list.name != List::JUST_ME && @list.users.one? %>
+    <p class="text-body-secondary">
+      Just you so far. Add people from <%= link_to "Edit", edit_list_path(@list) %> to watch together.
+    </p>
+  <% end %>
 <% end %>
 
 

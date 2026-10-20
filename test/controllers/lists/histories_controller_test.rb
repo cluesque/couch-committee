@@ -43,7 +43,7 @@ class Lists::HistoriesControllerTest < ActionDispatch::IntegrationTest
   test "an empty history says so" do
     get list_history_path(@list)
 
-    assert_select "p", "Nothing watched or removed yet."
+    assert_select "p", text: /Nothing watched or removed yet\./
   end
 
   test "someone else's history is not found" do

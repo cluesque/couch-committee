@@ -15,7 +15,7 @@ class RewatchingTest < ApplicationSystemTestCase
       fill_in "Watched on", with: Date.new(2026, 10, 1)
       click_on "Mark watched"
     end
-    assert_text "Nothing on this list yet."
+    assert_text "All caught up."
 
     click_on "History"
     click_link "Arrival"

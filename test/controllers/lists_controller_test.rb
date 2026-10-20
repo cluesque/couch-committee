@@ -23,12 +23,61 @@ class ListsControllerTest < ActionDispatch::IntegrationTest
   test "home says who else is on each list" do
     sam = create(:user, display_name: "Sam")
     alex = create(:user, display_name: "alex")
-    create(:list, members: [ @user, sam, alex ], name: "Movie night")
-    create(:list, members: [ @user ], name: "Solo")
+    create(:list, members: [ @user, sam, alex ], name: "Movie night").add(create(:movie))
+    create(:list, members: [ @user ], name: "Solo").add(create(:movie))
 
     get root_path
 
     assert_equal [ "Movie night with alex and Sam", "Solo" ], css_select(".list-group a").map { |link| link.text.squish }
+  end
+
+  test "home points out New list while none of my lists is shared, and marks empty lists" do
+    create(:list, members: [ @user ], name: List::JUST_ME)
+    create(:list, members: [ @user ], name: "Watched it all").add(create(:movie)).update!(state: :watched)
+
+    get root_path
+
+    assert_select ".hint", text: /Watching with someone\? Start a list for the two of you\./
+    assert_equal [ "Just Me Empty. Open it to add something you want to watch.", "Watched it all" ],
+      css_select(".list-group a").map { |link| link.text.squish }
+  end
+
+  test "once a list is shared, home stops pointing out New list" do
+    create(:list, members: [ @user ], name: List::JUST_ME)
+    create(:list, members: [ @user, create(:user) ], name: "Movie night")
+
+    get root_path
+
+    assert_select ".hint", count: 0
+  end
+
+  test "an empty list points up at Add a title, and suggests sharing it" do
+    list = create(:list, members: [ @user ], name: "Movie night")
+
+    get list_path(list)
+
+    assert_select ".hint", text: /Start here: find a movie or show to put on the list\./
+    assert_select "p", text: /Just you so far\. Add people from Edit to watch together\./
+    assert_select "p a[href=?]", edit_list_path(list), text: "Edit"
+  end
+
+  test "an empty Just Me or shared list doesn't suggest sharing" do
+    just_me = create(:list, members: [ @user ], name: List::JUST_ME)
+    shared = create(:list, members: [ @user, create(:user) ])
+
+    [ just_me, shared ].each do |list|
+      get list_path(list)
+      assert_select "p", text: /Just you so far/, count: 0
+    end
+  end
+
+  test "a list with everything watched says it's all caught up" do
+    list = create(:list, members: [ @user ])
+    list.add(create(:movie)).update!(state: :watched)
+
+    get list_path(list)
+
+    assert_select ".hint", text: /All caught up\. Find the next movie or show to put on the list\./
   end
 
   test "home explains what to do when I'm on no lists" do
