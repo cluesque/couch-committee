@@ -33,7 +33,7 @@
     <p class="text-body-secondary mb-0">Already on <%= @list.name %>.</p>
   <% else %>
     <% hidden = @title.series? ? { tmdb_show_id: @title.tmdb_id, q: @query } : { q: @query } %>
-    <%= render "add_title_form", hidden: hidden %>
+    <%= render "add_title_form", hidden: hidden, card: false %>
     <div>
       <%= button_tag "Add to #{@list.name}", form: "add_title",
             name: @title.series? ? "season" : "tmdb_movie_id", value: @title.series? ? @title.season : @title.tmdb_id,
