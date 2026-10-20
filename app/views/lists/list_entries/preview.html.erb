@@ -10,6 +10,23 @@
 
 <%= render "titles/header", title: @title %>
 
+<% if @elsewhere.any? %>
+  <ul class="list-unstyled text-body-secondary mb-3 elsewhere">
+    <% @elsewhere.each do |entry| %>
+      <% list = link_to entry.list.name, list_list_entry_path(entry.list, entry) %>
+      <li>
+        <% if entry.watched? %>
+          Watched on <%= list %>, <%= l entry.last_viewed_on, format: :long %>
+        <% elsif entry.in_progress? %>
+          In progress on <%= list %>
+        <% else %>
+          On <%= list %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>
+
 <% if @on_list %>
   <p class="text-body-secondary">Already on <%= @list.name %>.</p>
 <% else %>

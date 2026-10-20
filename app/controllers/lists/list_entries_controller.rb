@@ -59,6 +59,7 @@ class Lists::ListEntriesController < ApplicationController
       importer.build_season(params.expect(:tmdb_show_id), params.expect(:season))
     end
     @on_list = @title.persisted? && @list.list_entries.active.exists?(title: @title)
+    @elsewhere = @title.persisted? ? elsewhere(@title) : []
     @providers = Tmdb::WatchProviders.for(@title, client: tmdb)
   rescue Tmdb::Error
     redirect_to search_again_path, alert: TMDB_UNAVAILABLE
@@ -124,6 +125,15 @@ class Lists::ListEntriesController < ApplicationController
       end
 
       ActiveSupport::Dependencies.interlock.permit_concurrent_loads { lookups.filter_map(&:value) }.to_h
+    end
+
+    # The title's entries on the lists I'm on: where it's waiting to be watched, then where it's been
+    # watched, most recent first. Leaves out removed entries, and an active one on this list, which
+    # the page already mentions.
+    def elsewhere(title)
+      ListEntry.where(title: title, list: Current.user.lists).where.not(state: :cancelled)
+        .includes(:list, :viewings).reject { |entry| entry.list == @list && entry.active? }
+        .sort_by { |entry| [ entry.active? ? 0 : 1, -(entry.last_viewed_on&.jd || 0) ] }
     end
 
     # Back to the search, keeping what was typed.
