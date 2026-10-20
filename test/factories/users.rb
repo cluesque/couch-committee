@@ -3,10 +3,12 @@ FactoryBot.define do
     sequence(:email) { |n| "user#{n}@example.com" }
     sequence(:display_name) { |n| "User #{n}" }
     sequence(:google_id) { |n| "google-uid-#{n}" }
+    welcomed_at { Time.current }
 
     trait :invited do
       display_name { nil }
       google_id { nil }
+      welcomed_at { nil }
     end
   end
 end

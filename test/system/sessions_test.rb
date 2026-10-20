@@ -7,7 +7,7 @@ class SessionsTest < ApplicationSystemTestCase
 
     sign_in_with_google(sub: "g-1", email: "pat@example.com", name: "Pat")
 
-    assert_current_path root_path
+    assert_current_path welcome_path
     assert_button "Account menu", text: "P"
     within("nav") { assert_no_text "pat@example.com" }
 

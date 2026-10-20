@@ -9,7 +9,7 @@ class ListMembersTest < ApplicationSystemTestCase
     click_on "Create list"
     assert_text "Created Movie night."
 
-    click_on "Edit"
+    click_link "Edit", class: "btn"
     fill_in "Add someone by email", with: "sam@example.com"
     click_on "Add"
     assert_text "Added sam@example.com."
@@ -17,10 +17,14 @@ class ListMembersTest < ApplicationSystemTestCase
 
     sign_out
     sign_in_with_google(sub: "g-sam", email: "sam@example.com", name: "Sam")
+    assert_selector "h1", text: "Welcome, Sam!"
+    click_on "Get started"
+    assert_selector "h1", text: "Just Me"
+    click_on "Home"
 
     assert_link "Movie night", text: /with Pat/
     click_on "Movie night"
-    click_on "Edit"
+    click_link "Edit", class: "btn"
     assert_text "Pat"
     assert_text "Sam"
     assert_no_text "Hasn't signed in yet"

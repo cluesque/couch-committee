@@ -35,7 +35,11 @@ class User < ApplicationRecord
 
   # Everyone starts with a list of their own, on first sign-in.
   def create_just_me_list
-    List.create!(name: "Just Me").tap { |list| list.list_memberships.create!(user: self) }
+    List.create!(name: List::JUST_ME).tap { |list| list.list_memberships.create!(user: self) }
+  end
+
+  def first_name
+    display_name&.split&.first
   end
 
   def name

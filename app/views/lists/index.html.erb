@@ -10,6 +10,12 @@
   <h2 class="h4 mb-0">Lists</h2>
   <%= link_to "New list", new_list_path, class: "btn btn-primary btn-sm" %>
 </div>
+<% if @lists.any? && @lists.none? { |list| list.users.many? } %>
+  <p class="hint text-end small mb-2">
+    <span class="hint-arrow hint-arrow-new" aria-hidden="true">↑</span>
+    Watching with someone? Start a list for the two of you.
+  </p>
+<% end %>
 
 <% if @lists.any? %>
   <div class="list-group">
@@ -19,6 +25,9 @@
         <div><%= list.name %></div>
         <% if others.any? %>
           <div class="small text-body-secondary">with <%= others.to_sentence %></div>
+        <% end %>
+        <% unless list.id.in?(@lists_with_entries) %>
+          <div class="small text-body-secondary">Empty. Open it to add something you want to watch.</div>
         <% end %>
       <% end %>
     <% end %>

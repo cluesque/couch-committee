@@ -9,7 +9,7 @@ class ListsTest < ApplicationSystemTestCase
     click_on "New list"
     fill_in "Name", with: "Movie night"
     click_on "Create list"
-    assert_text "Nothing on this list yet."
+    assert_text "Start here: find a movie or show to put on the list."
 
     click_on "Add a title"
     fill_in "Search movies and shows", with: "the bear"

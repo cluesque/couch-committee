@@ -11,6 +11,9 @@ from.
 - `email` — unique, normalized to lowercase
 - `display_name` — optional; filled from the Google profile on first sign-in
 - `google_id` — optional, unique; Google's stable account ID (the ID token's `sub`)
+- `welcomed_at` — when they saw the one-time welcome page. Until then, Home sends them there.
+  Everyone already signed in when it was added counts as welcomed; "How it works" in the account
+  menu reopens it for anyone.
 
 A User can exist before they've ever signed in (adding someone to a List by email creates one), so
 `google_id` and `display_name` are blank until first sign-in. Sign-in matches on `google_id`

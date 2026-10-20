@@ -34,7 +34,7 @@ class WatchingTest < ApplicationSystemTestCase
 
     assert_text "Finished The Bear: Season 3."
     assert_no_text "Next: 2. Next"
-    assert_text "Nothing on this list yet."
+    assert_text "All caught up."
   end
 
   test "watching a movie checks it off on this list only" do
