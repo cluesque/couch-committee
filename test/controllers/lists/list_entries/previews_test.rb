@@ -76,6 +76,41 @@ class Lists::ListEntries::PreviewsTest < ActionDispatch::IntegrationTest
     assert_select "button[form=add_title]", count: 0
   end
 
+  test "the preview says where else on my lists the title is waiting or has been watched" do
+    arrival = Tmdb::Importer.new(client: Tmdb::Client.new(token: "test")).import_movie(329865)
+    spooky = create(:list, members: [ @user ], name: "Spooky season")
+    solo = create(:list, members: [ @user ], name: "Just Me")
+    WatchRecorder.call(@list.add(arrival), episode: arrival.episodes.first, date: Date.new(2025, 3, 1))
+    WatchRecorder.call(solo.add(arrival), episode: arrival.episodes.first, date: Date.new(2026, 5, 9))
+    waiting = spooky.add(arrival)
+    create(:list, name: "Someone else's").add(arrival)
+    create(:list, members: [ @user ], name: "Removed it").add(arrival).cancel
+    create(:list, members: [ @user ], name: "Deleted").tap { |list| list.add(arrival) }.soft_delete
+
+    get preview_list_list_entries_path(@list, tmdb_movie_id: 329865)
+
+    assert_equal [ "On Spooky season", "Watched on Just Me, May 09, 2026", "Watched on Movie night, March 01, 2025" ],
+      css_select(".elsewhere li").map { |item| item.text.squish }
+    assert_select ".elsewhere a[href=?]", list_list_entry_path(spooky, waiting)
+  end
+
+  test "a season part-way through on another list says so, and this list's own entry isn't repeated" do
+    bear = Tmdb::Importer.new(client: Tmdb::Client.new(token: "test")).import_season(136315, 1)
+    @list.add(bear)
+    other = create(:list, members: [ @user ], name: "Spooky season").add(bear)
+    WatchRecorder.call(other, episode: bear.episodes.first, date: Date.new(2026, 10, 1))
+
+    get preview_list_list_entries_path(@list, tmdb_show_id: 136315, season: 1)
+
+    assert_equal [ "In progress on Spooky season" ], css_select(".elsewhere li").map { |item| item.text.squish }
+  end
+
+  test "a title not yet in the catalog has nowhere else to be" do
+    get preview_list_list_entries_path(@list, tmdb_movie_id: 329865)
+
+    assert_select ".elsewhere", count: 0
+  end
+
   test "when TMDB can't be reached, the preview sends you back to search" do
     FakeTmdb.unreachable = true
 
