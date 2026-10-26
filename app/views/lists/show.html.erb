@@ -21,18 +21,32 @@
   <div class="dropdown">
     <button type="button" class="btn btn-outline-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown"
             aria-expanded="false">
-      Showing: <%= choices[@kind] %>
+      Showing: <%= @tag ? tag_pill(@tag) : choices[@kind] %>
     </button>
     <ul class="dropdown-menu">
       <% choices.each do |kind, label| %>
+        <% current = kind == @kind && !@tag %>
         <li>
           <%= link_to list_path(@list, kind: kind),
-                class: [ "dropdown-item d-flex justify-content-between gap-3", { active: kind == @kind } ],
-                "aria-current": (kind == @kind || nil) do %>
+                class: [ "dropdown-item d-flex justify-content-between gap-3", { active: current } ],
+                "aria-current": (current || nil) do %>
             <span><%= label %></span>
             <span class="small opacity-75"><%= kind ? @counts.fetch(kind, 0) : @total %></span>
           <% end %>
         </li>
+      <% end %>
+      <% if @list.tags.any? %>
+        <li><hr class="dropdown-divider"></li>
+        <% @list.tags.each do |list_tag| %>
+          <li>
+            <%= link_to list_path(@list, tag: list_tag.id),
+                  class: [ "dropdown-item d-flex justify-content-between align-items-center gap-3", { active: list_tag == @tag } ],
+                  "aria-current": (list_tag == @tag || nil) do %>
+              <%= tag_pill(list_tag) %>
+              <span class="small opacity-75"><%= @tag_counts.fetch(list_tag.id, 0) %></span>
+            <% end %>
+          </li>
+        <% end %>
       <% end %>
     </ul>
   </div>
@@ -47,6 +61,8 @@
   </ol>
 <% elsif @kind %>
   <p class="text-body-secondary">No <%= @kind == "movie" ? "movies" : "series" %> on this list right now.</p>
+<% elsif @tag %>
+  <p class="text-body-secondary">Nothing tagged <%= tag_pill(@tag) %> right now.</p>
 <% else %>
   <p class="hint text-end mb-4">
     <span class="hint-arrow hint-arrow-add" aria-hidden="true">↑</span>

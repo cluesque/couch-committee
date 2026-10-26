@@ -1,0 +1,49 @@
+<% content_for :title, "Tags for #{@list_entry.title.full_name} · Couch Committee" %>
+
+<%= back_link @list_entry.title.full_name, [ @list, @list_entry ] %>
+<h1 class="h3 mb-3">Tags for <%= @list_entry.title.full_name %></h1>
+
+<%= turbo_frame_tag "tags", class: "d-block mb-3" do %>
+  <%= form_with url: list_list_entry_tags_path(@list, @list_entry), method: :patch,
+        data: { turbo_frame: "_top" }, class: "card card-body" do |form| %>
+    <% if @new_tag.errors.any? %>
+      <div class="alert alert-danger">New tag: <%= @new_tag.errors.full_messages.to_sentence %></div>
+    <% end %>
+
+    <%# Sent even with every box unticked, so taking off the last tag works. %>
+    <%= hidden_field_tag "list_entry[tag_ids][]", "", id: nil %>
+    <% if @list.tags.any? %>
+      <fieldset class="mb-3">
+        <legend class="form-label fs-6">Tags on <%= @list.name %></legend>
+        <div class="d-flex flex-wrap gap-2">
+          <% @list.tags.each do |list_tag| %>
+            <div class="form-check form-check-inline m-0">
+              <%= check_box_tag "list_entry[tag_ids][]", list_tag.id, @selected_ids.include?(list_tag.id),
+                    id: "tag_#{list_tag.id}", class: "form-check-input" %>
+              <%= label_tag "tag_#{list_tag.id}", class: "form-check-label" do %>
+                <%= tag_pill(list_tag) %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </fieldset>
+    <% end %>
+
+    <div class="mb-2">
+      <%= label_tag "new_tag_name", "New tag (optional)", class: "form-label" %>
+      <%= text_field_tag "new_tag[name]", @new_tag.name, id: "new_tag_name", maxlength: 20, autocomplete: "off",
+            placeholder: "e.g. Alice+", class: "form-control" %>
+    </div>
+    <fieldset class="mb-3">
+      <legend class="visually-hidden">New tag's color</legend>
+      <div class="d-flex flex-wrap gap-1">
+        <%= tag_color_choices "new_tag[color]", selected: @new_tag.color, id_prefix: "new_tag_color" %>
+      </div>
+    </fieldset>
+
+    <div>
+      <%= form.submit "Save", class: "btn btn-primary" %>
+      <%= link_to "Never mind", [ @list, @list_entry ], class: "btn btn-link" %>
+    </div>
+  <% end %>
+<% end %>

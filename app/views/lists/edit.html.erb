@@ -48,6 +48,19 @@
   </div>
 <% end %>
 
+<h2 class="h5 mt-5">Tags</h2>
+<% if @list.tags.any? %>
+  <ul class="list-unstyled mb-3 list-tags">
+    <% @list.tags.includes(:list_entries).each do |list_tag| %>
+      <li class="mb-2"><%= render "lists/tags/tag", list_tag: list_tag %></li>
+    <% end %>
+  </ul>
+<% else %>
+  <p class="text-body-secondary">
+    No tags yet. Add them from any entry's page, like “Alice+” for what to save until Alice can watch too.
+  </p>
+<% end %>
+
 <% others = (@list.users - [ Current.user ]).map(&:name).sort_by(&:downcase) %>
 <h2 class="h5 mt-5">Delete this list</h2>
 <p class="text-body-secondary">

@@ -69,3 +69,46 @@
 // Roughly centered under the button each points at.
 .hint-arrow-new { padding-right: 1.6rem; }
 .hint-arrow-add { padding-right: 2.2rem; }
+
+// A list's tags, as soft pills in the color its people picked (Tag::COLORS).
+$tag-colors:
+  "blue" $blue-100 $blue-800,
+  "teal" $teal-100 $teal-800,
+  "green" $green-100 $green-800,
+  "yellow" $yellow-100 $yellow-800,
+  "orange" $orange-100 $orange-800,
+  "red" $red-100 $red-800,
+  "pink" $pink-100 $pink-800,
+  "purple" $purple-100 $purple-800,
+  "gray" $gray-200 $gray-800;
+
+.tag {
+  display: inline-block;
+  padding: 0.15em 0.6em;
+  border-radius: var(--bs-border-radius-pill);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+@each $name, $background, $text in $tag-colors {
+  .tag-#{$name} {
+    background-color: $background;
+    color: $text;
+  }
+}
+
+// Color pickers: the chosen color gets a ring.
+.tag-color-choice {
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.btn-check:checked + .tag-color-choice {
+  border-color: currentColor;
+}
+
+.btn-check:focus-visible + .tag-color-choice {
+  outline: 2px solid var(--bs-focus-ring-color);
+}

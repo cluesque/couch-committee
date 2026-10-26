@@ -101,6 +101,21 @@ A recommendation is just the `recommendation` string on `ListEntry` (the reason)
 suggested a Title, which a separate `Recommendation` model was once planned for, is still out of
 scope.
 
+### Tag
+- `belongs_to :list`
+- `name` — up to 20 characters, unique within the List (ignoring case), e.g. "Alice+"
+- `color` — one of a fixed palette (`Tag::COLORS`)
+
+A List's people make up its tags as they go, from an entry's page, and rename, recolor, or delete
+them from the List's edit page. Tags belong to one List; another List can have its own "Alice+".
+The list view can be filtered to one tag.
+
+### ListEntryTag
+- `belongs_to :list_entry`
+- `belongs_to :tag` — one of the entry's List's tags
+
+An entry can have several tags, each once. A rewatch (a fresh `ListEntry`) starts with none.
+
 ### Viewing
 - `date`
 - `belongs_to :episode`

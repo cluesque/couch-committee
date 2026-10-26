@@ -108,6 +108,7 @@ these hand-entry forms are gone. See `docs/title-metadata.md`.
 SessionsController          # google_sign_in callback, destroy (logout)
 ListsController             # index (Home: my lists), show, new, create, edit (incl. who's on it), update
 Lists::MembershipsController   # add someone by email, remove someone, leave — from the list's edit page
+Lists::TagsController          # rename, recolor, delete a tag — in place on the list's edit page
 TitlesController                # browse the global catalog — not list-nested, since Titles are global
 ViewingsController              # index — "Recently watched" across all my lists, from the account menu
 Lists::ListEntriesController  # new (search TMDB), seasons (pick a show's season), create (import

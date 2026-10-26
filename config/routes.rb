@@ -20,6 +20,7 @@ Rails.application.routes.draw do
     scope module: :lists do
       resources :memberships, only: %i[ create destroy ]
       resource :restoration, only: :create
+      resources :tags, only: %i[ edit update destroy ]
       resource :history, only: :show
       resources :list_entries, only: %i[ show new create ] do
         patch :reorder, on: :collection
@@ -29,6 +30,7 @@ Rails.application.routes.draw do
           resources :viewings, only: %i[ new create destroy ]
           resource :cancellation, only: %i[ new create ]
           resource :recommendation, only: %i[ edit update ]
+          resource :tags, only: %i[ edit update ]
         end
       end
     end

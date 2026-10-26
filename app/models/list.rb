@@ -5,6 +5,7 @@ class List < ApplicationRecord
   has_many :list_memberships, dependent: :destroy
   has_many :users, through: :list_memberships
   has_many :list_entries
+  has_many :tags, -> { order(:name) }, dependent: :destroy
   has_many :viewings, through: :list_entries
 
   scope :kept, -> { where(deleted_at: nil) }

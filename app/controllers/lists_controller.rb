@@ -11,13 +11,22 @@ class ListsController < ApplicationController
     @lists_with_entries = ListEntry.where(list: @lists).distinct.pluck(:list_id)
   end
 
-  # Optionally just the movies, or just the series (`kind`).
+  # Optionally just the movies, or just the series (`kind`), or just what has one of the list's tags
+  # (`tag`).
   def show
-    entries = @list.list_entries.active.includes(:viewings, title: :episodes).order(:sequence).to_a
+    entries = @list.list_entries.active.includes(:viewings, :tags, title: :episodes).order(:sequence).to_a
     @kind = params[:kind].presence_in(KINDS)
+    @tag = @list.tags.find_by(id: params[:tag]) unless @kind
     @counts = entries.map { |entry| entry.title.kind }.tally
+    @tag_counts = entries.flat_map { |entry| entry.tags.map(&:id) }.tally
     @total = entries.size
-    @entries = @kind ? entries.select { |entry| entry.title.kind == @kind } : entries
+    @entries = if @kind
+      entries.select { |entry| entry.title.kind == @kind }
+    elsif @tag
+      entries.select { |entry| entry.tags.include?(@tag) }
+    else
+      entries
+    end
   end
 
   def new

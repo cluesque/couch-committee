@@ -1,0 +1,13 @@
+<%# The entry's tags. The form for changing them opens in place of this frame. %>
+<%= turbo_frame_tag "tags", class: "d-block mb-3" do %>
+  <% if entry.tags.any? %>
+    <div class="d-flex flex-wrap align-items-center gap-1 entry-tags">
+      <% entry.tags.each do |list_tag| %>
+        <%= tag_pill(list_tag) %>
+      <% end %>
+      <%= link_to "Edit tags", edit_list_list_entry_tags_path(entry.list_id, entry), class: "small ms-1" %>
+    </div>
+  <% else %>
+    <%= link_to "Add tags", edit_list_list_entry_tags_path(entry.list_id, entry), class: "small" %>
+  <% end %>
+<% end %>
