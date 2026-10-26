@@ -20,6 +20,7 @@
 <% end %>
 
 <%= render "recommendation", entry: @entry %>
+<%= render "tags", entry: @entry %>
 
 <% if @entry.cancelled? %>
   <div class="alert alert-secondary">

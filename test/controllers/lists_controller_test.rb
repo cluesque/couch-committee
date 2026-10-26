@@ -288,6 +288,64 @@ class ListsControllerTest < ActionDispatch::IntegrationTest
     assert_nil others.reload.deleted_at
   end
 
+  test "list rows show each entry's tags" do
+    list = create(:list, members: [ @user ])
+    entry = list.add(create(:movie, name: "Arrival"))
+    entry.tags << create(:tag, list: list, name: "Alice+", color: "purple")
+
+    get list_path(list)
+
+    assert_select "li##{ActionView::RecordIdentifier.dom_id(entry)} .tag.tag-purple", "Alice+"
+  end
+
+  test "the Showing menu filters by tag, with counts" do
+    list = create(:list, members: [ @user ])
+    alice = create(:tag, list: list, name: "Alice+")
+    create(:tag, list: list, name: "Cozy")
+    list.add(create(:movie, name: "Arrival")).tags << alice
+    list.add(create(:movie, name: "Saw It"))
+
+    get list_path(list, tag: alice.id)
+
+    assert_equal [ "Arrival" ], css_select("ol > li .fw-medium").map(&:text)
+    assert_select "button.dropdown-toggle .tag", "Alice+"
+    assert_equal [ [ "Alice+", "1" ], [ "Cozy", "0" ] ],
+      css_select(".dropdown-menu a .tag").map { |pill| [ pill.text, pill.next_element.text ] }
+    assert_select ".dropdown-menu a.active", count: 1
+    assert_select ".dropdown-menu a.active .tag", "Alice+"
+  end
+
+  test "filtering by a tag nothing has says so" do
+    list = create(:list, members: [ @user ])
+    cozy = create(:tag, list: list, name: "Cozy")
+    list.add(create(:movie))
+
+    get list_path(list, tag: cozy.id)
+
+    assert_select "p", text: /Nothing tagged\s+Cozy\s+right now/
+  end
+
+  test "another list's tag doesn't filter" do
+    list = create(:list, members: [ @user ])
+    list.add(create(:movie, name: "Arrival"))
+
+    get list_path(list, tag: create(:tag).id)
+
+    assert_equal [ "Arrival" ], css_select("ol > li .fw-medium").map(&:text)
+  end
+
+  test "a rewatch starts without the earlier entry's tags" do
+    list = create(:list, members: [ @user ])
+    movie = create(:movie)
+    earlier = list.add(movie)
+    earlier.tags << create(:tag, list: list)
+    earlier.update!(state: :watched)
+
+    post list_list_entries_path(list), params: { title_id: movie.id }
+
+    assert_empty list.list_entries.active.sole.tags
+  end
+
   test "someone else's lists are not found" do
     others = create(:list)
 

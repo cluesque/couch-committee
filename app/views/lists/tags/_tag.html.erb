@@ -1,0 +1,7 @@
+<%# One of a list's tags on its edit page. The form for changing it opens in place of this frame. %>
+<%= turbo_frame_tag list_tag, class: "d-flex align-items-center gap-2" do %>
+  <%= tag_pill(list_tag) %>
+  <span class="small text-body-secondary"><%= pluralize(list_tag.list_entries.size, "entry", plural: "entries") %></span>
+  <%= link_to "Edit", edit_list_tag_path(list_tag.list_id, list_tag), class: "small ms-auto",
+        "aria-label": "Edit #{list_tag.name}" %>
+<% end %>

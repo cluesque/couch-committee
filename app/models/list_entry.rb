@@ -4,6 +4,8 @@ class ListEntry < ApplicationRecord
   belongs_to :list
   belongs_to :title
   has_many :viewings
+  has_many :list_entry_tags, dependent: :destroy
+  has_many :tags, -> { order(:name) }, through: :list_entry_tags
 
   enum :state, { not_started: 0, in_progress: 1, watched: 2, cancelled: 3 }, validate: true
 

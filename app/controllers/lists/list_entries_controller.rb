@@ -5,7 +5,7 @@ class Lists::ListEntriesController < ApplicationController
   before_action :set_list
 
   def show
-    @entry = @list.list_entries.includes(:viewings, title: :episodes).find(params[:id])
+    @entry = @list.list_entries.includes(:viewings, :tags, title: :episodes).find(params[:id])
     @active_entry = @list.list_entries.active.find_by(title_id: @entry.title_id) unless @entry.active?
   end
 

@@ -38,6 +38,13 @@
     <% if list_entry.recommendation %>
       <div class="small fst-italic ps-4 recommendation">“<%= list_entry.recommendation %>”</div>
     <% end %>
+    <% if list_entry.tags.any? %>
+      <div class="d-flex flex-wrap gap-1 ps-4 mt-1 entry-tags">
+        <% list_entry.tags.each do |list_tag| %>
+          <%= tag_pill(list_tag) %>
+        <% end %>
+      </div>
+    <% end %>
     </div>
   <% end %>
 </li>
