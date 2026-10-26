@@ -30,7 +30,9 @@
 
     <div class="mb-3">
       <%= form.label :date, "Watched on", class: "form-label" %>
-      <%= form.date_field :date, required: true, class: "form-control" %>
+      <%# Today, in the browser's time zone; but a date sent back with an error stays as it was. %>
+      <%= form.date_field :date, required: true, class: "form-control",
+            data: ({ controller: "local-date" } if @viewing.errors.none?) %>
     </div>
 
     <div>
