@@ -79,6 +79,10 @@ native HTML5 drag-and-drop, so desktop and touch share one code path and system 
 real drag. This is the one genuinely custom bit of JS in the app, deliberately kept
 to one controller with one responsibility — everything else leans on Turbo + Bootstrap's own JS.
 
+The only other Stimulus controller, `local-date`, is a few lines: it fills in the "Mark as watched"
+form's date with today in the browser's time zone, since the server runs in UTC and that's already
+tomorrow on a US evening.
+
 ### 5. "Upcoming season" badge is computed, not stored
 A season `ListEntry` is visually flagged as "upcoming" when every one of its not-yet-watched
 Episodes has `available_on` in the future. The same rule covers a movie with a future release
