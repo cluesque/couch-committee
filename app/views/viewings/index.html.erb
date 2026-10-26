@@ -1,0 +1,34 @@
+<% content_for :title, "Recently watched · Couch Committee" %>
+
+<%= back_link "Home", root_path %>
+<h1 class="h3 mb-3">Recently watched</h1>
+
+<% if @watches.any? %>
+  <ol class="list-group mb-3">
+    <% @watches.each do |viewings| %>
+      <% viewing = viewings.first %>
+      <% title = viewing.list_entry.title %>
+      <% entries = viewings.map(&:list_entry).uniq(&:list_id).sort_by { |entry| entry.list.name.downcase } %>
+      <li class="list-group-item d-flex align-items-start gap-2">
+        <%= poster_thumb(title.poster_path) %>
+        <div class="flex-grow-1 min-w-0">
+          <span class="d-flex align-items-baseline gap-2">
+            <%= kind_icon(title) %>
+            <span class="fw-medium"><%= title.full_name %></span>
+          </span>
+          <% unless title.movie? %>
+            <div class="small text-body-secondary ps-4"><%= viewing.episode.label %></div>
+          <% end %>
+          <div class="small ps-4 watch-lists">
+            <%= safe_join(entries.map { |entry| link_to entry.list.name, list_list_entry_path(entry.list, entry) }, ", ") %>
+          </div>
+        </div>
+        <small class="text-body-secondary text-nowrap"><%= l viewing.date, format: :short %></small>
+      </li>
+    <% end %>
+  </ol>
+<% else %>
+  <p class="text-body-secondary">
+    Nothing watched yet. When you mark something watched on any of your lists, it shows up here.
+  </p>
+<% end %>

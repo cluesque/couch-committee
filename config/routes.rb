@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   get "session/google", to: "sessions#create", as: :google_session
 
   resource :welcome, only: %i[ show update ]
+  resources :viewings, only: :index
 
   resources :lists, only: %i[ index show new create edit update destroy ] do
     scope module: :lists do
