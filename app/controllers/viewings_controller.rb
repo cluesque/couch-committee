@@ -4,7 +4,7 @@ class ViewingsController < ApplicationController
   LIMIT = 50
 
   def index
-    viewings = Viewing.joins(:list_entry).where(list_entries: { list_id: Current.user.lists.select(:id) })
+    viewings = Viewing.joins(:list_entry).where(list_entries: { list: Current.user.lists })
       .includes(:episode, list_entry: [ :title, :list ]).order(date: :desc, created_at: :desc).limit(LIMIT)
     @watches = viewings.group_by { |viewing| [ viewing.episode_id, viewing.date ] }.values
   end
