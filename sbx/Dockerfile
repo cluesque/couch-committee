@@ -31,7 +31,7 @@ RUN npx -y playwright@1 install --with-deps chromium \
 ENV BROWSER_PATH=/usr/local/bin/chromium
 
 # Layer 2: ruby, compiled with ruby-build into /usr/local
-ARG RUBY_VERSION=4.0.7
+ARG RUBY_VERSION=4.0.9
 RUN git clone --depth 1 https://github.com/rbenv/ruby-build.git /tmp/ruby-build \
     && PREFIX=/usr/local /tmp/ruby-build/install.sh \
     && ruby-build ${RUBY_VERSION} /usr/local \
