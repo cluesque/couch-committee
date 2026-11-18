@@ -33,8 +33,10 @@ This installs gems, prepares the database, and starts the dev server (`bin/dev`)
 
 ### Google sign-in credentials
 
-Signing in needs a Google OAuth client. Tests don't (they fake Google), so this is only needed
-to run the app.
+Signing in for real needs a Google OAuth client. Tests don't (they fake Google), and neither does
+development: the sign-in page there has a **Dev sign-in** form that signs you in as any email. An
+email that's new gets an account, just like a first Google sign-in. To try real Google sign-in
+locally, set up a client:
 
 1. In the [Google Cloud console](https://console.cloud.google.com/apis/credentials), configure
    the OAuth consent screen, then create an **OAuth client ID** of type **Web application**.

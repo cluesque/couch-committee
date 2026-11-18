@@ -24,7 +24,8 @@ add gems, frameworks, or JavaScript unless they're clearly needed, and say why w
 - Hotwire: Turbo Drive and Frames, plus Stimulus. There are no Turbo Streams yet.
 - Bootstrap 5, compiled by `dartsass-rails` from `app/assets/stylesheets/application.scss`.
 - SQLite in every environment, production included.
-- Google sign-in through Basecamp's `google_sign_in`. There are no passwords.
+- Google sign-in through Basecamp's `google_sign_in`. There are no passwords. Development and
+  test also have "Dev sign-in" (any email, no Google), gated by `config.x.dev_sign_in`.
 - TMDB for title metadata (`app/services/tmdb/`).
 - Minitest with `factory_bot_rails`, and Capybara with Cuprite (headless Chromium) for system tests.
 - Deployed to Fly.io as a single machine (`fly.toml`, `Dockerfile`).
@@ -47,7 +48,8 @@ bin/ci                     # everything above, plus the seeds check, as defined 
 Before calling a change done, run `bin/rubocop`, `bin/rails test`, and `bin/rails test:system`
 (or `bin/ci`). GitHub Actions runs the same checks on every push and PR.
 
-Running the app needs Google OAuth and TMDB credentials in `config/credentials.yml.enc` (see
+Running the app needs TMDB credentials, and Google OAuth credentials only for real Google
+sign-in (development has "Dev sign-in" instead), in `config/credentials.yml.enc` (see
 README). The tests need neither, and never touch the network.
 
 ## Code layout and conventions

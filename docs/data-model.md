@@ -21,6 +21,10 @@ first, since a Google account's email can change. Failing that, it claims an exi
 the same (verified) email and no `google_id` yet; failing that, it creates a new User. Either way,
 that first sign-in also creates a "Just Me" List with only them on it.
 
+Dev sign-in (development and test only) matches on email alone. It signs in as an existing User
+as they are, or creates one. It never sets `google_id`, so a later real Google sign-in still
+claims that User by email. It adds a "Just Me" List if they aren't on one yet.
+
 ### ListMembership
 - `belongs_to :user`
 - `belongs_to :list`

@@ -12,6 +12,8 @@ Rails.application.routes.draw do
   resource :session, only: %i[ new destroy ]
   # google_sign_in's proceed_to target: it redirects here (a GET) once Google has answered.
   get "session/google", to: "sessions#create", as: :google_session
+  # Sign in as any email, without Google. Development and test only (config.x.dev_sign_in).
+  resource :dev_session, only: :create
 
   resource :welcome, only: %i[ show update ]
   resources :viewings, only: :index
