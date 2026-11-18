@@ -47,4 +47,8 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions.
   config.action_controller.raise_on_missing_callback_actions = true
+
+  # Show "Dev sign-in" on the sign-in page: sign in as any email, no Google needed.
+  # Never set this in production, where it would let anyone sign in as anyone.
+  config.x.dev_sign_in = true
 end

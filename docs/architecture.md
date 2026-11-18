@@ -23,7 +23,10 @@ over extra gems/frameworks wherever plain Rails is enough.
   OmniAuth). On a successful callback the `User` is found by Google account ID, else claimed by
   verified email, else created (see `docs/data-model.md`). A sign-in is a `Session` row plus a
   permanent signed cookie, in the shape of Rails 8's authentication generator. No password auth
-  at all.
+  at all. Development and test also have a **Dev sign-in** form (`DevSessionsController`) that
+  signs in as any email, so running the app doesn't need a Google OAuth client. It's on only where
+  `config.x.dev_sign_in` is set (`config/environments/development.rb` and `test.rb`); anywhere
+  else it's a 404 and the form isn't shown.
 - **Database**: SQLite in development, test, *and* production, via the standard `sqlite3` adapter.
   All migrations use only database-agnostic Rails migration DSL — standard column types
   (`string`, `text`, `integer`, `date`, `datetime`, `boolean`), Rails-native `enum` (integer-backed,
@@ -106,6 +109,7 @@ these hand-entry forms are gone. See `docs/title-metadata.md`.
 
 ```
 SessionsController          # google_sign_in callback, destroy (logout)
+DevSessionsController       # create — "Dev sign-in" as any email; development and test only
 ListsController             # index (Home: my lists), show, new, create, edit (incl. who's on it), update
 Lists::MembershipsController   # add someone by email, remove someone, leave — from the list's edit page
 Lists::TagsController          # rename, recolor, delete a tag — in place on the list's edit page

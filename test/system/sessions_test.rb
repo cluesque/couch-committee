@@ -24,4 +24,14 @@ class SessionsTest < ApplicationSystemTestCase
     visit root_path
     assert_current_path new_session_path
   end
+
+  test "dev sign-in as any email" do
+    visit new_session_path
+    fill_in "Email", with: "sam@example.com"
+    fill_in "Name (for someone new)", with: "Sam"
+    click_on "Dev sign-in"
+
+    assert_current_path welcome_path
+    assert_button "Account menu", text: "S"
+  end
 end

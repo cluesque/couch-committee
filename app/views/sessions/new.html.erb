@@ -11,4 +11,23 @@
                             proceed_to: google_session_url,
                             class: "btn btn-primary btn-lg",
                             data: { turbo: false } %>
+
+  <% if Rails.configuration.x.dev_sign_in %>
+    <%= form_with url: dev_session_path, class: "card card-body text-start mt-4 mx-auto",
+                  style: "max-width: 24rem" do |form| %>
+      <h2 class="h6">Dev sign-in</h2>
+      <p class="small text-body-secondary">
+        Development only. Sign in as anyone, no Google needed. Someone new gets an account.
+      </p>
+      <div class="mb-2">
+        <%= form.label :email, class: "form-label" %>
+        <%= form.email_field :email, required: true, autocomplete: "email", class: "form-control" %>
+      </div>
+      <div class="mb-3">
+        <%= form.label :name, "Name (for someone new)", class: "form-label" %>
+        <%= form.text_field :name, autocomplete: "name", class: "form-control" %>
+      </div>
+      <%= form.submit "Dev sign-in", class: "btn btn-outline-secondary" %>
+    <% end %>
+  <% end %>
 </div>
