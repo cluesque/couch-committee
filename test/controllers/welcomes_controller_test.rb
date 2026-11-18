@@ -66,4 +66,25 @@ class WelcomesControllerTest < ActionDispatch::IntegrationTest
 
     assert_select "h1", "Welcome!"
   end
+
+  test "someone signed out can read how it works, and is offered a sign in" do
+    delete session_path
+
+    get welcome_path
+
+    assert_response :success
+    assert_select "h1", "How it works"
+    assert_equal 5, css_select(".welcome-steps h2").size
+    assert_select "a[href=?]", new_session_path, text: "Sign in"
+    assert_select "a", text: "Back to your lists", count: 0
+    assert_select "button", text: "Get started", count: 0
+  end
+
+  test "someone signed out can't mark themselves welcomed" do
+    delete session_path
+
+    patch welcome_path
+
+    assert_redirected_to new_session_path
+  end
 end

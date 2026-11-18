@@ -1,7 +1,8 @@
 <% content_for :title, "Welcome · Couch Committee" %>
-<% welcomed = Current.user.welcomed_at %>
+<% signed_in = Current.user.present? %>
+<% welcomed = !signed_in || Current.user.welcomed_at %>
 
-<% if welcomed %>
+<% if signed_in && welcomed %>
   <%= back_link "Home", root_path %>
 <% end %>
 
@@ -42,7 +43,9 @@
   <% end %>
 </ol>
 
-<% if welcomed %>
+<% if !signed_in %>
+  <%= link_to "Sign in", new_session_path, class: "btn btn-primary btn-lg" %>
+<% elsif welcomed %>
   <%= link_to "Back to your lists", root_path, class: "btn btn-primary" %>
 <% else %>
   <%= button_to "Get started", welcome_path, method: :patch, class: "btn btn-primary btn-lg" %>
