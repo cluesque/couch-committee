@@ -1,7 +1,10 @@
 # The one-time introduction, shown on the way to Home until it's been seen. "How it works" in the
-# account menu reopens it.
+# account menu reopens it. Anyone signed out can read it too, as "How it works", with a way to sign in.
 class WelcomesController < ApplicationController
+  allow_unauthenticated_access only: :show
+
   def show
+    resume_session
   end
 
   def update

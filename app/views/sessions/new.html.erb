@@ -7,8 +7,10 @@
                 alt: "Couch Committee — what should we watch tonight?",
                 class: "img-fluid mx-auto d-block mb-4" %>
 
+  <%# Google OAuth must leave Superconductor's iframe to display its sign-in screen. %>
   <%= google_sign_in_button "Sign in with Google",
                             proceed_to: google_session_url,
                             class: "btn btn-primary btn-lg",
+                            formtarget: ("_top" if Rails.env.development? && ENV["AGENT_WEB_HOST"].present?),
                             data: { turbo: false } %>
 </div>
