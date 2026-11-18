@@ -220,3 +220,6 @@ lists directly. One PR, built in these steps, with the suite green after each:
 - Recording who recommended a title. The reason is covered by `ListEntry#recommendation` (added
   2026-10-16), entered when adding a title or later.
 - Deployment target selection.
+- Sign-in with an emailed code, and with Apple. WorkOS AuthKit was evaluated for this on
+  2026-11-18 and set aside for now; `docs/workos-research.md` has the findings and the approach
+  we'd take.
